@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Entreprises | Talentyah</title>
+
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <header class="header">
+    <div class="container nav">
+      <div class="logo">Talentyah</div>
+      <nav>
+        <a href="index.html">Accueil</a>
+        <a href="carrieres.html">Carrières</a>
+        <a href="candidats.html">Candidats</a>
+        <a href="entreprises.html" class="active">Entreprises</a>
+        <a href="blog.html">Blog</a>
+        <a href="apropos.html">À propos</a>
+        <a href="admin.html" class="admin-link" title="Connexion administrateur">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+              width="18" height="18" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="4"></circle>
+            <path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
+          </svg>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO ENTREPRISES -->
+  <section class="page-hero">
+    <div class="container">
+      <span class="tag">Recrutement stratégique</span>
+      <h1>Un partenaire de confiance pour vos recrutements en Afrique</h1>
+      <p>
+        Talentyah accompagne les entreprises dans des recrutements
+        ciblés, confidentiels et alignés avec leurs enjeux réels.
+      </p>
+    </div>
+  </section>
+
+  <!-- CONFIER / RDV -->
+  <section class="section light">
+    <div class="container grid-2">
+
+      <!-- CONFIER UN RECRUTEMENT -->
+      <div class="card">
+        <h2>Confier un recrutement</h2>
+        <p>
+          Décrivez brièvement votre besoin.
+          Un consultant Talentyah vous recontactera
+          pour un échange confidentiel.
+        </p>
+
+        <form class="company-form" method="post" action="#">
+          <input type="text" name="company" placeholder="Entreprise" required>
+          <input type="email" name="email" placeholder="Email professionnel" required>
+          <input type="text" name="location" placeholder="Pays / Région">
+          <input type="text" name="position" placeholder="Poste à pourvoir">
+
+          <label for="experience-level">Urgence du recrutement</label>
+          <select id="experience-level" name="experience-level" required>
+            <option value="" disabled selected>Choisissez l'urgence du recrutement</option>
+            <option>Faible</option>
+            <option>Moyenne</option>
+            <option>Élevée</option>
+          </select>
+
+          <textarea name="context" placeholder="Contexte du besoin (facultatif)"></textarea>
+
+          <button type="submit" class="btn btn-primary">
+            Transmettre la demande
+          </button>
+        </form>
+      </div>
+
+      <!-- RDV -->
+        <div class="card exchange-card">
+            <h2>Échanger sur votre besoin</h2>
+            <p>
+                Vous souhaitez discuter de votre projet de recrutement
+                avant toute formalisation ?
+            </p>
+
+            <a
+                class="btn btn-secondary"
+                href="https://outlook.office.com/bookings/nomdetonservice"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                Prendre rendez-vous
+            </a>
+        </div>
+
+
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container footer-grid">
+      <p>© 2024 Talentyah. Tous droits réservés.</p>
+      <div class="footer-links">
+        <a href="#">LinkedIn</a>
+        <a href="#">Contact</a>
+        <a href="mentionslegales.html">Mentions légales</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
