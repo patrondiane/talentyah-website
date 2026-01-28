@@ -446,6 +446,16 @@ nav a:hover {
   text-decoration: underline;
 }
 
+/* Multi-select dans la barre de filtres */
+.filter-multi{
+  flex: 1 1 260px;
+  max-width: 360px;
+}
+
+.select-multi{
+  width: 100%;
+}
+
 /* =========================
    CAREERS BLOCK (HERO IMAGE)
 ========================= */
