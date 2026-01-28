@@ -6,23 +6,23 @@
   <title>Carrières | Talentyah</title>
   <link rel="stylesheet" href="css/styles.css">
   <script src="js/script.js" defer></script>
+  </style>
 </head>
 
 <body>
 
-  <!-- NAVBAR -->
+<!-- NAVBAR -->
   <header class="header">
     <div class="container nav">
       <div class="logo">Talentyah</div>
       <nav>
         <a href="index.html">Accueil</a>
-        <a href="carrieres.html" class="active">Carrières</a>
+        <a href="carrieres.html">Carrières</a>
         <a href="candidats.html">Candidats</a>
         <a href="entreprises.html">Entreprises</a>
-        <a href="apropos.html">À propos</a>
         <a href="blog.html">Blog</a>
-
-        <a href="admin.html" class="admin-link" title="Connexion administrateur" aria-label="Connexion administrateur">
+        <a href="apropos.html">À propos</a>
+        <a href="admin.html" class="admin-link" title="Connexion administrateur">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
               width="18" height="18" fill="none" stroke="currentColor"
               stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -34,167 +34,187 @@
     </div>
   </header>
 
-  <!-- CARRIÈRES HERO -->
-  <section class="careers-block">
+<!-- CARRIÈRES SECTION -->
+ <section class="careers-block">
     <div class="careers-media">
-      <img src="images/Career1.jpg" alt="Carrières à Talentyah">
+      <img src="images/Career1.jpg" alt="Carrières 2025">
     </div>
-
     <div class="container careers-content">
       <span class="tag">Carrières</span>
       <h1>Carrières à Talentyah</h1>
-      <p>
-        Talentyah accompagne des talents et des organisations
-        à travers des parcours professionnels structurés,
-        exigeants et alignés avec les réalités du marché africain.
-      </p>
+      <p>Talentyah accompagne des talents et des organisations
+      à travers des parcours professionnels structurés,
+      exigeants et alignés avec les réalités du marché africain.</p>
+      </div>
     </div>
-  </section>
+ </section>
 
-  <!-- INTRO -->
-  <section class="careers-intro">
-    <div class="container narrow">
-      <p>
-        Talentyah offre aux professionnels l’opportunité de valoriser
-        leur expérience et leurs compétences au sein d’organisations
-        locales et internationales opérant sur le continent africain.
-        Pour consulter les opportunités disponibles, veuillez sélectionner
-        la région dans laquelle vous souhaitez être considéré(e).
-      </p>
-    </div>
-  </section>
 
-  <!-- SEARCH BAR CARRIÈRES -->
-  <section class="careers-search">
-    <div class="container">
+<!-- INTRO TEXTE (AVANT RECTANGLES) -->
+<section class="careers-intro">
+  <div class="container narrow">
+    <p>
+      Talentyah offre aux professionnels l’opportunité de valoriser
+      leur expérience et leurs compétences au sein d’organisations
+      locales et internationales opérant sur le continent africain.
+      Pour consulter les opportunités disponibles, veuillez sélectionner
+      la région dans laquelle vous souhaitez être considéré(e).
+    </p>
+  </div>
+</section>
 
-      <form class="search-bar" id="careersSearchForm">
+<!-- SEARCH BAR CARRIÈRES -->
+<section class="careers-search">
+  <div class="container">
 
-        <!-- Intitulé / compétences -->
-        <div class="search-field">
-          <span class="search-icon" aria-hidden="true">🔍</span>
-          <input
-            type="text"
-            placeholder="Intitulé du poste, compétences ou mots-clés"
-            name="keywords"
-            aria-label="Mots-clés"
-          >
-        </div>
+    <form class="search-bar">
 
-        <!-- Ville -->
-        <div class="search-field">
-          <span class="search-icon" aria-hidden="true">📍</span>
-          <input
-            type="text"
-            placeholder="Ville"
-            name="city"
-            aria-label="Ville"
-          >
-        </div>
-
-        <!-- Bouton -->
-        <button type="submit" class="search-btn">
-          Recherche
-        </button>
-
-      </form>
-
-      <!-- Filtres -->
-      <div class="search-filters">
-
-        <label for="teletravail-select" class="visually-hidden">Télétravail</label>
-        <select id="teletravail-select" name="remote" aria-label="Télétravail">
-          <option value="">Télétravail</option>
-          <option value="oui">Oui</option>
-          <option value="non">Non</option>
-          <option value="hybride">Hybride</option>
-        </select>
-
-        <!-- Multi select pays -->
-        <div class="filter-multi">
-          <label for="pays-afrique" class="visually-hidden">Pays d'Afrique</label>
-          <select id="pays-afrique" name="countries[]" multiple class="select-multi" aria-label="Pays d’Afrique (sélection multiple)">
-            <option value="Afrique du Sud">Afrique du Sud</option>
-            <option value="Algerie">Algérie</option>
-            <option value="Angola">Angola</option>
-            <option value="Benin">Bénin</option>
-            <option value="Botswana">Botswana</option>
-            <option value="Burkina Faso">Burkina Faso</option>
-            <option value="Burundi">Burundi</option>
-            <option value="Cameroun">Cameroun</option>
-            <option value="Cap-Vert">Cap-Vert</option>
-            <option value="Centrafrique">République centrafricaine</option>
-            <option value="Comores">Comores</option>
-            <option value="Congo">Congo</option>
-            <option value="Cote d’Ivoire">Côte d’Ivoire</option>
-            <option value="Djibouti">Djibouti</option>
-            <option value="Egypte">Égypte</option>
-            <option value="Erythree">Érythrée</option>
-            <option value="Eswatini">Eswatini</option>
-            <option value="Ethiopie">Éthiopie</option>
-            <option value="Gabon">Gabon</option>
-            <option value="Gambie">Gambie</option>
-            <option value="Ghana">Ghana</option>
-            <option value="Guinee">Guinée</option>
-            <option value="Guinee-Bissau">Guinée-Bissau</option>
-            <option value="Guinee equatoriale">Guinée équatoriale</option>
-            <option value="Kenya">Kenya</option>
-            <option value="Lesotho">Lesotho</option>
-            <option value="Liberia">Liberia</option>
-            <option value="Libye">Libye</option>
-            <option value="Madagascar">Madagascar</option>
-            <option value="Malawi">Malawi</option>
-            <option value="Mali">Mali</option>
-            <option value="Maroc">Maroc</option>
-            <option value="Maurice">Maurice</option>
-            <option value="Mauritanie">Mauritanie</option>
-            <option value="Mozambique">Mozambique</option>
-            <option value="Namibie">Namibie</option>
-            <option value="Niger">Niger</option>
-            <option value="Nigeria">Nigéria</option>
-            <option value="Ouganda">Ouganda</option>
-            <option value="RDC">RDC</option>
-            <option value="Rwanda">Rwanda</option>
-            <option value="Sao Tome et Principe">São Tomé-et-Principe</option>
-            <option value="Senegal">Sénégal</option>
-            <option value="Seychelles">Seychelles</option>
-            <option value="Sierra Leone">Sierra Leone</option>
-            <option value="Somalie">Somalie</option>
-            <option value="Soudan">Soudan</option>
-            <option value="Soudan du Sud">Soudan du Sud</option>
-            <option value="Tanzanie">Tanzanie</option>
-            <option value="Tchad">Tchad</option>
-            <option value="Togo">Togo</option>
-            <option value="Tunisie">Tunisie</option>
-            <option value="Zambie">Zambie</option>
-            <option value="Zimbabwe">Zimbabwe</option>
-          </select>
-        </div>
-
-        <label for="specialisation-select" class="visually-hidden">Spécialisation</label>
-        <select id="specialisation-select" name="specialization" aria-label="Spécialisation">
-          <option value="">Spécialisation</option>
-          <option value="finance">Finance</option>
-          <option value="tech">Tech</option>
-          <option value="rh">RH</option>
-          <option value="logistique">Logistique</option>
-        </select>
-
-        <label for="type-emploi-select" class="visually-hidden">Type d’emploi</label>
-        <select id="type-emploi-select" name="job_type" aria-label="Type d’emploi">
-          <option value="">Type d’emploi</option>
-          <option value="cdi">CDI</option>
-          <option value="cdd">CDD</option>
-          <option value="freelance">Freelance</option>
-          <option value="mission">Mission</option>
-        </select>
-
+      <!-- Intitulé / compétences -->
+      <div class="search-field">
+        <span class="search-icon">🔍</span>
+        <input
+          type="text"
+          placeholder="Intitulé du poste, compétences ou mots-clés"
+          name="keywords"
+        >
       </div>
 
-    </div>
-  </section>
+      <!-- Ville -->
+      <div class="search-field">
+        <span class="search-icon">📍</span>
+        <input
+          type="text"
+          placeholder="Ville"
+          name="city"
+        >
+      </div>
 
-  <!-- FOOTER -->
+      <!-- Bouton -->
+      <button type="submit" class="search-btn">
+        Recherche
+      </button>
+
+    </form>
+
+    <!-- Filtres -->
+    <div class="search-filters">
+      <select aria-label="Filtrer par télétravail">
+        <option>Télétravail</option>
+        <option>100% télétravail</option>
+        <option>Hybride</option>
+        <option>Présentiel</option>
+      </select>
+
+      <select aria-label="Filtrer par lieu">
+        <option>Lieu</option>
+        <option>Afrique de l’Ouest</option>
+        <option>Afrique Centrale</option>
+        <option>Afrique de l’Est</option>
+        <option>Afrique Australe</option>
+        <option>International</option>
+      </select>
+
+      <select aria-label="Filtrer par spécialisation">
+        <option>Spécialisation</option>
+        <option>Finance</option>
+        <option>Tech</option>
+        <option>RH</option>
+        <option>Logistique</option>
+      </select>
+
+      <select aria-label="Filtrer par type d’emploi">
+        <option>Type d’emploi</option>
+        <option>CDI</option>
+        <option>CDD</option>
+        <option>Freelance</option>
+        <option>Mission</option>
+      </select>
+    </div>
+
+  </div>
+</section>
+
+<!-- LISTE OFFRES -->
+<section class="jobs-section">
+  <div class="container">
+
+    <div class="jobs-list">
+
+      <!-- Offre 1 -->
+      <article class="job-card" data-country="Senegal" data-city="Dakar" data-type="CDI">
+        <div class="job-top">
+          <p class="job-location">DAKAR, SÉNÉGAL</p>
+          <h3 class="job-title">Responsable Administratif & Financier (F/H)</h3>
+        </div>
+
+        <div class="job-meta">
+          <span class="job-pill">CDI</span>
+          <span class="job-salary">2 500 – 3 500 € / mois</span>
+        </div>
+
+        <p class="job-desc">
+          Poste stratégique au sein d’une PME en croissance : pilotage financier,
+          structuration des process et accompagnement de la direction.
+        </p>
+
+        <div class="job-footer">
+          <a href="#" class="job-link">Voir l’offre →</a>
+          <span class="job-date">Il y a 5 jours</span>
+        </div>
+      </article>
+
+      <!-- Offre 2 -->
+      <article class="job-card" data-country="Cote dIvoire" data-city="Abidjan" data-type="CDD">
+        <div class="job-top">
+          <p class="job-location">ABIDJAN, CÔTE D’IVOIRE</p>
+          <h3 class="job-title">Chargé(e) RH (F/H)</h3>
+        </div>
+
+        <div class="job-meta">
+          <span class="job-pill">CDD</span>
+          <span class="job-salary">1 200 – 1 800 € / mois</span>
+        </div>
+
+        <p class="job-desc">
+          Recrutement opérationnel, onboarding, suivi administratif RH et appui
+          au développement des talents.
+        </p>
+
+        <div class="job-footer">
+          <a href="#" class="job-link">Voir l’offre →</a>
+          <span class="job-date">Il y a 1 semaine</span>
+        </div>
+      </article>
+
+      <!-- Offre 3 -->
+      <article class="job-card" data-country="Kenya" data-city="Nairobi" data-type="Freelance">
+        <div class="job-top">
+          <p class="job-location">NAIROBI, KENYA</p>
+          <h3 class="job-title">Business Analyst (F/H)</h3>
+        </div>
+
+        <div class="job-meta">
+          <span class="job-pill">Freelance</span>
+          <span class="job-salary">Jour : 250 – 350 €</span>
+        </div>
+
+        <p class="job-desc">
+          Mission data / reporting : cadrage des besoins métier, dashboards,
+          qualité des données et recommandations.
+        </p>
+
+        <div class="job-footer">
+          <a href="#" class="job-link">Voir l’offre →</a>
+          <span class="job-date">Il y a 2 jours</span>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+
+ <!-- FOOTER -->
   <footer class="footer">
     <div class="container footer-grid">
       <p>© 2024 Talentyah. Tous droits réservés.</p>

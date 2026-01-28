@@ -38,3 +38,43 @@ document.querySelectorAll(".pw-header").forEach(header => {
     if (!alreadyActive) item.classList.add("active");
   });
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+  const selectCountries = document.getElementById("pays-afrique");
+  const form = document.getElementById("careersSearchForm");
+  const cards = Array.from(document.querySelectorAll(".job-card"));
+
+  function applyFilters() {
+    const selectedCountries = selectCountries
+      ? Array.from(selectCountries.selectedOptions).map(o => o.value)
+      : [];
+
+    const keywords = (form?.elements?.keywords?.value || "").toLowerCase();
+    const city = (form?.elements?.city?.value || "").toLowerCase();
+
+    cards.forEach(card => {
+      const country = (card.dataset.country || "").toLowerCase();
+      const cardCity = (card.dataset.city || "").toLowerCase();
+      const title = card.querySelector(".job-title")?.textContent.toLowerCase() || "";
+      const desc = card.querySelector(".job-desc")?.textContent.toLowerCase() || "";
+
+      const matchCountry =
+        selectedCountries.length === 0 || selectedCountries.some(c => c.toLowerCase() === country);
+
+      const matchKeywords =
+        !keywords || title.includes(keywords) || desc.includes(keywords);
+
+      const matchCity =
+        !city || cardCity.includes(city);
+
+      card.style.display = (matchCountry && matchKeywords && matchCity) ? "" : "none";
+    });
+  }
+
+  form?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    applyFilters();
+  });
+
+  selectCountries?.addEventListener("change", applyFilters);
+});
