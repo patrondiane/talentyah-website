@@ -1155,3 +1155,136 @@ CANDIDATS ========================= */
 }
 
 
+/* =========================
+   RESPONSIVE (MOBILE/TABLET)
+   À coller en bas du CSS
+========================= */
+
+/* Empêche les débordements horizontaux */
+html, body { overflow-x: hidden; }
+
+/* Images fluides */
+img { max-width: 100%; height: auto; }
+
+/* ---------- TABLET (<= 992px) ---------- */
+@media (max-width: 992px) {
+  .container { padding: 0 18px; }
+
+  /* Grilles -> 1 colonne si besoin */
+  .split { grid-template-columns: 1fr; }
+  .grid-2 { grid-template-columns: 1fr; }
+
+  /* Hero / blocs grands titres */
+  .hero, .blog-carousel, .section { padding: 72px 0; }
+  .hero h1, .careers-block h1 { font-size: 34px; }
+
+  /* Careers block */
+  .careers-block { padding: 96px 0; min-height: 560px; }
+  .careers-content { max-width: 680px; }
+
+  /* Job cards */
+  .job-title { font-size: 20px; }
+}
+
+/* ---------- MOBILE (<= 768px) ---------- */
+@media (max-width: 768px) {
+
+  /* Navbar */
+  .nav {
+    height: auto;
+    padding: 14px 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  nav {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 14px;
+  }
+
+  nav a {
+    margin-left: 0;     /* important */
+    font-size: 14px;
+    padding: 6px 0;
+  }
+
+  .admin-link { margin-left: 0; }
+
+  /* Typo */
+  .hero h1, .careers-block h1 { font-size: 30px; line-height: 1.2; }
+  .carousel-slide h1 { font-size: 28px; }
+
+  /* Sections */
+  .hero, .blog-carousel, .section { padding: 56px 0; }
+  .careers-intro { padding: 48px 0 24px; }
+
+  /* Buttons */
+  .hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .btn { text-align: center; }
+
+  /* Search bar (Carrières) */
+  .search-bar {
+    grid-template-columns: 1fr; /* empile */
+    gap: 12px;
+  }
+  .search-btn { width: 100%; }
+
+  .search-filters {
+    gap: 10px;
+  }
+
+  .search-filters select {
+    width: 100%;
+  }
+
+  /* Multi select pays plus confortable */
+  .filter-multi {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
+  .select-multi {
+    min-height: 170px;
+  }
+
+  /* Careers image overlay : lecture meilleure */
+  .careers-media::after {
+    background: rgba(0,0,0,0.55);
+  }
+
+  /* Job cards */
+  .job-card {
+    padding: 18px;
+    border-radius: 12px;
+  }
+
+  .job-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  /* Footer */
+  .footer-grid {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .footer-links a { margin-left: 0; margin-right: 14px; }
+}
+
+/* ---------- PETIT MOBILE (<= 420px) ---------- */
+@media (max-width: 420px) {
+  .hero h1, .careers-block h1 { font-size: 26px; }
+  .job-title { font-size: 18px; }
+  .search-field { padding: 12px 14px; }
+}
+
+.careers-block{
+  position: relative; /* obligatoire */
+}
