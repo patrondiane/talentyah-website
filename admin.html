@@ -7,6 +7,7 @@
   <link rel="apple-touch-icon" href="images/logo-talentyah.png">
   <meta name="msapplication-TileColor" content="#1F7A5B">
   <link rel="stylesheet" href="css/styles.css" />
+  <script src="js/admin.js" defer></script>
 </head>
 
 <body>
@@ -54,20 +55,136 @@
           <img src="images/Logo_Talentyah.png" alt="Icône administrateur">
         </div>
 
-        <form class="admin-form" action="#" method="post" autocomplete="on">
+        <form class="admin-form" id="adminLoginForm" autocomplete="on">
           <label for="username">Email</label>
-          <input type="email" id="username" name="username" placeholder="email@talentyah.com" required />
+          <input type="email" id="username" name="email" placeholder="email@talentyah.com" required />
 
           <label for="password">Mot de passe</label>
           <input type="password" id="password" name="password" placeholder="••••••••" required />
 
           <button type="submit" class="btn btn-primary">Se connecter</button>
 
+          <p id="adminMsg" class="form-msg"></p>
+
           <div class="admin-form-footer">
             <a class="link" href="#">Mot de passe oublié ?</a>
             <a class="btn btn-secondary" href="index.html">Annuler</a>
           </div>
         </form>
+
+        <div id="adminDashboard" class="admin-dashboard" style="display:none;">
+
+  <!-- HEADER DASHBOARD -->
+  <div class="admin-actions">
+    <div class="admin-tabs">
+      <button class="tab-btn active" id="tabCandidates" type="button">Candidatures</button>
+      <button class="tab-btn" id="tabCompanies" type="button">Recrutements Entreprises</button>
+      <button class="tab-btn" id="tabJobs" type="button">Offres</button>
+    </div>
+
+    <button class="btn btn-secondary" id="logoutBtn" type="button">Se déconnecter</button>
+  </div>
+
+  <!-- PANEL 1 : CANDIDATS -->
+  <div id="candidatesPanel" class="admin-panel">
+    <h2 class="admin-title">Candidatures reçues</h2>
+
+    <div class="admin-filters">
+      <input type="text" id="filterSector" placeholder="Filtrer par secteur (ex : Tech)">
+      <input type="text" id="filterCountry" placeholder="Filtrer par pays (ex : Senegal)">
+      <button class="btn btn-primary" id="applyFiltersBtn" type="button">Appliquer</button>
+    </div>
+
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Nom</th>
+            <th>Email</th>
+            <th>Secteur</th>
+            <th>Pays</th>
+            <th>CV</th>
+          </tr>
+        </thead>
+        <tbody id="candidatesTbody">
+          <tr><td colspan="6">Aucune donnée.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PANEL 2 : ENTREPRISES -->
+  <div id="companiesPanel" class="admin-panel" style="display:none;">
+    <h2 class="admin-title">Demandes de recrutement</h2>
+
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Entreprise</th>
+            <th>Email</th>
+            <th>Pays / Région</th>
+            <th>Poste</th>
+            <th>Urgence</th>
+            <th>Message</th>
+          </tr>
+        </thead>
+        <tbody id="companiesTbody">
+          <tr><td colspan="7">Aucune demande.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PANEL 3 : OFFRES -->
+  <div id="jobsPanel" class="admin-panel" style="display:none;">
+    <h2 class="admin-title">Gérer les offres</h2>
+
+    <div class="card admin-inner-card">
+      <h3 style="margin-bottom:12px;">Ajouter une offre</h3>
+
+      <form id="jobForm" class="job-form">
+        <div class="admin-filters">
+          <input type="text" name="title" placeholder="Intitulé du poste *" required>
+          <input type="text" name="country" placeholder="Pays (ex : Senegal)">
+          <input type="text" name="city" placeholder="Ville (ex : Dakar)">
+          <input type="text" name="sector" placeholder="Secteur (ex : Tech)">
+          <input type="text" name="contract_type" placeholder="Type (CDI, CDD, Freelance)">
+          <input type="text" name="salary" placeholder="Salaire (optionnel)">
+        </div>
+
+        <textarea name="description" placeholder="Description (courte)" class="job-textarea"></textarea>
+
+        <div class="job-actions">
+          <button class="btn btn-primary" type="submit">Publier l’offre</button>
+          <p id="jobMsg" class="form-msg" style="margin:0;"></p>
+        </div>
+      </form>
+    </div>
+
+    <div class="admin-table-wrap">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Poste</th>
+            <th>Lieu</th>
+            <th>Secteur</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="jobsTbody">
+          <tr><td colspan="7">Aucune offre.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
 
       </div>
 

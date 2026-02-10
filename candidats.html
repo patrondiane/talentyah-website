@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Candidats | Talentyah</title>
   <link rel="stylesheet" href="css/styles.css">
-  <script src="js/script.js"></script>
+  <script src="js/script.js" defer></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -61,26 +61,81 @@
         pour des opportunités actuelles ou futures.
       </p>
 
-      <form class="candidate-form">
-        <input type="text" placeholder="Nom et prénom" required>
-        <input type="email" placeholder="Email professionnel" required>
-        <input type="text" placeholder="Pays de résidence">
-        <input type="text" placeholder="Fonction / Métier">
-        <label for="experience-level" class="visually-hidden">Niveau d’expérience</label>
-        <select id="experience-level" name="experience-level" required>
-          <option value="" disabled selected hidden>Niveau d’expérience</option>
-          <option>Junior</option>
-          <option>Confirmé</option>
-          <option>Senior</option>
-        </select>
-        <label for="cv-upload">CV (PDF)</label>
-        <input type="file" id="cv-upload" accept=".pdf" title="Télécharger votre CV au format PDF">
-        <textarea placeholder="Message (facultatif)"></textarea>
+      <form
+  class="candidate-form"
+  id="candidateForm"
+  enctype="multipart/form-data"
+>
+  <input
+    type="text"
+    name="first_name"
+    placeholder="Prénom"
+    required
+  >
 
-        <button class="btn btn-primary" type="submit">
-          Soumettre mon profil
-        </button>
-      </form>
+  <input
+    type="text"
+    name="last_name"
+    placeholder="Nom"
+    required
+  >
+
+  <input
+    type="email"
+    name="email"
+    placeholder="Email professionnel"
+    required
+  >
+
+  <input
+    type="text"
+    name="country"
+    placeholder="Pays de résidence"
+  >
+
+  <input
+    type="text"
+    name="role_target"
+    placeholder="Fonction / Métier"
+  >
+
+  <label for="experience-level" class="visually-hidden">
+    Niveau d’expérience
+  </label>
+  <select
+    id="experience-level"
+    name="experience_level"
+    required
+  >
+    <option value="" disabled selected hidden>
+      Niveau d’expérience
+    </option>
+    <option value="Junior">Junior</option>
+    <option value="Confirmé">Confirmé</option>
+    <option value="Senior">Senior</option>
+  </select>
+
+  <label for="cv-upload">CV (PDF)</label>
+  <input
+    type="file"
+    id="cv-upload"
+    name="cv"
+    accept=".pdf,.doc,.docx"
+    required
+  >
+
+  <textarea
+    name="message"
+    placeholder="Message (facultatif)"
+  ></textarea>
+
+  <button class="btn btn-primary" type="submit">
+    Soumettre mon profil
+  </button>
+
+  <p id="candidateMsg" class="form-msg"></p>
+</form>
+
     </div>
 
     <!-- RDV -->

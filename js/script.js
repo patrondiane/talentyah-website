@@ -38,3 +38,76 @@ document.querySelectorAll(".pw-header").forEach(header => {
     if (!alreadyActive) item.classList.add("active");
   });
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.querySelector(".company-form");
+  if (!form) return;
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const payload = {
+      company_name: form.querySelector('input[name="company"]')?.value.trim(),
+      email: form.querySelector('input[name="email"]')?.value.trim(),
+      region: form.querySelector('input[name="location"]')?.value.trim(),
+      role_needed: form.querySelector('input[name="position"]')?.value.trim(),
+      urgency: form.querySelector("#urgence-recrutement")?.value || "",
+      message: form.querySelector('textarea[name="context"]')?.value || "",
+    };
+
+    try {
+      const res = await fetch("http://localhost:4000/api/company", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const out = await res.json();
+
+      if (res.ok && out.ok) {
+        alert("Demande envoyée ✅");
+        form.reset();
+      } else {
+        alert("Erreur : " + (out.error || "Impossible d'envoyer"));
+        console.log("Réponse serveur:", out);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Erreur réseau : vérifie que le backend tourne sur http://localhost:4000");
+    }
+  });
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("candidateForm");
+  const msg = document.getElementById("candidateMsg");
+
+  if (!form) return;
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    msg.textContent = "Envoi en cours…";
+
+    try {
+      const formData = new FormData(form);
+
+      const res = await fetch("http://localhost:4000/api/candidate", {
+        method: "POST",
+        body: formData,
+      });
+
+      const out = await res.json();
+
+      if (!res.ok || !out.ok) {
+        msg.textContent = "Erreur lors de l’envoi du profil.";
+        return;
+      }
+
+      msg.textContent = "Profil envoyé avec succès ✅";
+      form.reset();
+    } catch (err) {
+      console.error(err);
+      msg.textContent = "Erreur réseau (backend indisponible).";
+    }
+  });
+});

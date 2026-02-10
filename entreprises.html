@@ -9,7 +9,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  
+  <script src="js/script.js" defer></script>
+
 </head>
 
 <body>
@@ -62,14 +63,14 @@
           pour un échange confidentiel.
         </p>
 
-        <form class="company-form" method="post" action="#">
+        <form class="company-form" action="#" method="post">
           <input type="text" name="company" placeholder="Entreprise" required>
           <input type="email" name="email" placeholder="Email professionnel" required>
           <input type="text" name="location" placeholder="Pays / Région">
           <input type="text" name="position" placeholder="Poste à pourvoir">
 
-          <label for="experience-level">Urgence du recrutement</label>
-          <select id="experience-level" name="experience-level" required>
+          <label for="urgence-recrutement">Urgence du recrutement</label>
+          <select id="urgence-recrutement" name="urgency" required>
             <option value="" disabled selected>Choisissez l'urgence du recrutement</option>
             <option>Faible</option>
             <option>Moyenne</option>
@@ -118,5 +119,5 @@
     </div>
   </footer>
 
-</body>
+</body>     
 </html>
