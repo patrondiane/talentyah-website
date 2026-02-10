@@ -6,23 +6,23 @@
   <title>Carrières | Talentyah</title>
   <link rel="stylesheet" href="css/styles.css">
   <script src="js/script.js" defer></script>
+  </style>
 </head>
 
 <body>
 
-  <!-- NAVBAR -->
+<!-- NAVBAR -->
   <header class="header">
     <div class="container nav">
       <div class="logo">Talentyah</div>
       <nav>
         <a href="index.html">Accueil</a>
-        <a href="carrieres.html" class="active">Carrières</a>
+        <a href="carrieres.html">Carrières</a>
         <a href="candidats.html">Candidats</a>
         <a href="entreprises.html">Entreprises</a>
-        <a href="apropos.html">À propos</a>
         <a href="blog.html">Blog</a>
-
-        <a href="admin.html" class="admin-link" title="Connexion administrateur" aria-label="Connexion administrateur">
+        <a href="apropos.html">À propos</a>
+        <a href="admin.html" class="admin-link" title="Connexion administrateur">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
               width="18" height="18" fill="none" stroke="currentColor"
               stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -34,37 +34,113 @@
     </div>
   </header>
 
-  <!-- CARRIÈRES HERO -->
-  <section class="careers-block">
+<!-- CARRIÈRES SECTION -->
+ <section class="careers-block">
     <div class="careers-media">
-      <img src="images/Career1.jpg" alt="Carrières à Talentyah">
+      <img src="images/Career1.jpg" alt="Carrières 2025">
     </div>
-
     <div class="container careers-content">
       <span class="tag">Carrières</span>
       <h1>Carrières à Talentyah</h1>
-      <p>
-        Talentyah accompagne des talents et des organisations
-        à travers des parcours professionnels structurés,
-        exigeants et alignés avec les réalités du marché africain.
-      </p>
+      <p>Talentyah accompagne des talents et des organisations
+      à travers des parcours professionnels structurés,
+      exigeants et alignés avec les réalités du marché africain.</p>
+      </div>
     </div>
-  </section>
+ </section>
 
-  <!-- INTRO -->
-  <section class="careers-intro">
-    <div class="container narrow">
-      <p>
-        Talentyah offre aux professionnels l’opportunité de valoriser
-        leur expérience et leurs compétences au sein d’organisations
-        locales et internationales opérant sur le continent africain.
-        Pour consulter les opportunités disponibles, veuillez sélectionner
-        la région dans laquelle vous souhaitez être considéré(e).
-      </p>
-    </div>
-  </section>
 
   <!-- LISTE OFFRES -->
+<section class="jobs-section">
+  <div class="container">
+
+    <div class="jobs-list">
+
+<!-- INTRO TEXTE (AVANT RECTANGLES) -->
+<section class="careers-intro">
+  <div class="container narrow">
+    <p>
+      Talentyah offre aux professionnels l’opportunité de valoriser
+      leur expérience et leurs compétences au sein d’organisations
+      locales et internationales opérant sur le continent africain.
+      Pour consulter les opportunités disponibles, veuillez sélectionner
+      la région dans laquelle vous souhaitez être considéré(e).
+    </p>
+  </div>
+</section>
+
+<!-- SEARCH BAR CARRIÈRES -->
+<section class="careers-search">
+  <div class="container">
+
+    <form class="search-bar">
+
+      <!-- Intitulé / compétences -->
+      <div class="search-field">
+        <span class="search-icon">🔍</span>
+        <input
+          type="text"
+          placeholder="Intitulé du poste, compétences ou mots-clés"
+          name="keywords"
+        >
+      </div>
+
+      <!-- Ville -->
+      <div class="search-field">
+        <span class="search-icon">📍</span>
+        <input
+          type="text"
+          placeholder="Ville"
+          name="city"
+        >
+      </div>
+
+      <!-- Bouton -->
+      <button type="submit" class="search-btn">
+        Recherche
+      </button>
+
+    </form>
+
+    <!-- Filtres -->
+    <div class="search-filters">
+      <select aria-label="Filtrer par télétravail">
+        <option>Télétravail</option>
+        <option>100% télétravail</option>
+        <option>Hybride</option>
+        <option>Présentiel</option>
+      </select>
+
+      <select aria-label="Filtrer par lieu">
+        <option>Lieu</option>
+        <option>Afrique de l’Ouest</option>
+        <option>Afrique Centrale</option>
+        <option>Afrique de l’Est</option>
+        <option>Afrique Australe</option>
+        <option>International</option>
+      </select>
+
+      <select aria-label="Filtrer par spécialisation">
+        <option>Spécialisation</option>
+        <option>Finance</option>
+        <option>Tech</option>
+        <option>RH</option>
+        <option>Logistique</option>
+      </select>
+
+      <select aria-label="Filtrer par type d’emploi">
+        <option>Type d’emploi</option>
+        <option>CDI</option>
+        <option>CDD</option>
+        <option>Freelance</option>
+        <option>Mission</option>
+      </select>
+    </div>
+
+  </div>
+</section>
+
+<!-- LISTE OFFRES -->
 <section class="jobs-section">
   <div class="container">
 
@@ -142,9 +218,13 @@
     </div>
   </div>
 </section>
+<<<<<<< HEAD
+
+=======
+>>>>>>> dab4ebffdad2677ec9b7d5f6921599a7fedbbce7
 
 
-  <!-- FOOTER -->
+ <!-- FOOTER -->
   <footer class="footer">
     <div class="container footer-grid">
       <p>© 2024 Talentyah. Tous droits réservés.</p>
