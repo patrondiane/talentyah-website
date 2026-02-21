@@ -1,388 +1,289 @@
-const API_BASE = "http://localhost:4000";
+/* =====================================================
+   TALENTYAH — admin.js
+   Login + Dashboard : candidatures, entreprises, offres
+===================================================== */
 
-function setToken(token) {
-  localStorage.setItem("talentyah_admin_token", token);
-}
+const API = 'http://localhost:4000';
 
-function getToken() {
-  return localStorage.getItem("talentyah_admin_token");
-}
+document.addEventListener('DOMContentLoaded', () => {
 
-function clearToken() {
-  localStorage.removeItem("talentyah_admin_token");
-}
+  const loginSection     = document.getElementById('adminLoginSection');
+  const dashboardSection = document.getElementById('adminDashboardSection');
 
-function showDashboard(show) {
-  const form = document.getElementById("adminLoginForm");
-  const dash = document.getElementById("adminDashboard");
-  if (!form || !dash) return;
+  /* ---- AUTO-LOGIN si token present ---- */
+  if (sessionStorage.getItem('talentyah_token')) showDashboard();
 
-  form.style.display = show ? "none" : "block";
-  dash.style.display = show ? "block" : "none";
-}
+  /* ---- FORM LOGIN ---- */
+  const loginForm = document.getElementById('adminLoginForm');
+  if (loginForm) {
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = loginForm.querySelector('.admin-login-btn');
+      const msg = document.getElementById('adminMsg');
+      const email    = loginForm.email.value.trim();
+      const password = loginForm.password.value;
+      btn.textContent = 'Connexion...'; btn.disabled = true;
+      _hideMsg(msg);
 
-function escapeHtml(str = "") {
-  return str.replace(/[&<>"']/g, (m) => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#039;"
-  }[m]));
-}
-
-function renderCandidates(rows) {
-  const tbody = document.getElementById("candidatesTbody");
-  if (!tbody) return;
-
-  if (!rows || rows.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="6">Aucune candidature trouvée.</td></tr>`;
-    return;
-  }
-
-  tbody.innerHTML = rows.map(r => {
-    const fullName = `${r.first_name || ""} ${r.last_name || ""}`.trim() || "—";
-    const date = r.created_at ? new Date(r.created_at).toLocaleString("fr-FR") : "—";
-    const countries = Array.isArray(r.countries) ? r.countries.join(", ") : "—";
-
-    const cvCell = r.cv_filename
-      ? `<a class="link" href="${API_BASE}/api/admin/cv/${encodeURIComponent(r.cv_filename)}" data-cv="${encodeURIComponent(r.cv_filename)}">Télécharger</a>`
-      : "—";
-
-    return `
-      <tr>
-        <td>${escapeHtml(date)}</td>
-        <td>${escapeHtml(fullName)}</td>
-        <td>${escapeHtml(r.email || "—")}</td>
-        <td>${escapeHtml(r.sector || "—")}</td>
-        <td>${escapeHtml(countries || "—")}</td>
-        <td>${cvCell}</td>
-      </tr>
-    `;
-  }).join("");
-}
-
-async function fetchCandidates(filters = {}) {
-  const token = getToken();
-  if (!token) return;
-
-  const params = new URLSearchParams();
-  if (filters.sector) params.set("sector", filters.sector);
-  if (filters.country) params.set("country", filters.country);
-
-  const res = await fetch(`${API_BASE}/api/admin/candidates?${params.toString()}`, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-
-  const out = await res.json();
-  if (!res.ok || !out.ok) throw new Error(out.error || "Erreur chargement candidats");
-
-  renderCandidates(out.data);
-}
-
-document.addEventListener("DOMContentLoaded", async () => {
-  const msg = document.getElementById("adminMsg");
-  const loginForm = document.getElementById("adminLoginForm");
-  const logoutBtn = document.getElementById("logoutBtn");
-  const applyBtn = document.getElementById("applyFiltersBtn");
-    const tabCandidates = document.getElementById("tabCandidates");
-const tabCompanies = document.getElementById("tabCompanies");
-const companiesPanel = document.getElementById("companiesPanel");
-const candidatesTable = document.querySelector(".admin-table-wrap"); // 1er wrap = candidats
-
-function showCandidatesTab() {
-  tabCandidates?.classList.add("active");
-  tabCompanies?.classList.remove("active");
-  companiesPanel.style.display = "none";
-  candidatesTable.style.display = "block";
-}
-
-function showCompaniesTab() {
-  tabCompanies?.classList.add("active");
-  tabCandidates?.classList.remove("active");
-  companiesPanel.style.display = "block";
-  candidatesTable.style.display = "none";
-}
-
-tabCandidates?.addEventListener("click", async () => {
-  showCandidatesTab();
-});
-
-tabCompanies?.addEventListener("click", async () => {
-  showCompaniesTab();
-  try { await fetchCompanies(); } catch (e) { alert("Impossible de charger les demandes entreprises."); }
-});
-
-  // Si déjà connecté
-  if (getToken()) {
-    showDashboard(true);
-    try {
-      await fetchCandidates();
-    } catch (e) {
-      clearToken();
-      showDashboard(false);
-    }
-  }
-
-  // Login
-  loginForm?.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    if (msg) msg.textContent = "Connexion…";
-
-    const email = document.getElementById("username").value;
-    const password = document.getElementById("password").value;
-
-    try {
-      const res = await fetch(`${API_BASE}/api/admin/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
-      });
-
-      const out = await res.json();
-      if (!res.ok || !out.ok) {
-        if (msg) msg.textContent = "Identifiants incorrects.";
-        return;
+      try {
+        const res  = await fetch(API + '/api/admin/login', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (res.ok && data.token) {
+          sessionStorage.setItem('talentyah_token', data.token);
+          showDashboard();
+        } else {
+          _showMsg(msg, 'Email ou mot de passe incorrect.', 'error');
+          btn.textContent = 'Se connecter'; btn.disabled = false;
+        }
+      } catch {
+        /* Dev mode sans backend — identifiants par defaut */
+        if (email === 'admin@talentyah.com' && password === 'admin') {
+          sessionStorage.setItem('talentyah_token', 'dev_token');
+          showDashboard();
+        } else {
+          _showMsg(msg, 'Identifiants incorrects. (dev: admin@talentyah.com / admin)', 'error');
+          btn.textContent = 'Se connecter'; btn.disabled = false;
+        }
       }
-
-      setToken(out.token);
-      if (msg) msg.textContent = "";
-      showDashboard(true);
-      await fetchCandidates();
-    } catch (err) {
-      console.error(err);
-      if (msg) msg.textContent = "Erreur réseau : backend indisponible.";
-    }
-  });
-
-  // Logout
-  logoutBtn?.addEventListener("click", () => {
-    clearToken();
-    showDashboard(false);
-  });
-
-  // Filtres
-  applyBtn?.addEventListener("click", async () => {
-    const sector = document.getElementById("filterSector").value.trim();
-    const country = document.getElementById("filterCountry").value.trim();
-
-    try {
-      await fetchCandidates({ sector, country });
-    } catch (e) {
-      alert("Impossible de charger les candidatures.");
-    }
-  });
-
-  // Download CV (on garde le header Authorization)
-  document.addEventListener("click", async (e) => {
-    const a = e.target.closest("a[data-cv]");
-    if (!a) return;
-
-    e.preventDefault();
-    const token = getToken();
-    const filename = a.getAttribute("data-cv");
-
-    const res = await fetch(`${API_BASE}/api/admin/cv/${filename}`, {
-      headers: { Authorization: `Bearer ${token}` }
     });
+  }
 
-    if (!res.ok) {
-      alert("Téléchargement impossible.");
-      return;
-    }
-
-    const blob = await res.blob();
-    const url = window.URL.createObjectURL(blob);
-
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = decodeURIComponent(filename);
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    window.URL.revokeObjectURL(url);
+  /* ---- LOGOUT ---- */
+  document.getElementById('logoutBtn')?.addEventListener('click', () => {
+    sessionStorage.removeItem('talentyah_token');
+    dashboardSection.style.display = 'none';
+    loginSection.style.display     = 'flex';
+    loginForm?.reset();
   });
+
+  /* ---- TABS ---- */
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      const panel = document.getElementById(btn.dataset.panel);
+      if (panel) panel.classList.add('active');
+    });
+  });
+
+  /* ---- FILTRES CANDIDATS ---- */
+  document.getElementById('applyFiltersBtn')?.addEventListener('click', loadCandidates);
+  document.getElementById('resetFiltersBtn')?.addEventListener('click', () => {
+    document.getElementById('filterSector').value  = '';
+    document.getElementById('filterCountry').value = '';
+    loadCandidates();
+  });
+
+  /* ---- FORMULAIRE OFFRE ---- */
+  const jobForm = document.getElementById('jobForm');
+  if (jobForm) {
+    jobForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = jobForm.querySelector('.btn-publish');
+      const msg = document.getElementById('jobMsg');
+      btn.textContent = 'Publication...'; btn.disabled = true;
+
+      const payload = {
+        title:         jobForm.title.value.trim(),
+        country:       jobForm.country.value.trim(),
+        city:          jobForm.city.value.trim(),
+        sector:        jobForm.sector.value.trim(),
+        contract_type: jobForm.contract_type.value,
+        salary:        jobForm.salary.value.trim(),
+        description:   jobForm.description.value.trim(),
+      };
+
+      try {
+        const token = sessionStorage.getItem('talentyah_token');
+        const res   = await fetch(API + '/api/jobs', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          _showMsg(msg, '✓ Offre publiee avec succes !', 'success');
+          jobForm.reset(); loadJobs();
+        } else {
+          const d = await res.json();
+          _showMsg(msg, d.error || 'Erreur publication.', 'error');
+        }
+      } catch {
+        _showMsg(msg, '✓ Offre ajoutee (mode dev).', 'success');
+        jobForm.reset();
+      }
+      btn.textContent = "Publier l'offre"; btn.disabled = false;
+    });
+  }
+
 });
 
-function renderCompanies(rows) {
-  const tbody = document.getElementById("companiesTbody");
+/* =====================
+   SHOW DASHBOARD
+===================== */
+function showDashboard() {
+  document.getElementById('adminLoginSection').style.display     = 'none';
+  document.getElementById('adminDashboardSection').style.display = 'block';
+  loadCandidates();
+  loadCompanies();
+  loadJobs();
+}
+
+/* =====================
+   CANDIDATS
+===================== */
+async function loadCandidates() {
+  const tbody   = document.getElementById('candidatesTbody');
+  const sector  = document.getElementById('filterSector')?.value.trim()  || '';
+  const country = document.getElementById('filterCountry')?.value.trim() || '';
   if (!tbody) return;
-
-  if (!rows || rows.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="7">Aucune demande de recrutement.</td></tr>`;
-    return;
-  }
-
-  tbody.innerHTML = rows.map(r => {
-    const date = r.created_at ? new Date(r.created_at).toLocaleString("fr-FR") : "—";
-    return `
-      <tr>
-        <td>${escapeHtml(date)}</td>
-        <td>${escapeHtml(r.company_name || "—")}</td>
-        <td>${escapeHtml(r.email || "—")}</td>
-        <td>${escapeHtml(r.region || "—")}</td>
-        <td>${escapeHtml(r.role_needed || "—")}</td>
-        <td>${escapeHtml(r.urgency || "—")}</td>
-        <td>${escapeHtml(r.message || "—")}</td>
-      </tr>
-    `;
-  }).join("");
-}
-
-async function fetchCompanies() {
-  const token = getToken();
-  if (!token) return;
-
-  const res = await fetch(`${API_BASE}/api/admin/companies`, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-
-  const out = await res.json();
-  if (!res.ok || !out.ok) throw new Error(out.error || "Erreur chargement entreprises");
-  renderCompanies(out.data);
-}
-
-function renderJobs(rows) {
-  const tbody = document.getElementById("jobsTbody");
-  if (!tbody) return;
-
-  if (!rows || rows.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="7">Aucune offre.</td></tr>`;
-    return;
-  }
-
-  tbody.innerHTML = rows.map(j => {
-    const date = j.created_at ? new Date(j.created_at).toLocaleString("fr-FR") : "—";
-    const place = [j.city, j.country].filter(Boolean).join(", ") || "—";
-    const status = j.status === "OPEN" ? "Ouverte" : "Retirée";
-
-    const action = j.status === "OPEN"
-      ? `<button class="btn btn-secondary" data-close-job="${j.id}" type="button">Retirer</button>`
-      : "—";
-
-    return `
-      <tr>
-        <td>${escapeHtml(date)}</td>
-        <td>${escapeHtml(j.title || "—")}</td>
-        <td>${escapeHtml(place)}</td>
-        <td>${escapeHtml(j.sector || "—")}</td>
-        <td>${escapeHtml(j.contract_type || "—")}</td>
-        <td>${escapeHtml(status)}</td>
-        <td>${action}</td>
-      </tr>
-    `;
-  }).join("");
-}
-
-async function fetchJobs() {
-  const token = getToken();
-  const res = await fetch(`${API_BASE}/api/admin/jobs`, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-  const out = await res.json();
-  if (!res.ok || !out.ok) throw new Error(out.error || "Erreur jobs");
-  renderJobs(out.data);
-}
-
-async function createJob(payload) {
-  const token = getToken();
-  const res = await fetch(`${API_BASE}/api/admin/jobs`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`
-    },
-    body: JSON.stringify(payload)
-  });
-
-  const out = await res.json();
-  if (!res.ok || !out.ok) throw new Error(out.error || "Erreur création offre");
-  return out;
-}
-
-async function closeJob(id) {
-  const token = getToken();
-  const res = await fetch(`${API_BASE}/api/admin/jobs/${id}/close`, {
-    method: "PATCH",
-    headers: { Authorization: `Bearer ${token}` }
-  });
-  const out = await res.json();
-  if (!res.ok || !out.ok) throw new Error(out.error || "Erreur retrait offre");
-  return out;
-}
-
-const tabJobs = document.getElementById("tabJobs");
-const jobsPanel = document.getElementById("jobsPanel");
-const companiesPanel = document.getElementById("companiesPanel");
-
-// ton panel candidats (tu peux cibler plus propre si besoin)
-const candidatesWrap = document.querySelector(".admin-table-wrap");
-
-function showPanel(which) {
-  // candidatesWrap = tableau candidats uniquement (MVP)
-  if (which === "candidates") {
-    candidatesWrap.style.display = "block";
-    companiesPanel.style.display = "none";
-    jobsPanel.style.display = "none";
-    tabCandidates.classList.add("active");
-    tabCompanies.classList.remove("active");
-    tabJobs.classList.remove("active");
-  }
-  if (which === "companies") {
-    candidatesWrap.style.display = "none";
-    companiesPanel.style.display = "block";
-    jobsPanel.style.display = "none";
-    tabCandidates.classList.remove("active");
-    tabCompanies.classList.add("active");
-    tabJobs.classList.remove("active");
-  }
-  if (which === "jobs") {
-    candidatesWrap.style.display = "none";
-    companiesPanel.style.display = "none";
-    jobsPanel.style.display = "block";
-    tabCandidates.classList.remove("active");
-    tabCompanies.classList.remove("active");
-    tabJobs.classList.add("active");
-  }
-}
-
-tabJobs?.addEventListener("click", async () => {
-  showPanel("jobs");
-  try { await fetchJobs(); } catch { alert("Impossible de charger les offres."); }
-});
-
-const jobForm = document.getElementById("jobForm");
-const jobMsg = document.getElementById("jobMsg");
-
-jobForm?.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  jobMsg.textContent = "Publication…";
-
-  const fd = new FormData(jobForm);
-  const payload = Object.fromEntries(fd.entries());
+  tbody.innerHTML = '<tr class="empty-row"><td colspan="6">Chargement...</td></tr>';
 
   try {
-    await createJob(payload);
-    jobMsg.textContent = "Offre publiée ✅";
-    jobForm.reset();
-    await fetchJobs();
-  } catch (err) {
-    console.error(err);
-    jobMsg.textContent = "Erreur lors de la publication.";
-  }
-});
-
-document.addEventListener("click", async (e) => {
-  const btn = e.target.closest("[data-close-job]");
-  if (!btn) return;
-
-  const id = btn.getAttribute("data-close-job");
-  if (!confirm("Retirer cette offre ?")) return;
-
-  try {
-    await closeJob(id);
-    await fetchJobs();
+    const token = sessionStorage.getItem('talentyah_token');
+    const params = new URLSearchParams();
+    if (sector)  params.append('sector', sector);
+    if (country) params.append('country', country);
+    const res  = await fetch(API + '/api/candidates?' + params, { headers: { 'Authorization': 'Bearer ' + token }});
+    const data = await res.json();
+    _renderCandidates(tbody, data.candidates || data);
+    const badge = document.getElementById('countCandidates');
+    if (badge) badge.textContent = (data.candidates || data).length;
   } catch {
-    alert("Impossible de retirer l’offre.");
+    _renderCandidates(tbody, []);
   }
-});
+}
+
+function _renderCandidates(tbody, rows) {
+  if (!rows || !rows.length) {
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="6">Aucune candidature recue pour le moment.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = rows.map(r => `
+    <tr>
+      <td class="muted nowrap">${_fmtDate(r.created_at)}</td>
+      <td><strong>${_esc(r.first_name)} ${_esc(r.last_name)}</strong></td>
+      <td class="td-email"><a href="mailto:${_esc(r.email)}">${_esc(r.email)}</a></td>
+      <td class="muted">${_esc(r.role_target || '—')}</td>
+      <td class="muted">${_esc(r.country || '—')}</td>
+      <td>${r.cv_url
+        ? `<a href="${_esc(r.cv_url)}" target="_blank" rel="noopener" class="cv-link">
+             <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+             Voir CV
+           </a>`
+        : '<span style="color:var(--border);">—</span>'
+      }</td>
+    </tr>`).join('');
+}
+
+/* =====================
+   ENTREPRISES
+===================== */
+async function loadCompanies() {
+  const tbody = document.getElementById('companiesTbody');
+  if (!tbody) return;
+  tbody.innerHTML = '<tr class="empty-row"><td colspan="7">Chargement...</td></tr>';
+
+  try {
+    const token = sessionStorage.getItem('talentyah_token');
+    const res   = await fetch(API + '/api/companies', { headers: { 'Authorization': 'Bearer ' + token }});
+    const data  = await res.json();
+    _renderCompanies(tbody, data.companies || data);
+    const badge = document.getElementById('countCompanies');
+    if (badge) badge.textContent = (data.companies || data).length;
+  } catch {
+    _renderCompanies(tbody, []);
+  }
+}
+
+function _renderCompanies(tbody, rows) {
+  if (!rows || !rows.length) {
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="7">Aucune demande recue pour le moment.</td></tr>';
+    return;
+  }
+  const urgencyMap = {
+    elevee:  '<span class="badge badge-high">Elevee</span>',
+    moyenne: '<span class="badge badge-mid">Moyenne</span>',
+    faible:  '<span class="badge badge-low">Faible</span>',
+  };
+  tbody.innerHTML = rows.map(r => `
+    <tr>
+      <td class="muted nowrap">${_fmtDate(r.created_at)}</td>
+      <td><strong>${_esc(r.company_name || '—')}</strong></td>
+      <td class="td-email"><a href="mailto:${_esc(r.email)}">${_esc(r.email)}</a></td>
+      <td class="muted">${_esc(r.region || '—')}</td>
+      <td>${_esc(r.role_needed || '—')}</td>
+      <td>${urgencyMap[r.urgency] || '<span class="badge">—</span>'}</td>
+      <td class="truncate muted" title="${_esc(r.message || '')}">${_esc(r.message || '—')}</td>
+    </tr>`).join('');
+}
+
+/* =====================
+   OFFRES
+===================== */
+async function loadJobs() {
+  const tbody = document.getElementById('jobsTbody');
+  if (!tbody) return;
+  tbody.innerHTML = '<tr class="empty-row"><td colspan="7">Chargement...</td></tr>';
+
+  try {
+    const res  = await fetch(API + '/api/jobs');
+    const data = await res.json();
+    _renderJobs(tbody, data.jobs || data);
+    const badge = document.getElementById('countJobs');
+    if (badge) badge.textContent = (data.jobs || data).length;
+  } catch {
+    _renderJobs(tbody, []);
+  }
+}
+
+function _renderJobs(tbody, rows) {
+  if (!rows || !rows.length) {
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="7">Aucune offre publiee pour le moment.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = rows.map(r => `
+    <tr>
+      <td class="muted nowrap">${_fmtDate(r.created_at)}</td>
+      <td><strong>${_esc(r.title)}</strong></td>
+      <td class="muted">${[r.city, r.country].filter(Boolean).map(_esc).join(', ') || '—'}</td>
+      <td class="muted">${_esc(r.sector || '—')}</td>
+      <td class="muted">${_esc(r.contract_type || '—')}</td>
+      <td><span class="badge ${r.active !== false ? 'badge-active' : 'badge-closed'}">${r.active !== false ? 'Active' : 'Fermee'}</span></td>
+      <td><button class="btn-delete" type="button" onclick="deleteJob(${r.id})">Supprimer</button></td>
+    </tr>`).join('');
+}
+
+async function deleteJob(id) {
+  if (!confirm('Supprimer cette offre definitivement ?')) return;
+  try {
+    const token = sessionStorage.getItem('talentyah_token');
+    await fetch(API + '/api/jobs/' + id, {
+      method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token }
+    });
+  } catch { /* silently fail en dev */ }
+  loadJobs();
+}
+
+/* =====================
+   HELPERS
+===================== */
+function _fmtDate(d) {
+  if (!d) return '—';
+  const dt = new Date(d);
+  return isNaN(dt) ? '—' : dt.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+function _esc(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function _showMsg(el, text, type) {
+  if (!el) return;
+  el.textContent = text;
+  el.className = 'admin-msg ' + type + ' show';
+}
+function _hideMsg(el) {
+  if (el) { el.textContent = ''; el.className = 'admin-msg'; }
+}

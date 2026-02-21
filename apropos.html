@@ -1,165 +1,237 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>À propos | Talentyah</title>
-
-  <link rel="stylesheet" href="css/styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A propos - Talentyah</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/apropos.css">
 </head>
-
 <body>
 
-<!-- NAVBAR -->
-<header class="header">
-  <div class="container nav">
-    <div class="logo">Talentyah</div>
-    <nav>
-      <a href="index.html">Accueil</a>
-      <a href="carrieres.html">Carrières</a>
-      <a href="candidats.html">Candidats</a>
-      <a href="entreprises.html">Entreprises</a>
-      <a href="apropos.html" class="active">À propos</a>
-      <a href="blog.html">Blog</a>
-      <a href="admin.html" class="admin-link" title="Connexion administrateur">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-            width="18" height="18" fill="none" stroke="currentColor"
-            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="8" r="4"></circle>
-          <path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
-        </svg>
-      </a>
-    </nav>
-  </div>
-</header>
+  <header class="header" id="header">
+    <div class="container nav">
+      <a href="index.html" class="logo">Talentyah<span>.</span></a>
+      <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+      <nav id="main-nav">
+        <a href="index.html">Accueil</a>
+        <a href="talents.html">Talents</a>
+        <a href="entreprises.html">Entreprises</a>
+        <a href="notre-approche.html">Notre approche</a>
+        <a href="apropos.html" class="active">A propos</a>
+        <a href="ressources.html">Ressources</a>
+        <a href="admin.html" class="admin-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
 
-<!-- HERO -->
-<section class="page-hero">
-  <div class="container">
-    <span class="tag">Qui sommes-nous</span>
-    <h1>Talentyah, cabinet de recrutement panafricain</h1>
-    <p>
-      Talentyah est né d’une conviction forte :
-      le développement du continent africain passera par ses talents,
-      qu’ils soient locaux ou issus de la diaspora.
-
-      Basé en France et intervenant à l’international, Talentyah accompagne
-      les entreprises africaines dans leurs recrutements stratégiques en favorisant
-      la circulation des compétences à l’échelle du continent et de la diaspora.
-    </p>
-  </div>
-</section>
-
-
-<section class="page-hero">
-  <div class="container">
-    <span class="tag">Notre mission</span>
-    <h1>Notre mission</h1>
-    <p>
-      Faciliter la mise en relation entre les entreprises africaines et les talents africains,
-      issus de la diaspora ou en mobilité intra-africaine, grâce à des solutions de recrutement
-      sur mesure, éthiques et performantes.
-
-      Notre ambition : contribuer au développement économique du continent
-      en valorisant ses talents, au-delà des frontières.
-    </p>
-  </div>
-</section>
-
-<section class="page-hero">
-  <div class="container">
-    <span class="tag">Ce qui nous distingue</span>
-    <h1>Une approche stratégique et humaine du recrutement</h1>
-    <p>
-        Bullet points
-
-        Expertise métier issue de plusieurs années en cabinet de recrutement
-
-        Compréhension interculturelle des réalités africaines et occidentales
-
-        Réseau qualifié de talents de la diaspora et d’entreprises ambitieuses
-
-        Recrutements durables, pensés pour la performance et l’engagement
-    </p>
-  </div>
-</section>
-
-<!-- FONDATRICE -->
-<section class="section">
-  <div class="container split">
-
-    <!-- PHOTO + IDENTITÉ -->
-    <div class="about-profile">
-      <div class="about-image">
-        <img
-          src="images/fondatrice.jpg"
-          alt="Fondatrice de Talentyah"
-        >
-      </div>
-
-      <div class="about-identity">
-        <h3>Tatiana WOTHOR</h3>
-        <p class="role">Fondatrice & Consultante en recrutement</p>
+  <!-- HERO -->
+  <section class="hero-page">
+    <div class="hero-media"><div class="hero-fallback-apropos"></div></div>
+    <div class="container">
+      <div class="hero-page-content">
+        <div class="hero-eyebrow"><span class="hero-eyebrow-line"></span><span class="hero-eyebrow-text">Qui sommes-nous</span></div>
+        <h1>Talentyah, cabinet de<br><em>recrutement panafricain</em></h1>
+        <p class="hero-page-desc">
+          Talentyah est ne d'une conviction forte : le developpement du continent africain passera par ses talents, qu'ils soient locaux ou issus de la diaspora. Base en France et intervenant a l'international, nous accompagnons les entreprises africaines dans leurs recrutements strategiques.
+        </p>
+        <div class="hero-page-cta">
+          <a href="entreprises.html" class="btn-gold">Confier un recrutement &#8594;</a>
+          <a href="talents.html" class="btn-ghost">Etre accompagne(e) &#8594;</a>
+        </div>
       </div>
     </div>
+  </section>
 
-    <!-- TEXTE -->
-    <div class="about-card">
-      <h2>La fondatrice</h2>
-      <p>
-        Depuis le début de mon parcours, j’ai toujours été convaincue que les talents africains,
-        qu’ils soient sur le continent ou dans la diaspora, ont un rôle majeur à jouer
-        dans le développement de l’Afrique.
+  <!-- INTRO -->
+  <section class="apropos-intro">
+    <div class="container">
+      <div class="apropos-intro-grid">
 
-        Mon parcours, à la croisée du droit et du recrutement international, m’a permis
-        de comprendre les enjeux réels des entreprises et l’importance de l’humain
-        dans chaque mission.
+        <div class="reveal">
+          <div class="section-label"><span class="section-label-line"></span><span class="section-label-text">Notre histoire</span></div>
+          <p class="apropos-intro-lead">Nous sommes un cabinet de recrutement <strong>engage dans la circulation des competences africaines</strong>, qu'elles soient issues de la diaspora ou du continent africain lui-meme.</p>
+        </div>
 
-        Talentyah est né de cette volonté : créer un pont durable entre les talents
-        et les opportunités du continent.
-      </p>
+        <div class="apropos-intro-body reveal">
+          <p>Base en France et intervenant a l'international, nous accompagnons les entreprises africaines dans leurs recrutements strategiques en favorisant :</p>
+          <div class="apropos-engagements">
+            <div class="engagement-item">
+              <div class="engagement-icon"><svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg></div>
+              <span class="engagement-text">Le retour des talents de la diaspora</span>
+            </div>
+            <div class="engagement-item">
+              <div class="engagement-icon"><svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+              <span class="engagement-text">La mobilite professionnelle entre les pays africains</span>
+            </div>
+            <div class="engagement-item">
+              <div class="engagement-icon"><svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+              <span class="engagement-text">Des recrutements durables et a fort impact</span>
+            </div>
+          </div>
+          <p>Notre ambition : <strong>contribuer au developpement economique du continent</strong> en valorisant ses talents, au-dela des frontieres.</p>
+        </div>
+
+      </div>
     </div>
+  </section>
 
-  </div>
-</section>
-
-<!-- LE CABINET -->
-<section class="section light">
-  <div class="container narrow">
-    <div class="about-card">
-      <h2>Le cabinet Talentyah</h2>
-      <p>
-        Talentyah est un cabinet de recrutement
-        spécialisé dans l’identification
-        et l’accompagnement de talents qualifiés
-        en Afrique et à l’international.
-      </p>
-      <p>
-        Le cabinet intervient comme un partenaire
-        de confiance auprès d’entreprises locales
-        et internationales, en privilégiant
-        des recrutements ciblés, confidentiels
-        et alignés avec des enjeux de croissance durable.
-      </p>
+  <!-- MISSION -->
+  <section class="apropos-mission">
+    <div class="container">
+      <div>
+        <span class="mission-eyebrow">Notre mission</span>
+        <h2 class="mission-title">Connecter <em>les talents africains</em><br>aux opportunites qui comptent</h2>
+        <p class="mission-text">Faciliter la mise en relation entre les entreprises africaines et les talents africains, issus de la diaspora ou en mobilite intra-africaine, grace a des solutions de recrutement sur mesure, ethiques et performantes.<br><br>Notre ambition : contribuer au developpement economique du continent en valorisant ses talents, au-dela des frontieres.</p>
+      </div>
+      <div class="mission-visual">
+        <div class="mission-stat-card reveal">
+          <div class="mission-stat-num">15+</div>
+          <div class="mission-stat-label"><strong>Pays couverts</strong>Afrique subsaharienne, Maghreb, Europe et international</div>
+        </div>
+        <div class="mission-stat-card reveal">
+          <div class="mission-stat-num">3</div>
+          <div class="mission-stat-label"><strong>Expertises core</strong>Recrutement, Chasse de profils, Accompagnement carriere</div>
+        </div>
+        <div class="mission-stat-card reveal">
+          <div class="mission-stat-num">100%</div>
+          <div class="mission-stat-label"><strong>Sur mesure</strong>Chaque mission construite autour de vos enjeux specifiques</div>
+        </div>
+      </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- FOOTER -->
-<footer class="footer">
-  <div class="container footer-grid">
-    <p>© 2024 Talentyah. Tous droits réservés.</p>
-    <div class="footer-links">
-      <a href="#">LinkedIn</a>
-      <a href="contact.html">Contact</a>
-      <a href="mentionslegales.html">Mentions légales</a>
+  <!-- CE QUI NOUS DISTINGUE -->
+  <section class="apropos-distingue">
+    <div class="container">
+      <div class="distingue-header reveal">
+        <div class="section-label" style="justify-content:center;"><span class="section-label-line"></span><span class="section-label-text">Ce qui nous distingue</span><span class="section-label-line"></span></div>
+        <h2 class="section-title">Une approche strategique<br>et humaine du recrutement</h2>
+      </div>
+      <div class="distingue-grid">
+        <div class="distingue-item reveal">
+          <div class="distingue-num">01</div>
+          <div class="distingue-icon"><svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <h3 class="distingue-title">Expertise metier affirmee</h3>
+          <p class="distingue-desc">Plusieurs annees d'experience en cabinet de recrutement, avec une specialisation sur les marches africains et la diaspora.</p>
+        </div>
+        <div class="distingue-item reveal">
+          <div class="distingue-num">02</div>
+          <div class="distingue-icon"><svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+          <h3 class="distingue-title">Comprehension interculturelle</h3>
+          <p class="distingue-desc">Une maitrise fine des realites africaines et occidentales, indispensable pour reussir les mobilites et les recrutements transfrontaliers.</p>
+        </div>
+        <div class="distingue-item reveal">
+          <div class="distingue-num">03</div>
+          <div class="distingue-icon"><svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          <h3 class="distingue-title">Reseau qualifie</h3>
+          <p class="distingue-desc">Un reseau solide de talents de la diaspora et d'entreprises ambitieuses, construit sur la confiance et la qualite des relations.</p>
+        </div>
+        <div class="distingue-item reveal">
+          <div class="distingue-num">04</div>
+          <div class="distingue-icon"><svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+          <h3 class="distingue-title">Recrutements durables</h3>
+          <p class="distingue-desc">Des missions pensees pour la performance et l'engagement a long terme, pas seulement pour remplir un poste rapidement.</p>
+        </div>
+      </div>
     </div>
-  </div>
-</footer>
+  </section>
 
+  <!-- VALEURS -->
+  <section class="apropos-valeurs">
+    <div class="container">
+      <div class="valeurs-header">
+        <div>
+          <div class="section-label"><span class="section-label-line"></span><span class="section-label-text">Nos valeurs</span></div>
+          <h2 class="section-title">Ce qui nous guide chaque jour</h2>
+        </div>
+        <p class="valeurs-header-desc">Nos valeurs ne sont pas des mots sur un mur. Elles definissent la maniere dont nous conduisons chaque mission, chaque relation, chaque engagement.</p>
+      </div>
+      <div class="valeurs-grid">
+        <div class="valeur-card reveal">
+          <div class="valeur-icon"><svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <div class="valeur-title">L'alignement strategique</div>
+          <p class="valeur-desc">Nous recherchons la justesse entre vision, culture et potentiel, pour creer des collaborations qui ont du sens et qui durent.</p>
+        </div>
+        <div class="valeur-card reveal">
+          <div class="valeur-icon"><svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+          <div class="valeur-title">L'exigence d'excellence</div>
+          <p class="valeur-desc">Nous evaluons avec rigueur et sans compromis pour garantir des decisions de recrutement a la hauteur de vos enjeux.</p>
+        </div>
+        <div class="valeur-card reveal">
+          <div class="valeur-icon"><svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          <div class="valeur-title">L'engagement partenarial</div>
+          <p class="valeur-desc">Nous nous impliquons comme un veritable partenaire, avec exigence, discretion et un engagement total a chaque mission.</p>
+        </div>
+        <div class="valeur-card reveal">
+          <div class="valeur-icon"><svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+          <div class="valeur-title">L'impact durable</div>
+          <p class="valeur-desc">Nous concevons des solutions de recrutement creatrices de valeur, pour transformer vos defis actuels en succes futurs.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FONDATRICE -->
+  <section class="apropos-fondatrice">
+    <div class="container">
+      <div class="fondatrice-grid">
+
+        <div class="fondatrice-visual reveal">
+          <div class="fondatrice-photo">
+            <img src="images/fondatrice.jpg" alt="Tatiana Wothor, fondatrice de Talentyah">
+            <div class="fondatrice-photo-placeholder">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+          </div>
+          <div class="fondatrice-id">
+            <div class="fondatrice-name">Tatiana WOTHOR</div>
+            <div class="fondatrice-role">Fondatrice & Consultante en recrutement</div>
+            <a href="https://linkedin.com" target="_blank" rel="noopener" class="fondatrice-linkedin">
+              LinkedIn &#8594;
+            </a>
+          </div>
+        </div>
+
+        <div class="fondatrice-content reveal">
+          <div class="section-label"><span class="section-label-line"></span><span class="section-label-text">La fondatrice</span></div>
+
+          <blockquote class="fondatrice-quote">
+            "Talentyah est ne de cette volonte : creer un pont durable entre les talents et les opportunites du continent."
+          </blockquote>
+
+          <div class="fondatrice-bio">
+            <p>Depuis le debut de mon parcours, j'ai toujours ete convaincue que les talents africains, qu'ils soient sur le continent ou dans la diaspora, ont un role majeur a jouer dans le developpement de l'Afrique.</p>
+            <p>Mon parcours, a la croisee du droit et du recrutement international, m'a permis de comprendre les enjeux reels des entreprises et l'importance de l'humain dans chaque mission.</p>
+          </div>
+
+          <div class="fondatrice-cabinet">
+            <h4>Le cabinet Talentyah</h4>
+            <p>Talentyah est un cabinet de recrutement specialise dans l'identification et l'accompagnement de talents qualifies en Afrique et a l'international. Le cabinet intervient comme un partenaire de confiance aupres d'entreprises locales et internationales, en privilegiant des recrutements cibles, confidentiels et alignes avec des enjeux de croissance durable.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="apropos-cta">
+    <div class="container">
+      <h2 class="cta-title">Construisons <em>l'avenir<br>du talent africain</em> ensemble</h2>
+      <p class="cta-sub">Que vous soyez une entreprise ou un professionnel, Talentyah est votre partenaire de confiance pour reussir vos recrutements et accelerer votre carriere.</p>
+      <div class="apropos-cta-actions">
+        <a href="entreprises.html" class="btn-white">Je recrute &#8594;</a>
+        <a href="talents.html" class="btn-white-outline">Je cherche une opportunite &#8594;</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer"><div class="container"><div class="footer-grid"><div class="footer-brand"><a href="index.html" class="logo">Talentyah<span>.</span></a><p>Cabinet de recrutement et accompagnement de carriere. Base en France, intervenant en Afrique et a l'international.</p></div><div class="footer-col"><h4>Navigation</h4><a href="talents.html">Talents</a><a href="entreprises.html">Entreprises</a><a href="notre-approche.html">Notre approche</a><a href="ressources.html">Ressources</a></div><div class="footer-col"><h4>Decouvrir</h4><a href="apropos.html">A propos</a><a href="carrieres.html">Offres d'emploi</a><a href="contact.html">Contact</a></div><div class="footer-col"><h4>Contact</h4><a href="mailto:contact@talentyah.com">contact@talentyah.com</a><a href="https://linkedin.com" target="_blank" rel="noopener">LinkedIn</a></div></div><div class="footer-bottom"><p>2025 Talentyah. Tous droits reserves.</p><div class="footer-bottom-links"><a href="mentionslegales.html">Mentions legales</a><a href="confidentialite.html">Confidentialite</a></div></div></div></footer>
+
+  <script src="js/script.js"></script>
 </body>
 </html>

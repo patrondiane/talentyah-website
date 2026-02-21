@@ -3,206 +3,296 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Connexion administrateur | Talentyah</title>
-  <link rel="apple-touch-icon" href="images/logo-talentyah.png">
-  <meta name="msapplication-TileColor" content="#1F7A5B">
-  <link rel="stylesheet" href="css/styles.css" />
-  <script src="js/admin.js" defer></script>
+  <title>Administration - Talentyah</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/admin.css">
 </head>
-
 <body>
 
   <!-- NAVBAR -->
-  <header class="header">
+  <header class="header" id="header">
     <div class="container nav">
-      <div class="logo">Talentyah</div>
-      <nav>
+      <a href="index.html" class="logo">Talentyah<span>.</span></a>
+      <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+      <nav id="main-nav">
         <a href="index.html">Accueil</a>
-        <a href="carrieres.html">Carrières</a>
-        <a href="candidats.html">Candidats</a>
+        <a href="talents.html">Talents</a>
         <a href="entreprises.html">Entreprises</a>
-        <a href="apropos.html">À propos</a>
-        <a href="blog.html">Blog</a>
-
-        <a href="admin.html" class="admin-link" title="Connexion administrateur" aria-label="Connexion administrateur">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-              width="18" height="18" fill="none" stroke="currentColor"
-              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="8" r="4"></circle>
-            <path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
-          </svg>
+        <a href="notre-approche.html">Notre approche</a>
+        <a href="apropos.html">A propos</a>
+        <a href="ressources.html">Ressources</a>
+        <a href="admin.html" class="admin-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>
         </a>
       </nav>
     </div>
   </header>
 
-  <!-- HERO SIMPLE -->
-  <section class="page-hero">
-    <div class="container narrow">
-      <span class="tag">Espace sécurisé</span>
-      <h1>Connexion administrateur</h1>
-      <p>Accès réservé aux administrateurs Talentyah.</p>
-    </div>
-  </section>
+  <!-- ============================================================
+       SECTION LOGIN
+  ============================================================ -->
+  <section class="admin-login-page" id="adminLoginSection">
+    <div class="admin-login-wrap">
 
-  <!-- FORM -->
-  <section class="section">
-    <div class="container narrow">
-
-      <div class="card admin-card">
-
-        <div class="admin-icon">
-          <img src="images/Logo_Talentyah.png" alt="Icône administrateur">
+      <div class="admin-login-header">
+        <a href="index.html" class="admin-login-logo">Talentyah<span>.</span></a>
+        <div class="admin-lock-icon">
+          <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
         </div>
+        <h1 class="admin-login-title">Espace administrateur</h1>
+        <p class="admin-login-sub">Acces reserve aux administrateurs Talentyah</p>
+      </div>
 
-        <form class="admin-form" id="adminLoginForm" autocomplete="on">
-          <label for="username">Email</label>
-          <input type="email" id="username" name="email" placeholder="email@talentyah.com" required />
+      <div class="admin-login-box">
+        <form id="adminLoginForm" autocomplete="on">
 
-          <label for="password">Mot de passe</label>
-          <input type="password" id="password" name="password" placeholder="••••••••" required />
-
-          <button type="submit" class="btn btn-primary">Se connecter</button>
-
-          <p id="adminMsg" class="form-msg"></p>
-
-          <div class="admin-form-footer">
-            <a class="link" href="#">Mot de passe oublié ?</a>
-            <a class="btn btn-secondary" href="index.html">Annuler</a>
+          <div class="admin-form-field">
+            <label for="admin-email">Email</label>
+            <input type="email" id="admin-email" name="email"
+                   placeholder="admin@talentyah.com" required>
           </div>
+
+          <div class="admin-form-field">
+            <label for="admin-password">Mot de passe</label>
+            <input type="password" id="admin-password" name="password"
+                   placeholder="••••••••" required>
+          </div>
+
+          <button type="submit" class="admin-login-btn">Se connecter &rarr;</button>
+
+          <div id="adminMsg" class="admin-msg"></div>
+
+          <div class="admin-login-links">
+            <a href="#">Mot de passe oublie ?</a>
+            <a href="index.html">Retour au site</a>
+          </div>
+
         </form>
-
-        <div id="adminDashboard" class="admin-dashboard" style="display:none;">
-
-  <!-- HEADER DASHBOARD -->
-  <div class="admin-actions">
-    <div class="admin-tabs">
-      <button class="tab-btn active" id="tabCandidates" type="button">Candidatures</button>
-      <button class="tab-btn" id="tabCompanies" type="button">Recrutements Entreprises</button>
-      <button class="tab-btn" id="tabJobs" type="button">Offres</button>
-    </div>
-
-    <button class="btn btn-secondary" id="logoutBtn" type="button">Se déconnecter</button>
-  </div>
-
-  <!-- PANEL 1 : CANDIDATS -->
-  <div id="candidatesPanel" class="admin-panel">
-    <h2 class="admin-title">Candidatures reçues</h2>
-
-    <div class="admin-filters">
-      <input type="text" id="filterSector" placeholder="Filtrer par secteur (ex : Tech)">
-      <input type="text" id="filterCountry" placeholder="Filtrer par pays (ex : Senegal)">
-      <button class="btn btn-primary" id="applyFiltersBtn" type="button">Appliquer</button>
-    </div>
-
-    <div class="admin-table-wrap">
-      <table class="admin-table">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Nom</th>
-            <th>Email</th>
-            <th>Secteur</th>
-            <th>Pays</th>
-            <th>CV</th>
-          </tr>
-        </thead>
-        <tbody id="candidatesTbody">
-          <tr><td colspan="6">Aucune donnée.</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- PANEL 2 : ENTREPRISES -->
-  <div id="companiesPanel" class="admin-panel" style="display:none;">
-    <h2 class="admin-title">Demandes de recrutement</h2>
-
-    <div class="admin-table-wrap">
-      <table class="admin-table">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Entreprise</th>
-            <th>Email</th>
-            <th>Pays / Région</th>
-            <th>Poste</th>
-            <th>Urgence</th>
-            <th>Message</th>
-          </tr>
-        </thead>
-        <tbody id="companiesTbody">
-          <tr><td colspan="7">Aucune demande.</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- PANEL 3 : OFFRES -->
-  <div id="jobsPanel" class="admin-panel" style="display:none;">
-    <h2 class="admin-title">Gérer les offres</h2>
-
-    <div class="card admin-inner-card">
-      <h3 style="margin-bottom:12px;">Ajouter une offre</h3>
-
-      <form id="jobForm" class="job-form">
-        <div class="admin-filters">
-          <input type="text" name="title" placeholder="Intitulé du poste *" required>
-          <input type="text" name="country" placeholder="Pays (ex : Senegal)">
-          <input type="text" name="city" placeholder="Ville (ex : Dakar)">
-          <input type="text" name="sector" placeholder="Secteur (ex : Tech)">
-          <input type="text" name="contract_type" placeholder="Type (CDI, CDD, Freelance)">
-          <input type="text" name="salary" placeholder="Salaire (optionnel)">
-        </div>
-
-        <textarea name="description" placeholder="Description (courte)" class="job-textarea"></textarea>
-
-        <div class="job-actions">
-          <button class="btn btn-primary" type="submit">Publier l’offre</button>
-          <p id="jobMsg" class="form-msg" style="margin:0;"></p>
-        </div>
-      </form>
-    </div>
-
-    <div class="admin-table-wrap">
-      <table class="admin-table">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Poste</th>
-            <th>Lieu</th>
-            <th>Secteur</th>
-            <th>Type</th>
-            <th>Status</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody id="jobsTbody">
-          <tr><td colspan="7">Aucune offre.</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-</div>
-
       </div>
 
     </div>
   </section>
 
-  <!-- FOOTER -->
-  <footer class="footer">
-    <div class="container footer-grid">
-      <p>© 2024 Talentyah. Tous droits réservés.</p>
-      <div class="footer-links">
-        <a href="#">LinkedIn</a>
-        <a href="#">Contact</a>
-        <a href="mentions-legales.html">Mentions légales</a>
-        <a href="confidentialite.html">Confidentialité</a>
+  <!-- ============================================================
+       DASHBOARD (affiche apres login)
+  ============================================================ -->
+  <div id="adminDashboardSection" class="admin-dashboard-page" style="display:none;">
+
+    <!-- BARRE D'ONGLETS -->
+    <div class="admin-topbar">
+      <div class="container">
+        <div class="admin-topbar-inner">
+
+          <div class="admin-tabs">
+
+            <button class="tab-btn active" type="button" data-panel="panelCandidates">
+              <svg class="tab-icon" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              Candidatures
+              <span class="tab-badge" id="countCandidates">—</span>
+            </button>
+
+            <button class="tab-btn" type="button" data-panel="panelCompanies">
+              <svg class="tab-icon" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+              Entreprises
+              <span class="tab-badge" id="countCompanies">—</span>
+            </button>
+
+            <button class="tab-btn" type="button" data-panel="panelJobs">
+              <svg class="tab-icon" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+              Offres d'emploi
+              <span class="tab-badge" id="countJobs">—</span>
+            </button>
+
+          </div>
+
+          <div class="admin-topbar-right">
+            <div class="admin-user-badge">
+              <span class="admin-user-dot"
+                    style="width:7px;height:7px;background:var(--emerald-light);border-radius:50%;display:inline-block;"></span>
+              Administrateur
+            </div>
+            <button type="button" class="btn-logout" id="logoutBtn">
+              Se deconnecter
+            </button>
+          </div>
+
+        </div>
       </div>
     </div>
-  </footer>
 
+    <!-- ---- PANEL 1 : CANDIDATURES ---- -->
+    <div class="admin-panel active" id="panelCandidates">
+      <div class="container">
+
+        <div class="admin-panel-header">
+          <div>
+            <h2 class="admin-panel-title">Candidatures recues</h2>
+            <p class="admin-panel-subtitle">Profils deposes via le formulaire Talents</p>
+          </div>
+        </div>
+
+        <div class="admin-filters-bar">
+          <input type="text" class="admin-filter-input" id="filterSector"
+                 placeholder="Filtrer par fonction (ex : RAF, DRH...)">
+          <input type="text" class="admin-filter-input" id="filterCountry"
+                 placeholder="Filtrer par pays (ex : Senegal)">
+          <button type="button" class="btn-filter" id="applyFiltersBtn">Filtrer</button>
+          <button type="button" class="btn-reset"   id="resetFiltersBtn">Reinitialiser</button>
+        </div>
+
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Candidat</th>
+                <th>Email</th>
+                <th>Fonction / Metier</th>
+                <th>Pays</th>
+                <th>CV</th>
+              </tr>
+            </thead>
+            <tbody id="candidatesTbody">
+              <tr class="empty-row"><td colspan="6">Chargement des candidatures...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ---- PANEL 2 : ENTREPRISES ---- -->
+    <div class="admin-panel" id="panelCompanies">
+      <div class="container">
+
+        <div class="admin-panel-header">
+          <div>
+            <h2 class="admin-panel-title">Demandes de recrutement</h2>
+            <p class="admin-panel-subtitle">Formulaires deposes via la page Entreprises</p>
+          </div>
+        </div>
+
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Entreprise</th>
+                <th>Email</th>
+                <th>Pays / Region</th>
+                <th>Poste a pourvoir</th>
+                <th>Urgence</th>
+                <th>Contexte</th>
+              </tr>
+            </thead>
+            <tbody id="companiesTbody">
+              <tr class="empty-row"><td colspan="7">Chargement des demandes...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ---- PANEL 3 : OFFRES ---- -->
+    <div class="admin-panel" id="panelJobs">
+      <div class="container">
+
+        <div class="admin-panel-header">
+          <div>
+            <h2 class="admin-panel-title">Offres d'emploi</h2>
+            <p class="admin-panel-subtitle">Gerer les offres publiees sur le site</p>
+          </div>
+        </div>
+
+        <!-- Formulaire ajout -->
+        <div class="admin-job-form">
+          <div class="admin-job-form-title">Publier une nouvelle offre</div>
+          <form id="jobForm">
+            <div class="job-form-grid">
+
+              <div class="job-form-field full">
+                <label for="job-title">Intitule du poste *</label>
+                <input type="text" id="job-title" name="title"
+                       placeholder="Ex : Directeur Administratif et Financier" required>
+              </div>
+
+              <div class="job-form-field">
+                <label for="job-country">Pays</label>
+                <input type="text" id="job-country" name="country" placeholder="Ex : Senegal">
+              </div>
+              <div class="job-form-field">
+                <label for="job-city">Ville</label>
+                <input type="text" id="job-city" name="city" placeholder="Ex : Dakar">
+              </div>
+              <div class="job-form-field">
+                <label for="job-sector">Secteur</label>
+                <input type="text" id="job-sector" name="sector" placeholder="Ex : Finance, RH, Tech...">
+              </div>
+
+              <div class="job-form-field">
+                <label for="job-contract">Type de contrat</label>
+                <select id="job-contract" name="contract_type">
+                  <option value="">Selectionnez</option>
+                  <option>CDI</option>
+                  <option>CDD</option>
+                  <option>Freelance</option>
+                  <option>Stage</option>
+                  <option>Alternance</option>
+                </select>
+              </div>
+              <div class="job-form-field">
+                <label for="job-salary">Remuneration (optionnel)</label>
+                <input type="text" id="job-salary" name="salary"
+                       placeholder="Ex : 2 500 - 3 500 EUR / mois">
+              </div>
+
+              <div class="job-form-field full">
+                <label for="job-desc">Description du poste</label>
+                <textarea id="job-desc" name="description"
+                          placeholder="Decrivez les missions, le profil recherche, le contexte..."></textarea>
+              </div>
+
+            </div>
+            <div class="job-form-actions">
+              <button type="submit" class="btn-publish">Publier l'offre &rarr;</button>
+              <span class="job-form-msg" id="jobMsg"></span>
+            </div>
+          </form>
+        </div>
+
+        <!-- Table offres -->
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Poste</th>
+                <th>Lieu</th>
+                <th>Secteur</th>
+                <th>Type</th>
+                <th>Statut</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="jobsTbody">
+              <tr class="empty-row"><td colspan="7">Chargement des offres...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /dashboard -->
+
+  <script src="js/script.js"></script>
+  <script src="js/admin.js"></script>
 </body>
 </html>

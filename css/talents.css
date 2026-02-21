@@ -1,0 +1,198 @@
+/* =====================================================
+   TALENTYAH — talents.css
+   Styles specifiques a la page Talents
+===================================================== */
+
+/* =====================
+   PROGRAMMES (fond sombre)
+===================== */
+.programmes {
+  padding: 96px 0;
+  background: var(--dark);
+  position: relative;
+  overflow: hidden;
+}
+
+.programmes::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 60% 70% at 90% 20%, rgba(200,168,75,0.08) 0%, transparent 50%),
+    radial-gradient(ellipse 50% 60% at 10% 80%, rgba(31,122,91,0.15) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.programmes .container { position: relative; z-index: 1; }
+
+/* Override couleurs de texte dans l'intro sur fond sombre */
+.programmes .section-label-text { color: var(--gold); }
+.programmes .section-label-line  { background: var(--gold); }
+.programmes .section-title        { color: var(--white); }
+
+.programmes-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  background: rgba(255,255,255,0.06);
+}
+
+.programme-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  padding: 48px 36px;
+  display: flex; flex-direction: column;
+  position: relative; overflow: hidden;
+  transition: var(--transition);
+}
+
+.programme-card::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0;
+  width: 100%; height: 2px;
+  background: var(--gold);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.4s ease;
+}
+.programme-card:hover { background: rgba(255,255,255,0.06); border-color: rgba(200,168,75,0.2); }
+.programme-card:hover::after { transform: scaleX(1); }
+
+.programme-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 52px; font-weight: 300;
+  color: rgba(200,168,75,0.15); line-height: 1; margin-bottom: 20px;
+}
+
+.programme-icon {
+  width: 48px; height: 48px;
+  background: rgba(200,168,75,0.1);
+  border: 1px solid rgba(200,168,75,0.2);
+  border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 24px;
+}
+.programme-icon svg { width: 22px; height: 22px; stroke: var(--gold); fill: none; }
+
+.programme-tag {
+  font-size: 10px; font-weight: 700; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--gold); margin-bottom: 10px;
+}
+
+.programme-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px; font-weight: 600;
+  color: var(--white); line-height: 1.25; margin-bottom: 14px;
+}
+
+.programme-desc {
+  font-size: 14px; color: rgba(255,255,255,0.55);
+  line-height: 1.75; margin-bottom: 24px; flex-grow: 1;
+}
+
+.programme-points {
+  list-style: none; display: flex; flex-direction: column;
+  gap: 9px; margin-bottom: 28px;
+}
+.programme-points li {
+  display: flex; align-items: flex-start; gap: 10px;
+  font-size: 13px; color: rgba(255,255,255,0.6); line-height: 1.55;
+}
+.programme-points li::before {
+  content: ''; width: 5px; height: 5px;
+  background: var(--gold); border-radius: 50%;
+  margin-top: 7px; flex-shrink: 0;
+}
+
+.programme-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13px; font-weight: 600; color: var(--gold);
+  text-decoration: none; margin-top: auto;
+  transition: var(--transition);
+}
+.programme-link:hover { gap: 10px; }
+
+/* =====================
+   OFFRES EMPLOI PREVIEW
+===================== */
+.offres-emploi { padding: 96px 0; background: var(--bg-off); }
+
+.offres-emploi-header {
+  display: flex; justify-content: space-between;
+  align-items: flex-end; margin-bottom: 48px; gap: 24px;
+}
+
+.jobs-preview {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 2px; background: var(--border);
+}
+
+.job-preview-card {
+  background: var(--white); padding: 36px 32px;
+  display: flex; flex-direction: column;
+  transition: var(--transition); position: relative; overflow: hidden;
+}
+.job-preview-card::before {
+  content: ''; position: absolute;
+  left: 0; top: 0; width: 3px; height: 100%;
+  background: var(--gold); transform: scaleY(0);
+  transform-origin: top; transition: transform 0.4s ease;
+}
+.job-preview-card:hover::before { transform: scaleY(1); }
+.job-preview-card:hover { background: var(--bg-off); }
+
+.job-preview-top {
+  display: flex; justify-content: space-between;
+  align-items: center; margin-bottom: 14px;
+}
+
+.job-preview-location {
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted);
+}
+
+.job-preview-type {
+  font-size: 11px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; color: var(--emerald);
+  background: rgba(26,92,69,0.08); padding: 4px 10px; border-radius: 999px;
+}
+
+.job-preview-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px; font-weight: 600;
+  color: var(--dark); line-height: 1.25; margin-bottom: 12px;
+}
+
+.job-preview-desc {
+  font-size: 13px; color: var(--muted);
+  line-height: 1.65; margin-bottom: 24px; flex-grow: 1;
+}
+
+.job-preview-footer {
+  display: flex; justify-content: space-between;
+  align-items: center; gap: 12px;
+  border-top: 1px solid var(--border); padding-top: 18px; margin-top: auto;
+}
+
+.job-preview-salary { font-size: 13px; font-weight: 600; color: var(--dark); }
+
+.job-preview-link {
+  font-size: 13px; font-weight: 700; color: var(--emerald);
+  text-decoration: none; transition: var(--transition);
+}
+.job-preview-link:hover { color: var(--gold); }
+
+/* =====================
+   RESPONSIVE TALENTS
+===================== */
+@media (max-width: 1024px) {
+  .programmes-grid        { grid-template-columns: 1fr 1fr; }
+  .jobs-preview           { grid-template-columns: 1fr 1fr; }
+  .offres-emploi-header   { flex-direction: column; align-items: flex-start; }
+}
+
+@media (max-width: 768px) {
+  .programmes             { padding: 64px 0; }
+  .programmes-grid        { grid-template-columns: 1fr; }
+  .programme-card         { padding: 36px 24px; }
+  .offres-emploi          { padding: 64px 0; }
+  .jobs-preview           { grid-template-columns: 1fr; }
+}

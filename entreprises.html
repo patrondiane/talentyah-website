@@ -1,124 +1,214 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Entreprises | Talentyah</title>
-
-  <link rel="stylesheet" href="css/styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Entreprises - Talentyah</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script src="js/script.js" defer></script>
-
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/entreprises.css">
 </head>
-
 <body>
 
-  <!-- NAVBAR -->
-  <header class="header">
+  <header class="header" id="header">
     <div class="container nav">
-      <div class="logo">Talentyah</div>
-      <nav>
+      <a href="index.html" class="logo">Talentyah<span>.</span></a>
+      <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+      <nav id="main-nav">
         <a href="index.html">Accueil</a>
-        <a href="carrieres.html">Carrières</a>
-        <a href="candidats.html">Candidats</a>
+        <a href="talents.html">Talents</a>
         <a href="entreprises.html" class="active">Entreprises</a>
-        <a href="apropos.html">À propos</a>
-        <a href="blog.html">Blog</a>
-        <a href="admin.html" class="admin-link" title="Connexion administrateur">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-              width="18" height="18" fill="none" stroke="currentColor"
-              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="8" r="4"></circle>
-            <path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
-          </svg>
-        </a>
+        <a href="notre-approche.html">Notre approche</a>
+        <a href="apropos.html">A propos</a>
+        <a href="ressources.html">Ressources</a>
+        <a href="admin.html" class="admin-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg></a>
       </nav>
     </div>
   </header>
 
-  <!-- HERO ENTREPRISES -->
-  <section class="page-hero">
+  <!-- HERO -->
+  <section class="hero-page">
+    <div class="hero-media"><div class="hero-fallback-default"></div></div>
     <div class="container">
-      <span class="tag">Recrutement stratégique</span>
-      <h1>Un partenaire de confiance pour vos recrutements en Afrique</h1>
-      <p>
-        Nous accompagnons les entreprises africaines et panafricaines
-        dans leurs recrutements stratégiques, en mobilisant les talents
-        locaux et issus de la diaspora.      
-      </p>
+      <div class="hero-page-content">
+        <div class="hero-eyebrow"><span class="hero-eyebrow-line"></span><span class="hero-eyebrow-text">Recrutement strategique</span></div>
+        <h1>Confiez-nous votre<br><em>mission de recrutement</em></h1>
+        <p class="hero-page-desc">Des solutions de recrutement sur mesure, ethiques et performantes pour batir des equipes solides et durables. Nous mobilisons les talents locaux et issus de la diaspora africaine.</p>
+        <div class="hero-page-cta">
+          <a href="#formulaire" class="btn-gold">Renseignez votre demande en 1 minute &#8594;</a>
+        </div>
+      </div>
     </div>
   </section>
 
-  <!-- CONFIER / RDV -->
-  <section class="section light">
-    <div class="container grid-2">
-
-      <!-- CONFIER UN RECRUTEMENT -->
-      <div class="card">
-        <h2>Confier un recrutement</h2>
-        <p>
-          Décrivez brièvement votre besoin.
-          Un consultant Talentyah vous recontactera
-          pour un échange confidentiel.
-        </p>
-
-        <form class="company-form" action="#" method="post">
-          <input type="text" name="company" placeholder="Entreprise" required>
-          <input type="email" name="email" placeholder="Email professionnel" required>
-          <input type="text" name="location" placeholder="Pays / Région">
-          <input type="text" name="position" placeholder="Poste à pourvoir">
-
-          <label for="urgence-recrutement">Urgence du recrutement</label>
-          <select id="urgence-recrutement" name="urgency" required>
-            <option value="" disabled selected>Choisissez l'urgence du recrutement</option>
-            <option>Faible</option>
-            <option>Moyenne</option>
-            <option>Élevée</option>
-          </select>
-
-          <textarea name="context" placeholder="Contexte du besoin (facultatif)"></textarea>
-
-          <button type="submit" class="btn btn-primary">
-            Transmettre la demande
-          </button>
-        </form>
+  <!-- POURQUOI NOUS CHOISIR -->
+  <section class="why-choose">
+    <div class="container">
+      <div class="section-label"><span class="section-label-line"></span><span class="section-label-text">Pourquoi nous choisir</span></div>
+      <h2 class="section-title">Un partenaire de confiance<br>pour vos recrutements en Afrique</h2>
+      <div class="why-choose-grid">
+        <div class="why-item reveal">
+          <div class="why-item-num">01</div>
+          <div class="why-item-title">Approche specialisee</div>
+          <div class="why-item-desc">Forts d'une expertise de reference, nous pilotons la mobilite des talents locaux et de la diaspora sur l'ensemble du continent africain.</div>
+        </div>
+        <div class="why-item reveal">
+          <div class="why-item-num">02</div>
+          <div class="why-item-title">Accompagnement complet</div>
+          <div class="why-item-desc">Du sourcing a la fidelisation, nous gerons l'ensemble du processus.</div>
+        </div>
+        <div class="why-item reveal">
+          <div class="why-item-num">03</div>
+          <div class="why-item-title">Solutions flexibles</div>
+          <div class="why-item-desc">Adaptees a votre realite et vos besoins specifiques.</div>
+        </div>
+        <div class="why-item reveal">
+          <div class="why-item-num">04</div>
+          <div class="why-item-title">Impact durable</div>
+          <div class="why-item-desc">Un recrutement pense pour la performance et l'engagement.</div>
+        </div>
       </div>
+    </div>
+  </section>
 
-      <!-- RDV -->
-        <div class="card exchange-card">
-            <h2>Échanger sur votre besoin</h2>
-            <p>
-                Vous souhaitez discuter de votre projet de recrutement
-                avant toute formalisation ?
-            </p>
+  <!-- OFFRES D'ACCOMPAGNEMENT -->
+  <section class="offres">
+    <div class="container">
+      <div class="offres-intro">
+        <div>
+          <div class="section-label"><span class="section-label-line"></span><span class="section-label-text">Nos offres</span></div>
+          <h2 class="section-title">Nos offres<br>d'accompagnement</h2>
+        </div>
+        <p class="offres-intro-desc">Des solutions adaptees a chaque besoin, de la recherche de candidats au renforcement de votre marque employeur. Chaque mission conduite avec rigueur, discretion et un engagement total.</p>
+      </div>
+      <div class="offres-list">
 
-            <a
-                class="btn btn-secondary"
-                href="https://outlook.office.com/bookings/nomdetonservice"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-                Prendre rendez-vous
-            </a>
+        <div class="offre-item open reveal">
+          <div class="offre-header">
+            <span class="offre-num">01</span>
+            <div><div class="offre-tag">Recrutement</div><div class="offre-title">Recrutement et sourcing strategique</div></div>
+            <div class="offre-toggle">+</div>
+          </div>
+          <div class="offre-body">
+            <p class="offre-lead">Nous identifions et attirons les meilleurs talents de la diaspora africaine pour repondre precisement a vos enjeux de croissance.</p>
+            <ul class="offre-points">
+              <li>Diffusion d'annonces ciblees et preselection de profils a fort potentiel</li>
+              <li>Approche directe et sourcing sur mesure pour des profils rares et strategiques</li>
+            </ul>
+          </div>
         </div>
 
+        <div class="offre-item reveal">
+          <div class="offre-header">
+            <span class="offre-num">02</span>
+            <div><div class="offre-tag">Integration</div><div class="offre-title">Onboarding et retention des talents</div></div>
+            <div class="offre-toggle">+</div>
+          </div>
+          <div class="offre-body">
+            <p class="offre-lead">Parce qu'un recrutement reussi est avant tout une integration reussie.</p>
+            <ul class="offre-points">
+              <li>Accompagnement personnalise pour une prise de poste fluide et efficace</li>
+              <li>Suivi post-recrutement pour securiser les embauches et renforcer l'engagement dans la duree</li>
+            </ul>
+          </div>
+        </div>
 
+        <div class="offre-item reveal">
+          <div class="offre-header">
+            <span class="offre-num">03</span>
+            <div><div class="offre-tag">Marque employeur</div><div class="offre-title">Audit RH et marque employeur</div></div>
+            <div class="offre-toggle">+</div>
+          </div>
+          <div class="offre-body">
+            <p class="offre-lead">Renforcez votre attractivite et devenez un employeur de reference.</p>
+            <ul class="offre-points">
+              <li>Audit complet de vos pratiques RH et de recrutement</li>
+              <li>Diagnostic de votre marque employeur et de votre attractivite aupres des talents</li>
+              <li>Recommandations strategiques et operationnelles pour valoriser votre culture et vos valeurs</li>
+              <li>Amelioration de l'experience candidat pour convertir plus efficacement les talents</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="offre-item reveal">
+          <div class="offre-header">
+            <span class="offre-num">04</span>
+            <div><div class="offre-tag">Flexibilite</div><div class="offre-title">Solutions flexibles et ecosysteme de partenaires</div></div>
+            <div class="offre-toggle">+</div>
+          </div>
+          <div class="offre-body">
+            <p class="offre-lead">Des solutions agiles, pensees pour s'adapter a votre realite.</p>
+            <ul class="offre-points">
+              <li>Recrutement flexible : missions freelance, contrats temporaires ou CDI</li>
+              <li>Mise en relation strategique entre entreprises et entrepreneurs aux interets convergents</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
     </div>
   </section>
 
-  <!-- FOOTER -->
-  <footer class="footer">
-    <div class="container footer-grid">
-      <p>© 2024 Talentyah. Tous droits réservés.</p>
-      <div class="footer-links">
-        <a href="#">LinkedIn</a>
-        <a href="#">Contact</a>
-        <a href="mentionslegales.html">Mentions légales</a>
+  <!-- FORMULAIRE -->
+  <section class="form-section" id="formulaire">
+    <div class="container">
+      <div class="form-grid">
+        <div>
+          <div class="section-label"><span class="section-label-line"></span><span class="section-label-text">Deposer votre besoin</span></div>
+          <h2 class="section-title">Parlons de<br>votre recrutement</h2>
+          <p class="form-left-desc">Decrivez brievement votre besoin. Un consultant Talentyah vous recontactera dans les 24h pour un echange confidentiel, sans engagement.</p>
+          <div class="contact-info">
+            <div class="contact-item">
+              <div class="contact-icon"><svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+              <div><div class="contact-label">Email</div><div class="contact-value">contact@talentyah.com</div></div>
+            </div>
+            <div class="contact-item">
+              <div class="contact-icon"><svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+              <div><div class="contact-label">Interventions</div><div class="contact-value">Afrique et international - Base a Paris</div></div>
+            </div>
+          </div>
+          <div class="rdv-card">
+            <div class="rdv-text"><h4>Preferer un echange direct ?</h4><p>Planifiez un appel confidentiel avec un consultant.</p></div>
+            <a href="https://outlook.office.com/bookings/nomdetonservice" target="_blank" rel="noopener" class="btn-rdv">Prendre RDV &#8594;</a>
+          </div>
+        </div>
+        <div>
+          <form class="form-box" id="companyForm">
+            <div class="form-title">Votre besoin de recrutement</div>
+            <p class="form-subtitle">Reponse sous 24h ourees - echange confidentiel garanti</p>
+            <div class="form-row">
+              <div class="form-field"><label for="company">Entreprise *</label><input type="text" id="company" name="company" placeholder="Nom de votre entreprise" required></div>
+              <div class="form-field"><label for="email">Email professionnel *</label><input type="email" id="email" name="email" placeholder="vous@entreprise.com" required></div>
+            </div>
+            <div class="form-row">
+              <div class="form-field"><label for="location">Pays / Region</label><input type="text" id="location" name="location" placeholder="Ex : Senegal, Cote d'Ivoire..."></div>
+              <div class="form-field"><label for="position">Poste a pourvoir</label><input type="text" id="position" name="position" placeholder="Ex : DAF, DRH, Chef de projet..."></div>
+            </div>
+            <div class="form-field">
+              <label for="urgency">Urgence du recrutement</label>
+              <div class="select-wrap">
+                <select id="urgency" name="urgency" required>
+                  <option value="" disabled selected>Selectionnez l'urgence</option>
+                  <option value="faible">Faible - dans 3 mois ou plus</option>
+                  <option value="moyenne">Moyenne - dans 1 a 3 mois</option>
+                  <option value="elevee">Elevee - sous 1 mois</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-field"><label for="context">Contexte du besoin</label><textarea id="context" name="context" placeholder="Decrivez brievement le contexte, le profil recherche, les enjeux..."></textarea></div>
+            <button type="submit" class="btn-submit">Transmettre la demande &#8594;</button>
+            <p class="form-note">Vos informations sont traitees de maniere strictement confidentielle.</p>
+            <div class="form-success" id="formSuccess"><p>Votre demande a bien ete transmise. Un consultant vous contactera dans les 24h.</p></div>
+          </form>
+        </div>
       </div>
     </div>
-  </footer>
+  </section>
 
-</body>     
+  <footer class="footer"><div class="container"><div class="footer-grid"><div class="footer-brand"><a href="index.html" class="logo">Talentyah<span>.</span></a><p>Cabinet de recrutement et accompagnement de carriere. Base en France, intervenant en Afrique et a l'international.</p></div><div class="footer-col"><h4>Navigation</h4><a href="talents.html">Talents</a><a href="entreprises.html">Entreprises</a><a href="notre-approche.html">Notre approche</a><a href="ressources.html">Ressources</a></div><div class="footer-col"><h4>Decouvrir</h4><a href="apropos.html">A propos</a><a href="carrieres.html">Offres d'emploi</a><a href="contact.html">Contact</a></div><div class="footer-col"><h4>Contact</h4><a href="mailto:contact@talentyah.com">contact@talentyah.com</a><a href="https://linkedin.com" target="_blank" rel="noopener">LinkedIn</a></div></div><div class="footer-bottom"><p>2025 Talentyah. Tous droits reserves.</p><div class="footer-bottom-links"><a href="mentionslegales.html">Mentions legales</a><a href="confidentialite.html">Confidentialite</a></div></div></div></footer>
+
+  <script src="js/script.js"></script>
+</body>
 </html>

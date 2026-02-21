@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ressources - Talentyah</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/ressources.css">
+</head>
+<body>
+
+  <header class="header" id="header">
+    <div class="container nav">
+      <a href="index.html" class="logo">Talentyah<span>.</span></a>
+      <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+      <nav id="main-nav">
+        <a href="index.html">Accueil</a>
+        <a href="talents.html">Talents</a>
+        <a href="entreprises.html">Entreprises</a>
+        <a href="notre-approche.html">Notre approche</a>
+        <a href="apropos.html">A propos</a>
+        <a href="ressources.html" class="active">Ressources</a>
+        <a href="admin.html" class="admin-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO — ARTICLE EN VEDETTE -->
+  <section class="hero-ressources">
+    <div class="hero-media"><div class="hero-fallback-ressources"></div></div>
+    <div class="container">
+      <div class="hero-article-featured">
+        <div class="hero-article-tag">Insight</div>
+        <h1 class="hero-article-title">Les tendances du recrutement en Afrique en 2025</h1>
+        <p class="hero-article-excerpt">Analyse du marche de l'emploi africain : quels profils sont les plus recherches, quels secteurs recrutent, et comment les entreprises s'adaptent pour attirer les meilleurs talents de la diaspora.</p>
+        <div class="hero-article-meta">
+          <span class="hero-article-date">Talentyah Editorial</span>
+          <span class="meta-sep"></span>
+          <span>6 min de lecture</span>
+        </div>
+        <div class="hero-article-ctas">
+          <a href="#" class="btn-article-read">Lire l'article &#8594;</a>
+          <a href="#articles" class="btn-ghost">Tous les articles &#8594;</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FILTRES -->
+  <div class="ressources-filters">
+    <div class="container">
+      <div class="filters-inner">
+        <button class="filter-btn active" data-filter="all">
+          Tous <span class="filter-count">6</span>
+        </button>
+        <button class="filter-btn" data-filter="recrutement">
+          Recrutement <span class="filter-count">2</span>
+        </button>
+        <button class="filter-btn" data-filter="carriere">
+          Carriere <span class="filter-count">2</span>
+        </button>
+        <button class="filter-btn" data-filter="marche">
+          Marche &amp; tendances <span class="filter-count">1</span>
+        </button>
+        <button class="filter-btn" data-filter="rh">
+          Ressources humaines <span class="filter-count">1</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ARTICLES -->
+  <section class="ressources-content" id="articles">
+    <div class="container">
+      <div class="articles-header">
+        <p class="articles-count"><span>6</span> articles disponibles</p>
+      </div>
+      <div class="articles-grid">
+
+        <article class="article-card reveal" data-category="recrutement">
+          <div class="article-card-thumb thumb-recrutement">
+            <div class="article-card-thumb-placeholder">
+              <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            </div>
+          </div>
+          <div class="article-card-body">
+            <div class="article-card-tag">Recrutement</div>
+            <h3 class="article-card-title">Les defis du recrutement de cadres en Afrique de l'Ouest</h3>
+            <p class="article-card-desc">Pourquoi certaines entreprises peinent a attirer les bons profils malgre un fort vivier de talents et comment y remedier.</p>
+            <div class="article-card-footer">
+              <span class="article-card-date">Talentyah Editorial</span>
+              <a href="#" class="article-card-link">Lire &#8594;</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="article-card reveal" data-category="carriere">
+          <div class="article-card-thumb thumb-carriere">
+            <div class="article-card-thumb-placeholder">
+              <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            </div>
+          </div>
+          <div class="article-card-body">
+            <div class="article-card-tag">Carriere</div>
+            <h3 class="article-card-title">Construire une trajectoire professionnelle non lineaire</h3>
+            <p class="article-card-desc">Mobilite, reconversion, expatriation : repenser les parcours professionnels africains et comment en faire une force.</p>
+            <div class="article-card-footer">
+              <span class="article-card-date">Talentyah Editorial</span>
+              <a href="#" class="article-card-link">Lire &#8594;</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="article-card reveal" data-category="marche">
+          <div class="article-card-thumb thumb-marche">
+            <div class="article-card-thumb-placeholder">
+              <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            </div>
+          </div>
+          <div class="article-card-body">
+            <div class="article-card-tag">Marche</div>
+            <h3 class="article-card-title">Pourquoi les soft skills deviennent strategiques</h3>
+            <p class="article-card-desc">Leadership, adaptabilite et intelligence culturelle au coeur des recrutements africains. Ce que les DRH regardent vraiment.</p>
+            <div class="article-card-footer">
+              <span class="article-card-date">Talentyah Editorial</span>
+              <a href="#" class="article-card-link">Lire &#8594;</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="article-card reveal" data-category="rh">
+          <div class="article-card-thumb thumb-rh">
+            <div class="article-card-thumb-placeholder">
+              <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            </div>
+          </div>
+          <div class="article-card-body">
+            <div class="article-card-tag">Ressources humaines</div>
+            <h3 class="article-card-title">Marque employeur en Afrique : comment devenir un employeur attractif</h3>
+            <p class="article-card-desc">Les leviers concrets pour renforcer votre attractivite et vous positionner comme un employeur de reference sur le continent.</p>
+            <div class="article-card-footer">
+              <span class="article-card-date">Talentyah Editorial</span>
+              <a href="#" class="article-card-link">Lire &#8594;</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="article-card reveal" data-category="recrutement">
+          <div class="article-card-thumb thumb-diaspora">
+            <div class="article-card-thumb-placeholder">
+              <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            </div>
+          </div>
+          <div class="article-card-body">
+            <div class="article-card-tag">Recrutement</div>
+            <h3 class="article-card-title">Recruter dans la diaspora : mythes et realites</h3>
+            <p class="article-card-desc">Deconstruire les idees recues sur le recrutement diasporique et identifier les bons canaux pour trouver les profils d'excellence.</p>
+            <div class="article-card-footer">
+              <span class="article-card-date">Talentyah Editorial</span>
+              <a href="#" class="article-card-link">Lire &#8594;</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="article-card reveal" data-category="carriere">
+          <div class="article-card-thumb thumb-interview">
+            <div class="article-card-thumb-placeholder">
+              <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            </div>
+          </div>
+          <div class="article-card-body">
+            <div class="article-card-tag">Carriere</div>
+            <h3 class="article-card-title">Reussir son retour en Afrique apres la diaspora</h3>
+            <p class="article-card-desc">Preparation, negociation salariale, integration : le guide complet pour une reinstallation professionnelle reussie sur le continent.</p>
+            <div class="article-card-footer">
+              <span class="article-card-date">Talentyah Editorial</span>
+              <a href="#" class="article-card-link">Lire &#8594;</a>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- NEWSLETTER -->
+  <section class="ressources-newsletter">
+    <div class="container">
+      <div class="newsletter-text">
+        <div class="section-label"><span class="section-label-line"></span><span class="section-label-text">Newsletter</span></div>
+        <h2 class="section-title">Restez informe des tendances RH africaines</h2>
+        <p>Analyses du marche, conseils carriere, opportunites et portraits de talents : recevez nos meilleurs contenus directement dans votre boite mail.</p>
+      </div>
+      <div class="newsletter-form-wrap">
+        <form class="newsletter-form" id="newsletterForm">
+          <div class="newsletter-input-wrap">
+            <input type="email" class="newsletter-input" placeholder="Votre adresse email" required>
+            <button type="submit" class="newsletter-submit">S'inscrire</button>
+          </div>
+          <p class="newsletter-note">Pas de spam. Desinscription en un clic. Vos donnees restent confidentielles.</p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- VIDEOS / INTERVIEWS -->
+  <section class="ressources-videos">
+    <div class="container">
+      <div class="videos-header">
+        <div>
+          <div class="section-label"><span class="section-label-line"></span><span class="section-label-text">Interviews & portraits</span></div>
+          <h2 class="section-title">Temoignages<br>et portraits de talents</h2>
+        </div>
+        <p class="section-desc" style="max-width:380px;margin:0;">Des conversations avec des professionnels africains qui partagent leurs parcours et leurs convictions.</p>
+      </div>
+      <div class="videos-grid">
+
+        <div class="video-card reveal">
+          <div class="video-thumb thumb-recrutement">
+            <div class="video-play-btn">
+              <div class="video-play-icon">
+                <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="video-body">
+            <div class="video-tag">Interview</div>
+            <h3 class="video-title">Retour d'experience : directeur financier de la diaspora installee au Senegal</h3>
+            <p class="video-guest">Interview a venir</p>
+          </div>
+        </div>
+
+        <div class="video-card reveal">
+          <div class="video-thumb thumb-carriere">
+            <div class="video-play-btn">
+              <div class="video-play-icon">
+                <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="video-body">
+            <div class="video-tag">Portrait</div>
+            <h3 class="video-title">Comment j'ai negocie mon premier poste de cadre en Afrique de l'Est</h3>
+            <p class="video-guest">Temoignage a venir</p>
+          </div>
+        </div>
+
+        <div class="video-card reveal">
+          <div class="video-thumb thumb-marche">
+            <div class="video-play-btn">
+              <div class="video-play-icon">
+                <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="video-body">
+            <div class="video-tag">Analyse</div>
+            <h3 class="video-title">Le marche du recrutement en Cote d'Ivoire : enjeux et perspectives 2025</h3>
+            <p class="video-guest">Analyse Talentyah — a venir</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer"><div class="container"><div class="footer-grid"><div class="footer-brand"><a href="index.html" class="logo">Talentyah<span>.</span></a><p>Cabinet de recrutement et accompagnement de carriere. Base en France, intervenant en Afrique et a l'international.</p></div><div class="footer-col"><h4>Navigation</h4><a href="talents.html">Talents</a><a href="entreprises.html">Entreprises</a><a href="notre-approche.html">Notre approche</a><a href="ressources.html">Ressources</a></div><div class="footer-col"><h4>Decouvrir</h4><a href="apropos.html">A propos</a><a href="carrieres.html">Offres d'emploi</a><a href="contact.html">Contact</a></div><div class="footer-col"><h4>Contact</h4><a href="mailto:contact@talentyah.com">contact@talentyah.com</a><a href="https://linkedin.com" target="_blank" rel="noopener">LinkedIn</a></div></div><div class="footer-bottom"><p>2025 Talentyah. Tous droits reserves.</p><div class="footer-bottom-links"><a href="mentionslegales.html">Mentions legales</a><a href="confidentialite.html">Confidentialite</a></div></div></div></footer>
+
+  <script src="js/script.js"></script>
+  <script src="js/ressources.js"></script>
+</body>
+</html>

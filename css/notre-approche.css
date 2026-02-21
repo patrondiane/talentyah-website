@@ -1,0 +1,244 @@
+/* =====================================================
+   TALENTYAH — notre-approche.css
+   Styles specifiques a la page Notre Approche
+===================================================== */
+
+/* Ligne decorative verticale dans le hero */
+.hero-approche-decor {
+  position: absolute;
+  top: 0; right: 15%;
+  width: 1px; height: 100%;
+  background: linear-gradient(to bottom, transparent 0%, rgba(200,168,75,0.3) 30%, rgba(200,168,75,0.1) 70%, transparent 100%);
+  pointer-events: none; z-index: 1;
+}
+
+/* Citation bas droite du hero */
+.hero-approche-quote {
+  position: absolute; bottom: 60px; right: 32px;
+  max-width: 320px; z-index: 2;
+  opacity: 0; animation: fadeUp 0.8s ease 1s forwards;
+}
+.hero-approche-quote-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 16px; font-style: italic;
+  color: rgba(255,255,255,0.45); line-height: 1.7;
+  border-left: 2px solid var(--gold); padding-left: 18px;
+}
+
+/* =====================
+   INTRO
+===================== */
+.approche-intro { padding: 96px 0 64px; background: var(--white); }
+
+.approche-intro-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 80px; align-items: center;
+}
+
+.approche-intro-lead {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(22px, 3vw, 30px);
+  font-weight: 400; color: var(--dark); line-height: 1.55;
+}
+.approche-intro-lead strong { font-weight: 600; color: var(--emerald); }
+
+.approche-intro-body { display: flex; flex-direction: column; gap: 20px; }
+.approche-intro-body p { font-size: 15px; color: var(--muted); line-height: 1.8; }
+.approche-intro-body p strong { color: var(--dark); font-weight: 600; }
+
+/* =====================
+   PILIERS
+===================== */
+.approche-piliers { padding: 96px 0; background: var(--bg-off); }
+
+.approche-piliers-header {
+  text-align: center; max-width: 640px;
+  margin: 0 auto 80px;
+}
+
+.piliers-list { display: flex; flex-direction: column; gap: 2px; }
+
+.pilier-item {
+  display: grid; grid-template-columns: 120px 1fr;
+  background: var(--white); border: 1px solid var(--border);
+  overflow: hidden; transition: var(--transition);
+}
+.pilier-item:hover { border-color: rgba(200,168,75,0.4); box-shadow: 0 4px 32px rgba(0,0,0,0.06); }
+
+.pilier-num-col {
+  background: var(--dark);
+  display: flex; align-items: center; justify-content: center;
+  padding: 48px 24px; position: relative; overflow: hidden;
+}
+.pilier-num-col::after {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at center, rgba(200,168,75,0.12) 0%, transparent 70%);
+}
+
+.pilier-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 52px; font-weight: 300;
+  color: var(--gold); line-height: 1;
+  position: relative; z-index: 1; opacity: 0.8;
+}
+
+.pilier-content {
+  padding: 48px 56px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+
+.pilier-tag {
+  font-size: 10px; font-weight: 700; letter-spacing: 2.5px;
+  text-transform: uppercase; color: var(--gold);
+}
+
+.pilier-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 28px; font-weight: 600;
+  color: var(--dark); line-height: 1.2;
+}
+
+.pilier-body {
+  font-size: 15px; color: var(--muted);
+  line-height: 1.8; max-width: 680px;
+}
+.pilier-body strong { color: var(--dark); font-weight: 600; }
+
+.pilier-details { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+
+.pilier-chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 14px;
+  background: var(--bg-off); border: 1px solid var(--border);
+  border-radius: 999px; font-size: 12px; font-weight: 500;
+  color: var(--mid); transition: var(--transition);
+}
+.pilier-chip::before {
+  content: ''; width: 5px; height: 5px;
+  background: var(--gold); border-radius: 50%; flex-shrink: 0;
+}
+.pilier-item:hover .pilier-chip { border-color: rgba(200,168,75,0.3); background: var(--gold-pale); }
+
+/* =====================
+   VALEURS (fond sombre)
+===================== */
+.approche-valeurs {
+  padding: 96px 0; background: var(--dark);
+  position: relative; overflow: hidden;
+}
+.approche-valeurs::before {
+  content: ''; position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 50% 60% at 0% 50%, rgba(31,122,91,0.2) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 50% at 100% 50%, rgba(200,168,75,0.1) 0%, transparent 55%);
+  pointer-events: none;
+}
+.approche-valeurs .container { position: relative; z-index: 1; }
+
+.valeurs-header {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 80px; align-items: end; margin-bottom: 64px;
+}
+.valeurs-header .section-title     { color: var(--white); margin-bottom: 0; }
+.valeurs-header .section-label-text{ color: var(--gold); }
+.valeurs-header .section-label-line { background: var(--gold); }
+.valeurs-header-desc { font-size: 16px; color: rgba(255,255,255,0.55); line-height: 1.75; }
+
+.valeurs-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 2px; background: rgba(255,255,255,0.06);
+}
+
+.valeur-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  padding: 40px 32px;
+  display: flex; flex-direction: column; gap: 16px;
+  transition: var(--transition); position: relative; overflow: hidden;
+}
+.valeur-card::before {
+  content: ''; position: absolute; top: 0; left: 0;
+  width: 100%; height: 2px; background: var(--gold);
+  transform: scaleX(0); transform-origin: left; transition: transform 0.4s ease;
+}
+.valeur-card:hover { background: rgba(255,255,255,0.06); border-color: rgba(200,168,75,0.15); }
+.valeur-card:hover::before { transform: scaleX(1); }
+
+.valeur-icon {
+  width: 44px; height: 44px;
+  background: rgba(200,168,75,0.1);
+  border: 1px solid rgba(200,168,75,0.2);
+  border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+}
+.valeur-icon svg { width: 20px; height: 20px; stroke: var(--gold); fill: none; }
+.valeur-title { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; color: var(--white); line-height: 1.25; }
+.valeur-desc  { font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.7; }
+
+/* =====================
+   CTA DOUBLE
+===================== */
+.approche-cta { padding: 96px 0; background: var(--white); }
+
+.approche-cta-inner {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 2px; background: var(--border);
+}
+
+.approche-cta-card {
+  padding: 64px 56px; background: var(--white);
+  display: flex; flex-direction: column; gap: 24px;
+  transition: var(--transition); position: relative; overflow: hidden;
+}
+.approche-cta-card::after {
+  content: ''; position: absolute; bottom: 0; left: 0;
+  width: 100%; height: 3px; background: var(--gold);
+  transform: scaleX(0); transform-origin: left; transition: transform 0.4s ease;
+}
+.approche-cta-card:hover { background: var(--bg-off); }
+.approche-cta-card:hover::after { transform: scaleX(1); }
+
+.approche-cta-card-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 2.5px;
+  text-transform: uppercase; color: var(--gold);
+}
+.approche-cta-card-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 32px; font-weight: 600; color: var(--dark); line-height: 1.2;
+}
+.approche-cta-card-desc { font-size: 15px; color: var(--muted); line-height: 1.75; flex-grow: 1; }
+
+/* =====================
+   RESPONSIVE
+===================== */
+@media (max-width: 1024px) {
+  .approche-intro-grid { grid-template-columns: 1fr; gap: 40px; }
+  .valeurs-header      { grid-template-columns: 1fr; gap: 24px; }
+  .valeurs-grid        { grid-template-columns: 1fr 1fr; }
+  .approche-cta-inner  { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  .approche-intro          { padding: 64px 0 48px; }
+  .approche-piliers        { padding: 64px 0; }
+  .approche-piliers-header { margin-bottom: 48px; }
+
+  .pilier-item    { grid-template-columns: 80px 1fr; }
+  .pilier-num-col { padding: 32px 16px; }
+  .pilier-num     { font-size: 36px; }
+  .pilier-content { padding: 32px 24px; }
+  .pilier-title   { font-size: 22px; }
+
+  .approche-valeurs    { padding: 64px 0; }
+  .valeurs-grid        { grid-template-columns: 1fr; }
+
+  .approche-cta        { padding: 64px 0; }
+  .approche-cta-card   { padding: 40px 28px; }
+  .hero-approche-quote { display: none; }
+}
+
+@media (max-width: 480px) {
+  .pilier-item    { grid-template-columns: 1fr; }
+  .pilier-num-col { padding: 20px 24px; justify-content: flex-start; }
+  .pilier-details { flex-direction: column; }
+}
