@@ -24,18 +24,19 @@
         <a href="talents.html">Talents</a>
         <a href="entreprises.html">Entreprises</a>
         <a href="notre-approche.html">Notre approche</a>
-        <a href="apropos.html">A propos</a>
+        <a href="apropos.html">À propos</a>
         <a href="ressources.html">Ressources</a>
         <a href="admin.html" class="admin-link">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="4"/>
+            <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+          </svg>
         </a>
       </nav>
     </div>
   </header>
 
-  <!-- ============================================================
-       SECTION LOGIN
-  ============================================================ -->
+  <!-- SECTION LOGIN -->
   <section class="admin-login-page" id="adminLoginSection">
     <div class="admin-login-wrap">
 
@@ -48,7 +49,7 @@
           </svg>
         </div>
         <h1 class="admin-login-title">Espace administrateur</h1>
-        <p class="admin-login-sub">Acces reserve aux administrateurs Talentyah</p>
+        <p class="admin-login-sub">Accès réservé aux administrateurs Talentyah</p>
       </div>
 
       <div class="admin-login-box">
@@ -71,7 +72,7 @@
           <div id="adminMsg" class="admin-msg"></div>
 
           <div class="admin-login-links">
-            <a href="#">Mot de passe oublie ?</a>
+            <a href="#">Mot de passe oublié ?</a>
             <a href="index.html">Retour au site</a>
           </div>
 
@@ -81,12 +82,9 @@
     </div>
   </section>
 
-  <!-- ============================================================
-       DASHBOARD (affiche apres login)
-  ============================================================ -->
+  <!-- DASHBOARD -->
   <div id="adminDashboardSection" class="admin-dashboard-page" style="display:none;">
 
-    <!-- BARRE D'ONGLETS -->
     <div class="admin-topbar">
       <div class="container">
         <div class="admin-topbar-inner">
@@ -94,19 +92,16 @@
           <div class="admin-tabs">
 
             <button class="tab-btn active" type="button" data-panel="panelCandidates">
-              <svg class="tab-icon" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
               Candidatures
               <span class="tab-badge" id="countCandidates">—</span>
             </button>
 
             <button class="tab-btn" type="button" data-panel="panelCompanies">
-              <svg class="tab-icon" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
               Entreprises
               <span class="tab-badge" id="countCompanies">—</span>
             </button>
 
             <button class="tab-btn" type="button" data-panel="panelJobs">
-              <svg class="tab-icon" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
               Offres d'emploi
               <span class="tab-badge" id="countJobs">—</span>
             </button>
@@ -115,12 +110,10 @@
 
           <div class="admin-topbar-right">
             <div class="admin-user-badge">
-              <span class="admin-user-dot"
-                    style="width:7px;height:7px;background:var(--emerald-light);border-radius:50%;display:inline-block;"></span>
               Administrateur
             </div>
             <button type="button" class="btn-logout" id="logoutBtn">
-              Se deconnecter
+              Se déconnecter
             </button>
           </div>
 
@@ -128,14 +121,14 @@
       </div>
     </div>
 
-    <!-- ---- PANEL 1 : CANDIDATURES ---- -->
+    <!-- PANEL CANDIDATURES -->
     <div class="admin-panel active" id="panelCandidates">
       <div class="container">
 
         <div class="admin-panel-header">
           <div>
-            <h2 class="admin-panel-title">Candidatures recues</h2>
-            <p class="admin-panel-subtitle">Profils deposes via le formulaire Talents</p>
+            <h2 class="admin-panel-title">Candidatures reçues</h2>
+            <p class="admin-panel-subtitle">Profils déposés via le formulaire Talents</p>
           </div>
         </div>
 
@@ -143,9 +136,9 @@
           <input type="text" class="admin-filter-input" id="filterSector"
                  placeholder="Filtrer par fonction (ex : RAF, DRH...)">
           <input type="text" class="admin-filter-input" id="filterCountry"
-                 placeholder="Filtrer par pays (ex : Senegal)">
+                 placeholder="Filtrer par pays (ex : Sénégal)">
           <button type="button" class="btn-filter" id="applyFiltersBtn">Filtrer</button>
-          <button type="button" class="btn-reset"   id="resetFiltersBtn">Reinitialiser</button>
+          <button type="button" class="btn-reset" id="resetFiltersBtn">Réinitialiser</button>
         </div>
 
         <div class="admin-table-wrap">
@@ -155,7 +148,7 @@
                 <th>Date</th>
                 <th>Candidat</th>
                 <th>Email</th>
-                <th>Fonction / Metier</th>
+                <th>Fonction / Métier</th>
                 <th>Pays</th>
                 <th>CV</th>
               </tr>
@@ -169,14 +162,14 @@
       </div>
     </div>
 
-    <!-- ---- PANEL 2 : ENTREPRISES ---- -->
+    <!-- PANEL ENTREPRISES -->
     <div class="admin-panel" id="panelCompanies">
       <div class="container">
 
         <div class="admin-panel-header">
           <div>
             <h2 class="admin-panel-title">Demandes de recrutement</h2>
-            <p class="admin-panel-subtitle">Formulaires deposes via la page Entreprises</p>
+            <p class="admin-panel-subtitle">Formulaires déposés via la page Entreprises</p>
           </div>
         </div>
 
@@ -187,8 +180,8 @@
                 <th>Date</th>
                 <th>Entreprise</th>
                 <th>Email</th>
-                <th>Pays / Region</th>
-                <th>Poste a pourvoir</th>
+                <th>Pays / Région</th>
+                <th>Poste à pourvoir</th>
                 <th>Urgence</th>
                 <th>Contexte</th>
               </tr>
@@ -202,63 +195,37 @@
       </div>
     </div>
 
-    <!-- ---- PANEL 3 : OFFRES ---- -->
+    <!-- PANEL OFFRES -->
     <div class="admin-panel" id="panelJobs">
       <div class="container">
 
         <div class="admin-panel-header">
           <div>
             <h2 class="admin-panel-title">Offres d'emploi</h2>
-            <p class="admin-panel-subtitle">Gerer les offres publiees sur le site</p>
+            <p class="admin-panel-subtitle">Gérer les offres publiées sur le site</p>
           </div>
         </div>
 
-        <!-- Formulaire ajout -->
         <div class="admin-job-form">
           <div class="admin-job-form-title">Publier une nouvelle offre</div>
           <form id="jobForm">
             <div class="job-form-grid">
 
               <div class="job-form-field full">
-                <label for="job-title">Intitule du poste *</label>
+                <label for="job-title">Intitulé du poste *</label>
                 <input type="text" id="job-title" name="title"
-                       placeholder="Ex : Directeur Administratif et Financier" required>
+                       placeholder="Ex : Directeur administratif et financier" required>
               </div>
 
               <div class="job-form-field">
                 <label for="job-country">Pays</label>
-                <input type="text" id="job-country" name="country" placeholder="Ex : Senegal">
-              </div>
-              <div class="job-form-field">
-                <label for="job-city">Ville</label>
-                <input type="text" id="job-city" name="city" placeholder="Ex : Dakar">
-              </div>
-              <div class="job-form-field">
-                <label for="job-sector">Secteur</label>
-                <input type="text" id="job-sector" name="sector" placeholder="Ex : Finance, RH, Tech...">
-              </div>
-
-              <div class="job-form-field">
-                <label for="job-contract">Type de contrat</label>
-                <select id="job-contract" name="contract_type">
-                  <option value="">Selectionnez</option>
-                  <option>CDI</option>
-                  <option>CDD</option>
-                  <option>Freelance</option>
-                  <option>Stage</option>
-                  <option>Alternance</option>
-                </select>
-              </div>
-              <div class="job-form-field">
-                <label for="job-salary">Remuneration (optionnel)</label>
-                <input type="text" id="job-salary" name="salary"
-                       placeholder="Ex : 2 500 - 3 500 EUR / mois">
+                <input type="text" id="job-country" name="country" placeholder="Ex : Sénégal">
               </div>
 
               <div class="job-form-field full">
                 <label for="job-desc">Description du poste</label>
                 <textarea id="job-desc" name="description"
-                          placeholder="Decrivez les missions, le profil recherche, le contexte..."></textarea>
+                          placeholder="Décrivez les missions, le profil recherché, le contexte..."></textarea>
               </div>
 
             </div>
@@ -269,30 +236,10 @@
           </form>
         </div>
 
-        <!-- Table offres -->
-        <div class="admin-table-wrap">
-          <table class="admin-table">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Poste</th>
-                <th>Lieu</th>
-                <th>Secteur</th>
-                <th>Type</th>
-                <th>Statut</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody id="jobsTbody">
-              <tr class="empty-row"><td colspan="7">Chargement des offres...</td></tr>
-            </tbody>
-          </table>
-        </div>
-
       </div>
     </div>
 
-  </div><!-- /dashboard -->
+  </div>
 
 </body>
 </html>
