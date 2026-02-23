@@ -40,4 +40,54 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  /* =====================
+     ENVOI FORMULAIRE CANDIDAT (FormData + CV)
+  ===================== */
+  const form = document.getElementById('candidateForm');
+  const successBox = document.getElementById('candidateSuccess');
+
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      try {
+        // Vérifie que le CV est bien sélectionné
+        if (fileInput && (!fileInput.files || !fileInput.files[0])) {
+          alert("Veuillez ajouter votre CV avant d'envoyer.");
+          return;
+        }
+
+        const fd = new FormData(form);
+
+        for (const [k, v] of fd.entries()) {
+          console.log(k, v);
+        }
+
+
+        // IMPORTANT : le champ fichier doit s'appeler "cv"
+        // Ton input est name="cv" => OK.
+        // Si jamais tu changes le name, il faudra faire : fd.set('cv', fileInput.files[0]);
+
+        console.log("Submit OK — envoi en cours...");
+
+        await window.apiFetch('/candidates', {
+          method: 'POST',
+          body: fd
+          // ⚠️ Ne pas mettre Content-Type : le navigateur gère le boundary
+        });
+
+        form.reset();
+        if (successBox) successBox.style.display = 'block';
+
+        // Reset label fichier
+        if (fileLabel) fileLabel.textContent = 'Cliquez pour ajouter votre CV';
+        if (fileLabelEl) fileLabelEl.classList.remove('has-file');
+
+      } catch (err) {
+        console.error(err);
+        alert("Erreur lors de l'envoi : " + err.message);
+      }
+    });
+  }
+
 });
