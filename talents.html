@@ -4,11 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Talents - Talentyah</title>
+  <link rel="icon" type="image/png" href="images/logos/Talentyah Logo onglet.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="css/talents.css">
+  <script src="jobs-data.js"></script>
   <script src="js/api.js"></script>
   <script src="js/script.js"></script>
   <script src="js/talents.js"></script>
@@ -17,7 +19,9 @@
 
   <header class="header" id="header">
     <div class="container nav">
-      <a href="index.html" class="logo">Talentyah<span>.</span></a>
+      <a href="index.html" class="logo">
+        <img src="images/logos/Logo Talentyah.png" alt="Talentyah Logo" class="logo-img">
+      </a>
       <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
       <nav id="main-nav">
         <a href="index.html">Accueil</a>
@@ -136,25 +140,8 @@
         </div>
         <a href="carrieres.html" class="btn-outline">Voir toutes les offres &#8594;</a>
       </div>
-      <div class="jobs-preview">
-        <article class="job-preview-card reveal">
-          <div class="job-preview-top"><span class="job-preview-location">Dakar, Sénégal</span><span class="job-preview-type">CDI</span></div>
-          <h3 class="job-preview-title">Responsable administratif et financier</h3>
-          <p class="job-preview-desc">Pilotage financier, structuration des process et accompagnement de la direction au sein d'une PME en croissance.</p>
-          <div class="job-preview-footer"><span class="job-preview-salary">2 500 - 3 500 EUR / mois</span><a href="carrieres.html" class="job-preview-link">Voir l'offre &#8594;</a></div>
-        </article>
-        <article class="job-preview-card reveal">
-          <div class="job-preview-top"><span class="job-preview-location">Abidjan, Côte d'Ivoire</span><span class="job-preview-type">CDD</span></div>
-          <h3 class="job-preview-title">Chargé(e) RH</h3>
-          <p class="job-preview-desc">Recrutement opérationnel, onboarding, suivi administratif RH et appui au développement des talents.</p>
-          <div class="job-preview-footer"><span class="job-preview-salary">1 200 - 1 800 EUR / mois</span><a href="carrieres.html" class="job-preview-link">Voir l'offre &#8594;</a></div>
-        </article>
-        <article class="job-preview-card reveal">
-          <div class="job-preview-top"><span class="job-preview-location">Nairobi, Kenya</span><span class="job-preview-type">Freelance</span></div>
-          <h3 class="job-preview-title">Business Analyst</h3>
-          <p class="job-preview-desc">Mission data / reporting : cadrage des besoins métier, dashboards et qualité des données.</p>
-          <div class="job-preview-footer"><span class="job-preview-salary">250 - 350 EUR / jour</span><a href="carrieres.html" class="job-preview-link">Voir l'offre &#8594;</a></div>
-        </article>
+      <div class="jobs-preview" id="jobsPreview">
+        <!-- Injecté dynamiquement depuis jobs-data.js -->
       </div>
     </div>
   </section>
@@ -165,6 +152,10 @@
       <div class="form-grid">
         <div>
           <div class="section-label"><span class="section-label-line"></span><span class="section-label-text">Déposer votre profil</span></div>
+          <div class="rdv-card">
+            <div class="rdv-text"><h4>Vous préférez un échange d'abord ?</h4><p>Clarifiez votre positionnement avec un consultant.</p></div>
+            <a href="https://outlook.office.com/bookings/nomdetonservice" target="_blank" rel="noopener" class="btn-rdv">Prendre rendez-vous &#8594;</a>
+          </div>
           <h2 class="section-title">Déposez votre<br>candidature</h2>
           <p class="form-left-desc">Vous êtes autonome et souhaitez être considéré(e) pour des opportunités actuelles ou futures. Déposez votre profil : un consultant vous contactera dès qu'une opportunité correspond.</p>
           <div class="contact-info">
@@ -176,10 +167,6 @@
               <div class="contact-icon"><svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
               <div><div class="contact-label">Couverture</div><div class="contact-value">Afrique, diaspora et international</div></div>
             </div>
-          </div>
-          <div class="rdv-card">
-            <div class="rdv-text"><h4>Préférer un échange d'abord ?</h4><p>Clarifiez votre positionnement avec un consultant.</p></div>
-            <a href="https://outlook.office.com/bookings/nomdetonservice" target="_blank" rel="noopener" class="btn-rdv">Prendre rendez-vous &#8594;</a>
           </div>
         </div>
 

@@ -1,0 +1,72 @@
+/* =====================================================
+   TALENTYAH — offre.css
+   Styles spécifiques au détail d'une offre d'emploi
+===================================================== */
+
+.offre-page {
+    background-color: var(--dark);
+    color: var(--white);
+    padding: 60px 0 100px;
+}
+
+/* Hero spécifique à l'offre */
+.offre-hero-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 25px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--gold);
+}
+
+.offre-hero-info span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Layout en grille */
+.offre-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 60px;
+    align-items: start;
+}
+
+/* Contenu de la description */
+.job-content {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 40px;
+    border: 1px solid rgba(201, 168, 76, 0.1);
+    border-radius: 4px;
+}
+
+.job-description-text {
+    font-size: 17px;
+    line-height: 1.8;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 40px;
+}
+
+/* Formulaire latéral (Style Talents) */
+.offre-sidebar .form-box {
+    position: sticky;
+    top: 100px;
+    background: var(--dark-2);
+    border: 1px solid var(--gold-border);
+    padding: 40px;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .offre-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .offre-sidebar .form-box {
+        position: static;
+    }
+}

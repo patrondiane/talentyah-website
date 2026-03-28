@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Offre d'emploi - Talentyah</title>
+  <link rel="icon" type="image/png" href="images/logos/Talentyah Logo onglet.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/talents.css"> 
+  <link rel="stylesheet" href="css/offre.css">   
+  
+  <script src="jobs-data.js"></script>
+  <script src="js/offre.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/script.js"></script>
+</head>
+<body class="bg-dark"> <header class="header" id="header">
+    <div class="container nav">
+      <a href="index.html" class="logo">
+        <img src="images/logos/Logo Talentyah.png" alt="Talentyah Logo" class="logo-img">
+      </a>
+      <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+      <nav id="main-nav">
+        <a href="index.html">Accueil</a>
+        <a href="talents.html" class="active">Talents</a>
+        <a href="entreprises.html">Entreprises</a>
+        <a href="notre-approche.html">Notre approche</a>
+        <a href="apropos.html">À propos</a>
+        <a href="ressources.html">Ressources</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero-page" style="min-height: 60vh; padding-bottom: 40px;">
+    <div class="hero-media"><div class="hero-fallback-gold" style="opacity: 0.1;"></div></div>
+    <div class="container">
+      <div class="hero-page-content">
+        <div class="hero-eyebrow">
+            <span class="hero-eyebrow-line"></span>
+            <span class="hero-eyebrow-text" id="jobSector">Secteur</span>
+        </div>
+        <h1 id="jobTitle">Chargement...</h1>
+        <div class="offre-hero-info" style="display: flex; gap: 20px; color: rgba(255,255,255,0.7); margin-top: 20px;">
+            <span id="jobLocation"></span> • <span id="jobContract"></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="form-section">
+    <div class="container">
+      <div class="form-grid">
+        
+        <div id="jobDetails" class="reveal">
+          <div class="section-label"><span class="section-label-line"></span><span class="section-label-text">Détails du poste</span></div>
+          <h2 class="section-title" style="color: white; margin-bottom: 30px;">Description & Missions</h2>
+          
+          <div id="offreDescription" class="programme-desc" style="font-size: 16px; margin-bottom: 30px;"></div>
+          
+          <h3 class="programme-title" style="font-size: 20px;">Profil recherché</h3>
+          <ul id="profilList" class="programme-points"></ul>
+          
+          <div style="margin-top: 40px;">
+            <a href="carrieres.html" class="programme-link">← Retour aux offres</a>
+          </div>
+        </div>
+
+        <div class="reveal">
+          <form class="form-box" id="offreForm" enctype="multipart/form-data">
+            <div class="form-title">Postuler maintenant</div>
+            <p class="form-subtitle">Réponse sous 48 h ouvrées</p>
+            
+            <input type="hidden" name="job_id" id="hiddenJobId">
+
+            <div class="form-row">
+              <div class="form-field"><label for="first_name">Prénom *</label><input type="text" name="first_name" required></div>
+              <div class="form-field"><label for="last_name">Nom *</label><input type="text" name="last_name" required></div>
+            </div>
+
+            <div class="form-field"><label for="email">Email professionnel *</label><input type="email" name="email" placeholder="vous@email.com" required></div>
+
+            <div class="form-field">
+              <label for="experience_level">Niveau d'expérience *</label>
+              <div class="select-wrap">
+                <select name="experience_level" required>
+                  <option value="" disabled selected>Sélectionnez votre niveau</option>
+                  <option value="Junior">Junior (0 - 3 ans)</option>
+                  <option value="Confirme">Confirmé (3 - 8 ans)</option>
+                  <option value="Senior">Senior (8 ans et +)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label>Votre CV (PDF, Word) *</label>
+              <div class="file-upload-wrap">
+                <input type="file" id="cv_upload" name="cv" accept=".pdf,.doc,.docx" required class="file-input">
+                <label for="cv_upload" class="file-label">
+                  <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="20" height="20" style="stroke: var(--gold); fill: none;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  <span id="fileLabel">Cliquez pour ajouter votre CV</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="form-field"><label for="message">Message (facultatif)</label><textarea name="message" placeholder="Vos motivations..."></textarea></div>
+
+            <button type="submit" class="btn-submit">Envoyer ma candidature &#8594;</button>
+            <div class="form-success" id="offreSuccess"><p>Candidature transmise avec succès !</p></div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+        <div class="footer-bottom"><p>2026 Talentyah. Tous droits réservés.</p></div>
+    </div>
+  </footer>
+
+</body>
+</html>
