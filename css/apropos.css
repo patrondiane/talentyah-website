@@ -138,6 +138,10 @@
   font-size: 40px;
   font-weight: 700;
   color: var(--gold);
+  /* Nouvelles propriétés pour l'alignement : */
+  min-width: 90px;       /* Fixe une largeur commune pour tous les nombres */
+  text-align: center;    /* Centre les nombres dans cet espace défini */
+  flex-shrink: 0;        /* Empêche la zone du nombre de rétrécir */
 }
 
 .mission-stat-label strong {

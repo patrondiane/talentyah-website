@@ -981,3 +981,38 @@ textarea { resize: vertical; min-height: 120px; }
   .hero h1, .hero-page h1 { font-size: 32px; }
   .section-title           { font-size: 28px; }
 }
+
+/* =====================
+   LOGO IMAGE (navbar + footer)
+===================== */
+.logo-img {
+  height: 36px;        /* hauteur fixe — adapte selon ton logo */
+  width: auto;
+  display: block;
+  object-fit: contain;
+}
+
+/* ── Navbar : logo ne doit pas déborder ── */
+.nav .logo { display: flex; align-items: center; }
+
+/* ── Footer : logo image + correction colonne brand ── */
+.footer-brand .logo {
+  display: block;
+  margin-bottom: 16px;
+}
+.footer-brand .logo .logo-img {
+  height: 40px;
+  width: auto;
+  margin-bottom: 0;
+}
+.footer-brand p {
+  max-width: 500px;       /* réduit pour éviter le débordement */
+  font-size: 13px;
+  line-height: 1.65;
+  color: rgba(255,255,255,0.45);
+}
+
+/* ── Footer grid : colonne brand moins large ── */
+.footer-grid {
+  grid-template-columns: 1.4fr 1fr 1fr 1fr;  /* était 2fr — trop large */
+}

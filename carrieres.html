@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,19 +8,22 @@
   <link rel="icon" type="image/png" href="images/logos/Talentyah Logo onglet.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="css/carrieres.css">
   <script src="js/script.js"></script>
   <script src="jobs-data.js"></script>
   <script src="js/carrieres.js"></script>
 </head>
+
 <body>
 
   <header class="header" id="header">
     <div class="container nav">
       <a href="index.html" class="logo">
-        <img src="images/logos/Logo Talentyah.png" alt="Talentyah Logo" class="logo-img">
+        <img src="images/logos/logo principal@3x.png" alt="Talentyah Logo" class="logo-img">
       </a>
       <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
       <nav id="main-nav">
@@ -30,9 +34,10 @@
         <a href="apropos.html">À propos</a>
         <a href="ressources.html">Ressources</a>
         <a href="admin.html" class="admin-link">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="8" r="4"/>
-            <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="8" r="4" />
+            <path d="M4 20c0-4 4-6 8-6s8 2 8 6" />
           </svg>
         </a>
       </nav>
@@ -41,7 +46,9 @@
 
   <!-- HERO -->
   <section class="hero-page">
-    <div class="hero-media"><div class="hero-fallback-carrieres"></div></div>
+    <div class="hero-media">
+      <div class="hero-fallback-carrieres"></div>
+    </div>
     <div class="container">
       <div class="hero-page-content">
         <div class="hero-eyebrow">
@@ -50,7 +57,8 @@
         </div>
         <h1>Offres d'emploi<br><em>en Afrique et à l'international</em></h1>
         <p class="hero-page-desc">
-          Des postes stratégiques sélectionnés par Talentyah pour des talents africains locaux, de la diaspora ou en mobilité. Chaque offre est vérifiée et accompagnée.
+          Des postes stratégiques sélectionnés par Talentyah pour des talents africains locaux, de la diaspora ou en
+          mobilité. Chaque offre est vérifiée et accompagnée.
         </p>
         <div class="hero-page-cta">
           <a href="#offres" class="btn-gold">Voir les offres &#8594;</a>
@@ -69,8 +77,8 @@
           <span class="search-field-label">Poste ou mot-clé</span>
           <div class="search-field-icon">
             <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="11" cy="11" r="8"/>
-              <path d="m21 21-4.35-4.35"/>
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.35-4.35" />
             </svg>
           </div>
           <input type="text" id="searchKeyword" placeholder="Ex : RAF, DRH, Data...">
@@ -80,8 +88,8 @@
           <span class="search-field-label">Pays ou ville</span>
           <div class="search-field-icon">
             <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-              <circle cx="12" cy="10" r="3"/>
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+              <circle cx="12" cy="10" r="3" />
             </svg>
           </div>
           <input type="text" id="searchCountry" placeholder="Ex : Dakar, Abidjan, France...">
@@ -91,8 +99,8 @@
           <span class="search-field-label">Secteur</span>
           <div class="search-field-icon">
             <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="2" y="7" width="20" height="14" rx="2"/>
-              <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
+              <rect x="2" y="7" width="20" height="14" rx="2" />
+              <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
             </svg>
           </div>
           <select id="searchSector" title="Filtrer par secteur">
@@ -109,8 +117,8 @@
 
         <button class="btn-search" id="searchBtn">
           <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="11" cy="11" r="8"/>
-            <path d="m21 21-4.35-4.35"/>
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.35-4.35" />
           </svg>
           Rechercher
         </button>
@@ -216,9 +224,10 @@
           </div>
 
           <button class="sidebar-reset" id="resetFilters" type="button">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="1 4 1 10 7 10"/>
-              <path d="M3.51 15a9 9 0 1 0 .49-4.1"/>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="1 4 1 10 7 10" />
+              <path d="M3.51 15a9 9 0 1 0 .49-4.1" />
             </svg>
             Réinitialiser les filtres
           </button>
@@ -243,8 +252,8 @@
             <!-- Injecté par carrieres.js -->
             <div class="jobs-empty">
               <svg viewBox="0 0 24 24">
-                <circle cx="11" cy="11" r="8"/>
-                <path d="m21 21-4.35-4.35"/>
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.35-4.35" />
               </svg>
               <h3>Chargement des offres...</h3>
             </div>
@@ -254,7 +263,8 @@
           <div class="carrieres-cta-spontanee">
             <div class="cta-spontanee-text">
               <h3>Vous ne trouvez pas le bon poste ?</h3>
-              <p>Déposez une candidature spontanée, nous vous contactons dès qu'une opportunité correspond à votre profil.</p>
+              <p>Déposez une candidature spontanée, nous vous contactons dès qu'une opportunité correspond à votre
+                profil.</p>
             </div>
             <a href="talents.html#candidature" class="btn-gold">Candidature spontanée &#8594;</a>
           </div>
@@ -270,7 +280,8 @@
     <div class="container">
       <span class="cta-eyebrow">Vous êtes une entreprise ?</span>
       <h2 class="cta-title">Publiez votre offre<br>et <em>trouvez les bons profils</em></h2>
-      <p class="cta-sub">Talentyah identifie et qualifie pour vous les meilleurs talents africains et de la diaspora, adaptés à votre besoin.</p>
+      <p class="cta-sub">Talentyah identifie et qualifie pour vous les meilleurs talents africains et de la diaspora,
+        adaptés à votre besoin.</p>
       <div class="cta-actions">
         <a href="entreprises.html" class="btn-white">Confier un recrutement &#8594;</a>
         <a href="notre-approche.html" class="btn-white-outline">Notre approche &#8594;</a>
@@ -278,7 +289,42 @@
     </div>
   </section>
 
-  <footer class="footer"><div class="container"><div class="footer-grid"><div class="footer-brand"><a href="index.html" class="logo">Talentyah<span>.</span></a><p>Cabinet de recrutement et accompagnement de carrière. Basé en France, intervenant en Afrique et à l'international.</p></div><div class="footer-col"><h4>Navigation</h4><a href="talents.html">Talents</a><a href="entreprises.html">Entreprises</a><a href="notre-approche.html">Notre approche</a><a href="ressources.html">Ressources</a></div><div class="footer-col"><h4>Découvrir</h4><a href="apropos.html">À propos</a><a href="carrieres.html">Offres d'emploi</a><a href="contact.html">Contact</a></div><div class="footer-col"><h4>Contact</h4><a href="mailto:contact@talentyah.com">contact@talentyah.com</a><a href="https://linkedin.com" target="_blank" rel="noopener">LinkedIn</a></div></div><div class="footer-bottom"><p>2025 Talentyah. Tous droits réservés.</p><div class="footer-bottom-links"><a href="mentionslegales.html">Mentions légales</a><a href="confidentialite.html">Confidentialité</a></div></div></div></footer>
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="logo"><img src="images/logos/logo Talentyah Blanc.png" alt="Talentyah Logo" class="logo-img"></a>
+          <p>Cabinet de recrutement et accompagnement de carrière. Basé en France, intervenant en Afrique et à l'international.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Navigation</h4>
+          <a href="talents.html">Talents</a>
+          <a href="entreprises.html">Entreprises</a>
+          <a href="notre-approche.html">Notre approche</a>
+          <a href="ressources.html">Ressources</a>
+        </div>
+        <div class="footer-col">
+          <h4>Découvrir</h4>
+          <a href="apropos.html">À propos</a>
+          <a href="carrieres.html">Offres d'emploi</a>
+          <a href="contact.html">Contact</a>
+        </div>
+        <div class="footer-col">
+          <h4>Contact</h4>
+          <a href="mailto:contact@talentyah.com">contact@talentyah.com</a>
+          <a href="https://linkedin.com" target="_blank" rel="noopener">LinkedIn</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Talentyah. Tous droits réservés.</p>
+        <div class="footer-bottom-links">
+          <a href="mentionslegales.html">Mentions légales</a>
+          <a href="confidentialite.html">Confidentialité</a>
+        </div>
+      </div>
+    </div>
+  </footer>
 
 </body>
+
 </html>

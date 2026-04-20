@@ -1,248 +1,562 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Administration - Talentyah</title>
-    <link rel="icon" type="image/png" href="images/logos/Talentyah Logo onglet.png">
+  <link rel="icon" type="image/png" href="images/logos/Talentyah Logo onglet.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="css/admin.css">
-  <script src="js/script.js"></script>
-  <script src="js/admin.js"></script>
 </head>
+
 <body>
 
-  <!-- NAVBAR -->
-  <header class="header" id="header">
-    <div class="container nav">
-      <a href="index.html" class="logo">
-        <img src="images/logos/Logo Talentyah.png" alt="Talentyah Logo" class="logo-img">
-      </a>
-      <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
-      <nav id="main-nav">
-        <a href="index.html">Accueil</a>
-        <a href="talents.html">Talents</a>
-        <a href="entreprises.html">Entreprises</a>
-        <a href="notre-approche.html">Notre approche</a>
-        <a href="apropos.html">À propos</a>
-        <a href="ressources.html">Ressources</a>
-        <a href="admin.html" class="admin-link">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="8" r="4"/>
-            <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
-          </svg>
-        </a>
-      </nav>
-    </div>
-  </header>
-
-  <!-- SECTION LOGIN -->
+  <!-- ════════════════════════════════
+     PAGE LOGIN
+  ════════════════════════════════ -->
   <section class="admin-login-page" id="adminLoginSection">
     <div class="admin-login-wrap">
-
       <div class="admin-login-header">
         <a href="index.html" class="admin-login-logo">Talentyah<span>.</span></a>
         <div class="admin-lock-icon">
           <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="11" width="18" height="11" rx="2"/>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            <rect x="3" y="11" width="18" height="11" rx="2" />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
           </svg>
         </div>
         <h1 class="admin-login-title">Espace administrateur</h1>
-        <p class="admin-login-sub">Accès réservé aux administrateurs Talentyah</p>
+        <p class="admin-login-sub">Accès réservé aux équipes Talentyah</p>
       </div>
-
       <div class="admin-login-box">
         <form id="adminLoginForm" autocomplete="on">
-
           <div class="admin-form-field">
             <label for="admin-email">Email</label>
-            <input type="email" id="admin-email" name="email"
-                   placeholder="admin@talentyah.com" required>
+            <input type="email" id="admin-email" name="email" placeholder="votre@talentyah.com" required>
           </div>
-
           <div class="admin-form-field">
             <label for="admin-password">Mot de passe</label>
-            <input type="password" id="admin-password" name="password"
-                   placeholder="••••••••" required>
+            <input type="password" id="admin-password" name="password" placeholder="••••••••" required>
           </div>
-
           <button type="submit" class="admin-login-btn">Se connecter &rarr;</button>
-
           <div id="adminMsg" class="admin-msg"></div>
-
           <div class="admin-login-links">
             <a href="#">Mot de passe oublié ?</a>
             <a href="index.html">Retour au site</a>
           </div>
-
         </form>
       </div>
-
     </div>
   </section>
 
-  <!-- DASHBOARD -->
+  <!-- ════════════════════════════════
+     DASHBOARD
+  ════════════════════════════════ -->
   <div id="adminDashboardSection" class="admin-dashboard-page" style="display:none;">
 
-    <div class="admin-topbar">
-      <div class="container">
+    <!-- SIDEBAR -->
+    <aside class="admin-sidebar" id="adminSidebar">
+
+      <div class="admin-sidebar-brand">
+        <a href="index.html" class="admin-sidebar-logo">Talentyah<span>.</span></a>
+        <span class="admin-sidebar-badge">Administration</span>
+      </div>
+
+      <nav class="admin-nav">
+
+        <div class="admin-nav-section">
+          <span class="admin-nav-section-label">Données</span>
+
+          <!-- Candidatures — superadmin + admin uniquement (masqué par JS pour editor) -->
+          <button class="admin-nav-btn active" type="button"
+            data-panel="panelCandidates"
+            data-title="Candidatures"
+            data-sub="Profils déposés via le formulaire Talents">
+            <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+            Candidatures
+            <span class="nav-badge" id="countCandidates">—</span>
+          </button>
+
+          <!-- Entreprises — superadmin + admin uniquement -->
+          <button class="admin-nav-btn" type="button"
+            data-panel="panelCompanies"
+            data-title="Entreprises"
+            data-sub="Formulaires reçus via la page Entreprises">
+            <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="7" width="20" height="14" rx="2" />
+              <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
+            </svg>
+            Entreprises
+            <span class="nav-badge" id="countCompanies">—</span>
+          </button>
+        </div>
+
+        <div class="admin-nav-section">
+          <span class="admin-nav-section-label">Offres</span>
+
+          <!-- Offres — superadmin + admin uniquement -->
+          <button class="admin-nav-btn" type="button"
+            data-panel="panelJobs"
+            data-title="Offres d'emploi"
+            data-sub="Gérer les offres publiées sur le site">
+            <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+            </svg>
+            Offres d'emploi
+            <span class="nav-badge" id="countJobs">—</span>
+          </button>
+        </div>
+
+        <div class="admin-nav-section">
+          <span class="admin-nav-section-label">Contenu</span>
+
+          <!-- Accès & Rôles — superadmin uniquement -->
+          <button class="admin-nav-btn" type="button"
+            data-panel="panelAccess"
+            data-title="Accès &amp; Rôles"
+            data-sub="Gérez les administrateurs et leurs permissions"
+            id="btnAccessTab">
+            <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
+            Accès &amp; Rôles
+          </button>
+
+          <!-- Partenaires — superadmin + admin uniquement -->
+          <button class="admin-nav-btn" type="button"
+            data-panel="panelPartners"
+            data-title="Partenaires"
+            data-sub="Logos affichés dans la section partenaires">
+            <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" />
+              <circle cx="8.5" cy="8.5" r="1.5" />
+              <polyline points="21 15 16 10 5 21" />
+            </svg>
+            Partenaires
+            <span class="nav-badge" id="countPartners">—</span>
+          </button>
+
+          <!-- Publications — tous les rôles -->
+          <button class="admin-nav-btn" type="button"
+            data-panel="panelPublications"
+            data-title="Publications"
+            data-sub="Articles et ressources publiés sur le site">
+            <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+            </svg>
+            Publications
+            <span class="nav-badge" id="countPublications">—</span>
+          </button>
+        </div>
+
+      </nav>
+
+      <div class="admin-sidebar-footer">
+        <div class="admin-user-info">
+          <div class="admin-avatar">
+            <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="8" r="4" />
+              <path d="M4 20c0-4 4-6 8-6s8 2 8 6" />
+            </svg>
+          </div>
+          <div>
+            <div class="admin-user-name">Administrateur</div>
+            <!-- Le rôle est injecté dynamiquement par applyPermissions() -->
+            <div class="admin-user-role">—</div>
+          </div>
+        </div>
+        <!-- Lien footer Accès & Rôles (masqué par JS si non autorisé) -->
+        <div class="admin-nav-item" id="tabAccess"
+          style="cursor:pointer;display:flex;align-items:center;gap:8px;padding:10px 12px;
+                 color:rgba(255,255,255,0.5);font-size:13px;border-radius:6px;
+                 transition:background .2s;"
+          onmouseover="this.style.background='rgba(255,255,255,0.06)'"
+          onmouseout="this.style.background='transparent'">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               style="width:14px;height:14px;flex-shrink:0;">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+          <span>Accès &amp; Rôles</span>
+        </div>
+        <button type="button" class="btn-logout" id="logoutBtn">
+          <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
+          </svg>
+          Se déconnecter
+        </button>
+      </div>
+
+    </aside><!-- /.admin-sidebar -->
+
+    <!-- MAIN CONTENT -->
+    <div class="admin-main">
+
+      <div class="admin-topbar">
         <div class="admin-topbar-inner">
-
-          <div class="admin-tabs">
-
-            <button class="tab-btn active" type="button" data-panel="panelCandidates">
-              Candidatures
-              <span class="tab-badge" id="countCandidates">—</span>
-            </button>
-
-            <button class="tab-btn" type="button" data-panel="panelCompanies">
-              Entreprises
-              <span class="tab-badge" id="countCompanies">—</span>
-            </button>
-
-            <button class="tab-btn" type="button" data-panel="panelJobs">
-              Offres d'emploi
-              <span class="tab-badge" id="countJobs">—</span>
-            </button>
-
+          <div>
+            <div class="admin-topbar-title" id="topbarTitle">Candidatures</div>
+            <div class="admin-topbar-subtitle" id="topbarSub">Profils déposés via le formulaire Talents</div>
           </div>
-
-          <div class="admin-topbar-right">
-            <div class="admin-user-badge">
-              Administrateur
-            </div>
-            <button type="button" class="btn-logout" id="logoutBtn">
-              Se déconnecter
-            </button>
+          <div class="admin-topbar-actions">
+            <span class="admin-date" id="adminDate"></span>
           </div>
-
         </div>
       </div>
-    </div>
 
-    <!-- PANEL CANDIDATURES -->
-    <div class="admin-panel active" id="panelCandidates">
-      <div class="container">
+      <!-- PANEL : Accès & Rôles (superadmin uniquement) -->
+      <div class="admin-panel" id="panelAccess">
+        <div class="admin-panel-header">
+          <div>
+            <h2 class="admin-panel-title">Gestion des accès</h2>
+            <p class="admin-panel-subtitle">Gérez les utilisateurs et leurs niveaux de permissions</p>
+          </div>
+        </div>
+        <div class="admin-grid">
+          <div class="admin-card">
+            <div class="admin-card-title">Ajouter un accès</div>
+            <form id="accessForm">
+              <div class="job-form-field full">
+                <label>Email de l'utilisateur</label>
+                <input type="email" name="email" placeholder="ex: recruteur@talentyah.com" required>
+              </div>
+              <div class="job-form-field full">
+                <label>Rôle</label>
+                <select name="role">
+                  <option value="editor">Éditeur — blog uniquement</option>
+                  <option value="admin">Admin — tout sauf gestion des accès</option>
+                  <option value="superadmin">Super Admin — accès total</option>
+                </select>
+              </div>
+              <div class="job-form-actions">
+                <button type="submit" class="btn-publish-gold">Créer l'accès</button>
+                <span class="job-form-msg" id="accessMsg"></span>
+              </div>
+            </form>
+          </div>
+          <div class="admin-card">
+            <div class="admin-card-title">Utilisateurs actifs</div>
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Utilisateur</th>
+                    <th>Rôle</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="accessList">
+                  <tr class="empty-row"><td colspan="3">Chargement des accès…</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div><!-- /#panelAccess -->
 
+      <!-- PANEL : Candidatures (superadmin + admin) -->
+      <div class="admin-panel active" id="panelCandidates">
+        <div class="admin-stats">
+          <div class="admin-stat-card">
+            <div class="stat-icon gold">
+              <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+              </svg>
+            </div>
+            <div>
+              <div class="stat-num" id="statTotalCandidates">0</div>
+              <div class="stat-label">Candidatures totales</div>
+            </div>
+          </div>
+          <div class="admin-stat-card">
+            <div class="stat-icon green">
+              <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+            </div>
+            <div>
+              <div class="stat-num">48h</div>
+              <div class="stat-label">Délai de réponse</div>
+            </div>
+          </div>
+          <div class="admin-stat-card">
+            <div class="stat-icon gold">
+              <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+              </svg>
+            </div>
+            <div>
+              <div class="stat-num" id="statCountries">—</div>
+              <div class="stat-label">Pays représentés</div>
+            </div>
+          </div>
+          <div class="admin-stat-card">
+            <div class="stat-icon green">
+              <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+              </svg>
+            </div>
+            <div>
+              <div class="stat-num" id="statWithCV">0</div>
+              <div class="stat-label">Avec CV joint</div>
+            </div>
+          </div>
+        </div>
         <div class="admin-panel-header">
           <div>
             <h2 class="admin-panel-title">Candidatures reçues</h2>
             <p class="admin-panel-subtitle">Profils déposés via le formulaire Talents</p>
           </div>
         </div>
-
         <div class="admin-filters-bar">
           <input type="text" class="admin-filter-input" id="filterSector"
-                 placeholder="Filtrer par fonction (ex : RAF, DRH...)">
+            placeholder="Filtrer par fonction (ex : RAF, DRH...)">
           <input type="text" class="admin-filter-input" id="filterCountry"
-                 placeholder="Filtrer par pays (ex : Sénégal)">
+            placeholder="Filtrer par pays (ex : Sénégal)">
           <button type="button" class="btn-filter" id="applyFiltersBtn">Filtrer</button>
           <button type="button" class="btn-reset" id="resetFiltersBtn">Réinitialiser</button>
         </div>
-
         <div class="admin-table-wrap">
           <table class="admin-table">
             <thead>
               <tr>
-                <th>Date</th>
-                <th>Candidat</th>
-                <th>Email</th>
-                <th>Fonction / Métier</th>
-                <th>Pays</th>
-                <th>CV</th>
+                <th>Date</th><th>Candidat</th><th>Email</th>
+                <th>Fonction / Métier</th><th>Pays</th><th>Niveau</th><th>CV</th>
               </tr>
             </thead>
             <tbody id="candidatesTbody">
-              <tr class="empty-row"><td colspan="6">Chargement des candidatures...</td></tr>
+              <tr class="empty-row"><td colspan="7">Chargement des candidatures…</td></tr>
             </tbody>
           </table>
         </div>
+      </div><!-- /#panelCandidates -->
 
-      </div>
-    </div>
-
-    <!-- PANEL ENTREPRISES -->
-    <div class="admin-panel" id="panelCompanies">
-      <div class="container">
-
+      <!-- PANEL : Entreprises (superadmin + admin) -->
+      <div class="admin-panel" id="panelCompanies">
         <div class="admin-panel-header">
           <div>
             <h2 class="admin-panel-title">Demandes de recrutement</h2>
             <p class="admin-panel-subtitle">Formulaires déposés via la page Entreprises</p>
           </div>
         </div>
-
         <div class="admin-table-wrap">
           <table class="admin-table">
             <thead>
               <tr>
-                <th>Date</th>
-                <th>Entreprise</th>
-                <th>Email</th>
-                <th>Pays / Région</th>
-                <th>Poste à pourvoir</th>
-                <th>Urgence</th>
-                <th>Contexte</th>
+                <th>Date</th><th>Entreprise</th><th>Email</th>
+                <th>Pays / Région</th><th>Poste à pourvoir</th><th>Urgence</th><th>Contexte</th>
               </tr>
             </thead>
             <tbody id="companiesTbody">
-              <tr class="empty-row"><td colspan="7">Chargement des demandes...</td></tr>
+              <tr class="empty-row"><td colspan="7">Chargement des demandes…</td></tr>
             </tbody>
           </table>
         </div>
+      </div><!-- /#panelCompanies -->
 
-      </div>
-    </div>
-
-    <!-- PANEL OFFRES -->
-    <div class="admin-panel" id="panelJobs">
-      <div class="container">
-
+      <!-- PANEL : Offres d'emploi (superadmin + admin) -->
+      <div class="admin-panel" id="panelJobs">
         <div class="admin-panel-header">
           <div>
             <h2 class="admin-panel-title">Offres d'emploi</h2>
             <p class="admin-panel-subtitle">Gérer les offres publiées sur le site</p>
           </div>
         </div>
-
-        <div class="admin-job-form">
-          <div class="admin-job-form-title">Publier une nouvelle offre</div>
+        <div class="admin-card">
+          <div class="admin-card-title">Publier une nouvelle offre</div>
           <form id="jobForm">
             <div class="job-form-grid">
-
               <div class="job-form-field full">
                 <label for="job-title">Intitulé du poste *</label>
                 <input type="text" id="job-title" name="title"
-                       placeholder="Ex : Directeur administratif et financier" required>
+                  placeholder="Ex : Directeur administratif et financier" required>
               </div>
-
               <div class="job-form-field">
-                <label for="job-country">Pays</label>
+                <label for="job-city">Ville *</label>
+                <input type="text" id="job-city" name="city" placeholder="Ex : Dakar">
+              </div>
+              <div class="job-form-field">
+                <label for="job-country">Pays *</label>
                 <input type="text" id="job-country" name="country" placeholder="Ex : Sénégal">
               </div>
-
+              <div class="job-form-field">
+                <label for="job-type">Type de contrat</label>
+                <select id="job-type" name="contract_type">
+                  <option value="CDI">CDI</option>
+                  <option value="CDD">CDD</option>
+                  <option value="Freelance">Freelance</option>
+                  <option value="Stage">Stage</option>
+                </select>
+              </div>
+              <div class="job-form-field">
+                <label for="job-sector">Secteur</label>
+                <select id="job-sector" name="sector">
+                  <option value="Finance">Finance</option>
+                  <option value="RH">Ressources humaines</option>
+                  <option value="Tech">Tech / Digital</option>
+                  <option value="Commerce">Commerce</option>
+                  <option value="Marketing">Marketing</option>
+                  <option value="Juridique">Juridique</option>
+                  <option value="Operations">Opérations</option>
+                </select>
+              </div>
+              <div class="job-form-field">
+                <label for="job-salary">Rémunération</label>
+                <input type="text" id="job-salary" name="salary" placeholder="Ex : 2 500 – 3 500 EUR / mois">
+              </div>
+              <div class="job-form-field">
+                <label for="job-tags">Tags (virgules)</label>
+                <input type="text" id="job-tags" name="tags" placeholder="Ex : Finance, Gestion">
+              </div>
               <div class="job-form-field full">
                 <label for="job-desc">Description du poste</label>
-                <textarea id="job-desc" name="description"
-                          placeholder="Décrivez les missions, le profil recherché, le contexte..."></textarea>
+                <textarea id="job-desc" name="description" placeholder="Missions, profil, contexte…"></textarea>
               </div>
-
             </div>
             <div class="job-form-actions">
-              <button type="submit" class="btn-publish">Publier l'offre &rarr;</button>
+              <button type="submit" class="btn-publish-gold">Publier l'offre &rarr;</button>
               <span class="job-form-msg" id="jobMsg"></span>
             </div>
           </form>
         </div>
+        <div class="admin-card">
+          <div class="admin-card-title">Offres en ligne</div>
+          <div class="admin-jobs-list" id="adminJobsList">
+            <p style="color:var(--muted);font-size:14px;">Chargement des offres…</p>
+          </div>
+        </div>
+      </div><!-- /#panelJobs -->
 
-      </div>
-    </div>
+      <!-- PANEL : Partenaires (superadmin + admin) -->
+      <div class="admin-panel" id="panelPartners">
+        <div class="admin-panel-header">
+          <div>
+            <h2 class="admin-panel-title">Logos partenaires</h2>
+            <p class="admin-panel-subtitle">Photos et logos affichés dans la section partenaires du site</p>
+          </div>
+        </div>
+        <div class="admin-card">
+          <div class="admin-card-title">Gérer les logos</div>
+          <p style="font-size:14px;color:var(--muted);margin-bottom:20px;line-height:1.6;">
+            Cliquez sur un emplacement pour ajouter ou remplacer un logo. Format recommandé : PNG transparent, ratio 3:2.
+          </p>
+          <div class="partners-grid" id="partnersGrid"></div>
+          <div class="job-form-actions" style="margin-top:0;">
+            <button type="button" class="btn-publish" id="savePartnersBtn">Enregistrer les modifications &rarr;</button>
+            <button type="button" class="btn-reset" id="addPartnerSlotBtn">+ Ajouter un emplacement</button>
+            <span class="job-form-msg" id="partnersMsg"></span>
+          </div>
+        </div>
+        <div class="admin-card">
+          <div class="admin-card-title">Noms &amp; descriptions</div>
+          <div id="partnerNamesList" style="display:flex;flex-direction:column;gap:12px;"></div>
+        </div>
+      </div><!-- /#panelPartners -->
 
-  </div>
+      <!-- PANEL : Publications (tous les rôles) -->
+      <div class="admin-panel" id="panelPublications">
+        <div class="admin-panel-header">
+          <div>
+            <h2 class="admin-panel-title">Publications</h2>
+            <p class="admin-panel-subtitle">Articles, actualités et ressources publiés sur le site</p>
+          </div>
+        </div>
+        <div class="admin-card">
+          <div class="admin-card-title" id="pubFormTitle">Nouvelle publication</div>
+          <form id="pubForm">
+            <input type="hidden" id="pub-id" value="">
+            <div class="pub-form">
+              <div class="job-form-field full">
+                <label for="pub-title">Titre *</label>
+                <input type="text" id="pub-title" name="title"
+                  placeholder="Ex : Les 5 erreurs à éviter dans votre candidature" required>
+              </div>
+              <div class="job-form-field">
+                <label for="pub-category">Catégorie</label>
+                <select id="pub-category" name="category">
+                  <option value="Actualité">Actualité</option>
+                  <option value="Conseil carrière">Conseil carrière</option>
+                  <option value="Recrutement">Recrutement</option>
+                  <option value="Marché de l'emploi">Marché de l'emploi</option>
+                  <option value="Diaspora">Diaspora</option>
+                  <option value="Entreprise">Entreprise</option>
+                </select>
+              </div>
+              <div class="job-form-field">
+                <label for="pub-status">Statut</label>
+                <select id="pub-status" name="status">
+                  <option value="draft">Brouillon</option>
+                  <option value="published">Publié</option>
+                </select>
+              </div>
+              <div class="job-form-field full">
+                <label for="pub-excerpt">Résumé</label>
+                <textarea id="pub-excerpt" name="excerpt" style="min-height:80px;"
+                  placeholder="Court résumé visible sur la page Ressources…"></textarea>
+              </div>
+              <div class="job-form-field full">
+                <label for="pub-content">Contenu de l'article</label>
+                <textarea id="pub-content" name="content" style="min-height:220px;"
+                  placeholder="Rédigez votre article ici…"></textarea>
+              </div>
+              <div class="job-form-field full">
+                <label>Image de couverture</label>
+                <div class="img-upload-area">
+                  <input type="file" id="pub-img" name="image" accept="image/*">
+                  <div id="pubImgPreviewWrap">
+                    <div class="img-upload-icon">
+                      <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2" />
+                        <circle cx="8.5" cy="8.5" r="1.5" />
+                        <polyline points="21 15 16 10 5 21" />
+                      </svg>
+                    </div>
+                    <div class="img-upload-label"><strong>Cliquez pour ajouter</strong> une image de couverture</div>
+                    <div style="font-size:12px;color:var(--muted);margin-top:4px;">JPG, PNG — recommandé 1200×630 px</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="job-form-actions">
+              <button type="submit" class="btn-publish-gold" id="pubSubmitBtn">Publier l'article &rarr;</button>
+              <button type="button" class="btn-reset" id="pubCancelBtn" style="display:none;">Annuler</button>
+              <span class="job-form-msg" id="pubMsg"></span>
+            </div>
+          </form>
+        </div>
+        <div class="admin-card">
+          <div class="admin-card-title">Articles publiés</div>
+          <div class="pub-list" id="pubList">
+            <p style="color:var(--muted);font-size:14px;">Aucune publication pour le moment.</p>
+          </div>
+        </div>
+      </div><!-- /#panelPublications -->
 
+    </div><!-- /.admin-main -->
+
+  </div><!-- /#adminDashboardSection -->
+
+  <script src="js/admin.js"></script>
 </body>
+
 </html>
