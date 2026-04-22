@@ -11,8 +11,10 @@
   
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="css/talents.css"> 
-  <link rel="stylesheet" href="css/offre.css">   
-  
+  <link rel="stylesheet" href="css/offre.css">  
+  <link rel="stylesheet" href="css/carousel.css">
+
+  <script src="js/carousel.js"></script>
   <script src="jobs-data.js"></script>
   <script src="js/offre.js"></script>
   <script src="js/api.js"></script>
@@ -35,22 +37,76 @@
     </div>
   </header>
 
-  <section class="hero-page" style="min-height: 60vh; padding-bottom: 40px;">
-    <div class="hero-media"><div class="hero-fallback-gold" style="opacity: 0.1;"></div></div>
-    <div class="container">
-      <div class="hero-page-content">
-        <div class="hero-eyebrow">
-            <span class="hero-eyebrow-line"></span>
-            <span class="hero-eyebrow-text" id="jobSector">Secteur</span>
-        </div>
-        <h1 id="jobTitle">Chargement...</h1>
-        <div class="offre-hero-info" style="display: flex; gap: 20px; color: rgba(255,255,255,0.7); margin-top: 20px;">
-            <span id="jobLocation"></span> • <span id="jobContract"></span>
+ <!-- HERO CAROUSEL (hauteur réduite pour page offre) -->
+  <section class="hero-carousel" aria-label="Hero Offre" style="height: 65vh; min-height: 480px;">
+    <div class="carousel-slides">
+ 
+      <div class="carousel-slide">
+        <div class="carousel-slide-media" style="background-image: url('images/carousel/17.png');"></div>
+        <div class="carousel-slide-overlay"></div>
+        <div class="carousel-slide-content">
+          <div class="carousel-slide-inner">
+            <div class="carousel-slide-eyebrow">
+              <span class="carousel-slide-eyebrow-line"></span>
+              <span class="carousel-slide-eyebrow-text" id="jobSector">Secteur</span>
+            </div>
+            <h1 class="carousel-slide-title" id="jobTitle">Chargement...</h1>
+            <p class="carousel-slide-desc" id="jobMeta" style="color:rgba(255,255,255,0.6);font-size:14px;"></p>
+            <div class="carousel-slide-ctas">
+              <a href="#postuler" class="btn-gold">Postuler maintenant &#8594;</a>
+              <a href="carrieres.html" class="btn-ghost">← Retour aux offres</a>
+            </div>
+          </div>
         </div>
       </div>
+ 
+      <div class="carousel-slide">
+        <div class="carousel-slide-media" style="background-image: url('images/carousel/18.png');"></div>
+        <div class="carousel-slide-overlay"></div>
+        <div class="carousel-slide-content">
+          <div class="carousel-slide-inner">
+            <div class="carousel-slide-eyebrow">
+              <span class="carousel-slide-eyebrow-line"></span>
+              <span class="carousel-slide-eyebrow-text">Opportunité Talentyah</span>
+            </div>
+            <h1 class="carousel-slide-title">
+              Une opportunité<br><em>à fort impact sur le continent.</em>
+            </h1>
+            <p class="carousel-slide-desc">
+              Chaque offre Talentyah est vérifiée, accompagnée et suivie par nos consultants jusqu'à votre intégration.
+            </p>
+            <div class="carousel-slide-ctas">
+              <a href="#postuler" class="btn-gold">Postuler &#8594;</a>
+              <a href="talents.html#candidature" class="btn-ghost">Candidature spontanée &#8594;</a>
+            </div>
+          </div>
+        </div>
+      </div>
+ 
     </div>
+ 
+    <button class="carousel-arrow carousel-arrow-prev" aria-label="Précédent">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <button class="carousel-arrow carousel-arrow-next" aria-label="Suivant">
+      <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+ 
+    <div class="carousel-dots">
+      <button class="carousel-dot" aria-label="Slide 1"></button>
+      <button class="carousel-dot" aria-label="Slide 2"></button>
+    </div>
+ 
+    <div class="carousel-counter">
+      <span class="carousel-counter-current">01</span>
+      <span style="margin:0 5px;opacity:0.3;">/</span>
+      <span class="carousel-counter-total">02</span>
+    </div>
+ 
+    <div class="carousel-progress"></div>
   </section>
 
+  <!-- DÉTAIL OFFRE + FORMULAIRE -->
   <section class="form-section">
     <div class="container">
       <div class="form-grid">
@@ -122,7 +178,7 @@
       <div class="footer-grid">
         <div class="footer-brand">
           <a href="index.html" class="logo"><img src="images/logos/logo Talentyah Blanc.png" alt="Talentyah Logo" class="logo-img"></a>
-          <p>Cabinet de recrutement et accompagnement de carrière. Basé en France, intervenant en Afrique et à l'international.</p>
+          <p>Cabinet de recrutement et accompagnement de carrière. Basé à Paris et Cotonou, intervenant en Afrique et à l'international.</p>
         </div>
         <div class="footer-col">
           <h4>Navigation</h4>

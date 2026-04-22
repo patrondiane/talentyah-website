@@ -10,6 +10,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="css/ressources.css">
+  <link rel="stylesheet" href="css/carousel.css">
+  <script src="js/carousel.js"></script>
   <script src="js/script.js"></script>
   <script src="js/ressources.js"></script>
 </head>
@@ -39,24 +41,77 @@
   </header>
 
   <!-- HERO — ARTICLE EN VEDETTE -->
-  <section class="hero-ressources">
-    <div class="hero-media"><div class="hero-fallback-ressources"></div></div>
-    <div class="container">
-      <div class="hero-article-featured">
-        <div class="hero-article-tag">Insight</div>
-        <h1 class="hero-article-title">Les tendances du recrutement en Afrique en 2025</h1>
-        <p class="hero-article-excerpt">Analyse du marché de l'emploi africain : quels profils sont les plus recherchés, quels secteurs recrutent, et comment les entreprises s'adaptent pour attirer les meilleurs talents de la diaspora.</p>
-        <div class="hero-article-meta">
-          <span class="hero-article-date">Talentyah Editorial</span>
-          <span class="meta-sep"></span>
-          <span>6 min de lecture</span>
-        </div>
-        <div class="hero-article-ctas">
-          <a href="#" class="btn-article-read">Lire l'article &#8594;</a>
-          <a href="#articles" class="btn-ghost">Tous les articles &#8594;</a>
+ <!-- HERO CAROUSEL -->
+  <section class="hero-carousel" aria-label="Hero Ressources">
+    <div class="carousel-slides">
+ 
+      <div class="carousel-slide">
+        <div class="carousel-slide-media" style="background-image: url('images/carousel/15.png');"></div>
+        <div class="carousel-slide-overlay"></div>
+        <div class="carousel-slide-content">
+          <div class="carousel-slide-inner">
+            <div class="carousel-slide-eyebrow">
+              <span class="carousel-slide-eyebrow-line"></span>
+              <span class="carousel-slide-eyebrow-text">Insight</span>
+            </div>
+            <h1 class="carousel-slide-title">
+              Les tendances du recrutement<br><em>en Afrique en 2025</em>
+            </h1>
+            <p class="carousel-slide-desc">
+              Analyse du marché de l'emploi africain : quels profils sont les plus recherchés, quels secteurs recrutent, et comment les entreprises s'adaptent pour attirer les meilleurs talents.
+            </p>
+            <div class="carousel-slide-ctas">
+              <a href="#articles" class="btn-gold">Lire l'article &#8594;</a>
+              <a href="#articles" class="btn-ghost">Tous les articles &#8594;</a>
+            </div>
+          </div>
         </div>
       </div>
+ 
+      <div class="carousel-slide">
+        <div class="carousel-slide-media" style="background-image: url('images/carousel/16.png');"></div>
+        <div class="carousel-slide-overlay"></div>
+        <div class="carousel-slide-content">
+          <div class="carousel-slide-inner">
+            <div class="carousel-slide-eyebrow">
+              <span class="carousel-slide-eyebrow-line"></span>
+              <span class="carousel-slide-eyebrow-text">Conseils & analyses</span>
+            </div>
+            <h1 class="carousel-slide-title">
+              Expertise RH,<br><em>carrière et marché africain.</em>
+            </h1>
+            <p class="carousel-slide-desc">
+              Analyses du marché, conseils carrière, portraits de talents : des contenus de référence pour les professionnels africains et les DRH qui opèrent sur le continent.
+            </p>
+            <div class="carousel-slide-ctas">
+              <a href="#articles" class="btn-gold">Explorer les ressources &#8594;</a>
+              <a href="#newsletter" class="btn-ghost">S'abonner à la newsletter &#8594;</a>
+            </div>
+          </div>
+        </div>
+      </div>
+ 
     </div>
+ 
+    <button class="carousel-arrow carousel-arrow-prev" aria-label="Précédent">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <button class="carousel-arrow carousel-arrow-next" aria-label="Suivant">
+      <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+ 
+    <div class="carousel-dots">
+      <button class="carousel-dot" aria-label="Slide 1"></button>
+      <button class="carousel-dot" aria-label="Slide 2"></button>
+    </div>
+ 
+    <div class="carousel-counter">
+      <span class="carousel-counter-current">01</span>
+      <span style="margin:0 5px;opacity:0.3;">/</span>
+      <span class="carousel-counter-total">02</span>
+    </div>
+ 
+    <div class="carousel-progress"></div>
   </section>
 
   <!-- FILTRES -->
@@ -283,7 +338,7 @@
       <div class="footer-grid">
         <div class="footer-brand">
           <a href="index.html" class="logo"><img src="images/logos/logo Talentyah Blanc.png" alt="Talentyah Logo" class="logo-img"></a>
-          <p>Cabinet de recrutement et accompagnement de carrière. Basé en France, intervenant en Afrique et à l'international.</p>
+          <p>Cabinet de recrutement et accompagnement de carrière. Basé à Paris et Cotonou, intervenant en Afrique et à l'international.</p>
         </div>
         <div class="footer-col">
           <h4>Navigation</h4>

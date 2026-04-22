@@ -9,7 +9,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/carousel.css">
   <script src="js/script.js"></script>
+  <script src="js/carousel.js"></script>
+
 </head>
 <body>
 
@@ -38,28 +41,151 @@
   </header>
 
   <!-- HERO -->
-  <section class="hero">
-    <div class="hero-bg"></div>
-    <div class="hero-lines"></div>
-    <div class="container">
-      <div class="hero-content">
-        <div class="hero-eyebrow" style="opacity:0;animation:fadeUp 0.8s ease 0.2s forwards;">
-          <span class="hero-eyebrow-line"></span>
-          <span class="hero-eyebrow-text">Cabinet de recrutement et accompagnement</span>
+ <section class="hero-carousel" aria-label="Carousel principal">
+ 
+    <div class="carousel-slides">
+ 
+      <!-- SLIDE 1 -->
+      <div class="carousel-slide">
+        <div class="carousel-slide-media"
+             style="background-image: url('images/carousel/1.png')">
         </div>
-        <h1>Des talents d’exception<br><em>pour des entreprises ambitieuses.</em></h1>
-        <p class="hero-subtitle">Nous connectons les entreprises africaines et internationales aux talents africains, issus de la diaspora ou en mobilité intra-africaine.</p>
-        <div class="hero-actions">
-          <a href="entreprises.html" class="btn-gold">Je recrute <span class="btn-arrow">&#8594;</span></a>
-          <a href="talents.html" class="btn-ghost">Je cherche une opportunité <span class="btn-arrow">&#8594;</span></a>
+        <div class="carousel-slide-overlay"></div>
+        <div class="carousel-slide-content">
+          <div class="carousel-slide-inner">
+            <div class="carousel-slide-eyebrow">
+              <span class="carousel-slide-eyebrow-line"></span>
+              <span class="carousel-slide-eyebrow-text">Cabinet de recrutement et accompagnement</span>
+            </div>
+            <h1 class="carousel-slide-title">
+              Des talents d'exception<br>
+              <em>pour des entreprises ambitieuses.</em>
+            </h1>
+            <p class="carousel-slide-desc">
+              Nous connectons les entreprises africaines et internationales aux talents africains, issus de la diaspora ou en mobilité intra-africaine.
+            </p>
+            <div class="carousel-slide-ctas">
+              <a href="entreprises.html" class="btn-gold">Je recrute &#8594;</a>
+              <a href="talents.html" class="btn-ghost">Je cherche une opportunité &#8594;</a>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="hero-stats">
-        <div class="hero-stat"><div class="hero-stat-num">15+</div><div class="hero-stat-label">Pays couverts</div></div>
-        <div class="hero-stat"><div class="hero-stat-num">3</div><div class="hero-stat-label">Offres d'accompagnement</div></div>
-        <div class="hero-stat"><div class="hero-stat-num">100%</div><div class="hero-stat-label">Sur mesure</div></div>
+ 
+      <!-- SLIDE 2 -->
+      <div class="carousel-slide">
+        <div class="carousel-slide-media"
+             style="background-image: url('images/carousel/2.png')">
+        </div>
+        <div class="carousel-slide-overlay"></div>
+        <div class="carousel-slide-content">
+          <div class="carousel-slide-inner">
+            <div class="carousel-slide-eyebrow">
+              <span class="carousel-slide-eyebrow-line"></span>
+              <span class="carousel-slide-eyebrow-text">Recrutement stratégique</span>
+            </div>
+            <h1 class="carousel-slide-title">
+              Identifiez les leaders<br>
+              <em>de demain en Afrique.</em>
+            </h1>
+            <p class="carousel-slide-desc">
+              Nos experts sourcent, évaluent et accompagnent les meilleurs profils, des cadres locaux aux talents de la diaspora, pour bâtir vos équipes durables.
+            </p>
+            <div class="carousel-slide-ctas">
+              <a href="notre-approche.html" class="btn-gold">Notre approche &#8594;</a>
+              <a href="entreprises.html" class="btn-ghost">Confier un recrutement &#8594;</a>
+            </div>
+          </div>
+        </div>
       </div>
+ 
+      <!-- SLIDE 3 -->
+      <div class="carousel-slide">
+        <div class="carousel-slide-media"
+             style="background-image: url('images/carousel/3.png')">
+        </div>
+        <div class="carousel-slide-overlay"></div>
+        <div class="carousel-slide-content">
+          <div class="carousel-slide-inner">
+            <div class="carousel-slide-eyebrow">
+              <span class="carousel-slide-eyebrow-line"></span>
+              <span class="carousel-slide-eyebrow-text">Mobilité internationale</span>
+            </div>
+            <h1 class="carousel-slide-title">
+              Votre carrière mérite<br>
+              <em>les meilleures opportunités.</em>
+            </h1>
+            <p class="carousel-slide-desc">
+              Coaching, préparation aux entretiens, mobilité internationale : un accompagnement de bout en bout pour concrétiser votre prochain défi professionnel.
+            </p>
+            <div class="carousel-slide-ctas">
+              <a href="talents.html" class="btn-gold">Être accompagné(e) &#8594;</a>
+              <a href="carrieres.html" class="btn-ghost">Voir les offres &#8594;</a>
+            </div>
+          </div>
+        </div>
+      </div>
+ 
+      <!-- SLIDE 4 -->
+      <div class="carousel-slide">
+        <div class="carousel-slide-media"
+             style="background-image: url('images/carousel/4.png')">
+        </div>
+        <div class="carousel-slide-overlay"></div>
+        <div class="carousel-slide-content">
+          <div class="carousel-slide-inner">
+            <div class="carousel-slide-eyebrow">
+              <span class="carousel-slide-eyebrow-line"></span>
+              <span class="carousel-slide-eyebrow-text">15+ pays couverts</span>
+            </div>
+            <h1 class="carousel-slide-title">
+              Un réseau panafricain<br>
+              <em>à votre service.</em>
+            </h1>
+            <p class="carousel-slide-desc">
+              De Dakar à Nairobi, d'Abidjan à Paris — Talentyah intervient là où se trouvent les talents et les opportunités, sans frontières.
+            </p>
+            <div class="carousel-slide-ctas">
+              <a href="apropos.html" class="btn-gold">À propos de nous &#8594;</a>
+              <a href="ressources.html" class="btn-ghost">Nos insights &#8594;</a>
+            </div>
+          </div>
+        </div>
+      </div>
+ 
+    </div><!-- /.carousel-slides -->
+ 
+    <!-- Navigation flèches -->
+    <button class="carousel-arrow carousel-arrow-prev" aria-label="Slide précédente">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <button class="carousel-arrow carousel-arrow-next" aria-label="Slide suivante">
+      <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+ 
+    <!-- Points de navigation -->
+    <div class="carousel-dots" role="tablist" aria-label="Navigation slides">
+      <button class="carousel-dot" role="tab" aria-label="Slide 1"></button>
+      <button class="carousel-dot" role="tab" aria-label="Slide 2"></button>
+      <button class="carousel-dot" role="tab" aria-label="Slide 3"></button>
+      <button class="carousel-dot" role="tab" aria-label="Slide 4"></button>
     </div>
+ 
+    <!-- Compteur -->
+    <div class="carousel-counter" aria-hidden="true">
+      <span class="carousel-counter-current">01</span>
+      <span style="margin: 0 6px; opacity: 0.4;">/</span>
+      <span class="carousel-counter-total">04</span>
+    </div>
+ 
+    <!-- Barre de progression -->
+    <div class="carousel-progress" aria-hidden="true"></div>
+ 
+    <!-- Stats superposées (optionnel – reproduit les stats de l'ancien hero) -->
+    <div class="hero-stats" style="position:absolute;bottom:80px;left:50%;transform:translateX(-50%);display:none;">
+      <!-- Masqués par défaut, activez si besoin -->
+    </div>
+ 
   </section>
 
   <!-- SERVICES -->
@@ -235,7 +361,7 @@
       <div class="footer-grid">
         <div class="footer-brand">
           <a href="index.html" class="logo"><img src="images/logos/logo Talentyah Blanc.png" alt="Talentyah Logo" class="logo-img"></a>
-          <p>Cabinet de recrutement et accompagnement de carrière. Basé en France, intervenant en Afrique et à l'international.</p>
+          <p>Cabinet de recrutement et accompagnement de carrière. Basé à Paris et Cotonou, intervenant en Afrique et à l'international.</p>
         </div>
         <div class="footer-col">
           <h4>Navigation</h4>
