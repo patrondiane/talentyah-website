@@ -1,0 +1,72 @@
+/* =====================================================
+   TALENTYAH — contact.css
+===================================================== */
+
+/* Hero spécifique pour la page contact */
+.hero-page {
+    background: var(--forest-dark);
+    padding: 120px 0 80px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-page::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 100px;
+    background: linear-gradient(to top, var(--white), transparent);
+}
+
+/* Grille de contact */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 60px;
+    align-items: start;
+    margin-top: -40px; /* Chevauchement léger sur le hero */
+    position: relative;
+    z-index: 10;
+}
+
+/* Boîte d'information à droite */
+.contact-info {
+    background: var(--forest-mid);
+    padding: 40px;
+    border-radius: 12px;
+    color: var(--white);
+    border-left: 5px solid var(--gold);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+.contact-info h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    color: var(--gold-light);
+    margin-bottom: 25px;
+}
+
+.contact-info p {
+    margin-bottom: 20px;
+    font-size: 16px;
+    opacity: 0.9;
+    line-height: 1.6;
+}
+
+.contact-info strong {
+    color: var(--gold-light);
+    display: block;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 12px;
+}
+
+@media (max-width: 768px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+        margin-top: 20px;
+    }
+}

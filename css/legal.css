@@ -1,0 +1,103 @@
+/* =====================================================
+   TALENTYAH — legal.css (Design Premium)
+===================================================== */
+
+/* Fond de page doux */
+body {
+    background-color: #fdfbf7; 
+}
+
+.legal-section {
+    padding: 100px 0;
+}
+
+/* Conteneur principal style "Papier" */
+.legal-container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: var(--white);
+    padding: 80px;
+    border-radius: 4px; /* Coins légèrement arrondis pour un aspect pro */
+    box-shadow: 0 10px 40px rgba(13, 40, 24, 0.05);
+    border-top: 6px solid var(--gold); /* Rappel de la marque en haut */
+}
+
+/* Titres */
+.legal-container h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 48px;
+    font-weight: 700;
+    color: var(--forest-dark);
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.legal-container .update-date {
+    display: block;
+    text-align: center;
+    font-size: 14px;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 60px;
+}
+
+.legal-container h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    color: var(--emerald);
+    margin: 45px 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* Petit filet doré avant chaque titre H3 */
+.legal-container h3::before {
+    content: '';
+    width: 30px;
+    height: 1px;
+    background: var(--gold);
+    display: inline-block;
+}
+
+/* Texte et Listes */
+.legal-container p {
+    font-size: 17px;
+    line-height: 1.8;
+    color: #444;
+    margin-bottom: 20px;
+}
+
+.legal-container ul {
+    margin-bottom: 30px;
+    padding-left: 20px;
+}
+
+.legal-container li {
+    font-size: 16px;
+    line-height: 1.8;
+    color: #444;
+    margin-bottom: 12px;
+    list-style: none;
+    position: relative;
+    padding-left: 25px;
+}
+
+/* Puces dorées personnalisées */
+.legal-container li::before {
+    content: '•';
+    color: var(--gold);
+    position: absolute;
+    left: 0;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .legal-section { padding: 60px 0; }
+    .legal-container { padding: 40px 20px; border-top-width: 4px; }
+    .legal-container h1 { font-size: 34px; }
+    .legal-container h3 { font-size: 22px; }
+}

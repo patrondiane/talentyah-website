@@ -99,11 +99,88 @@ img { max-width: 100%; height: auto; display: block; }
   display: block;
 }
 
-/* Sur mobile, on peut réduire un peu la taille si nécessaire */
+/* =====================
+   RESPONSIVE OPTIMISÉ (Mobile & Tablette)
+===================== */
 @media (max-width: 768px) {
-  .logo-img {
-    height: 32px;
+  /* Réduction des marges globales */
+  .container { padding: 0 16px; }
+  section { padding: 48px 0 !important; } /* Réduit les grands espaces entre sections */
+
+  /* Header & Nav */
+  .nav { height: 60px; }
+  .logo-img { height: 28px; }
+  
+  nav.open {
+    top: 60px;
+    padding: 12px 16px;
   }
+
+  /* Hero & Carrousels - Cadrage plus serré */
+  .hero-page, .hero-carousel { 
+    min-height: 50vh !important; 
+    height: auto !important;
+    padding-top: 60px; 
+    padding-bottom: 40px;
+  }
+  
+  .hero-page h1, .carousel-slide-title { 
+    font-size: 28px !important; 
+    line-height: 1.2;
+  }
+  
+  .hero-page-desc, .carousel-slide-desc {
+    font-size: 14px;
+    margin-bottom: 24px;
+  }
+
+  /* Grilles - Suppression des espaces vides */
+  .services-grid, .why-choose-grid, .why-right, .form-grid, .footer-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  /* Cartes plus compactes */
+  .service-card, .why-item, .why-card, .programme-card {
+    padding: 24px !important;
+  }
+
+  /* Formulaires - Mieux cadrés */
+  .form-box {
+    padding: 24px 16px !important;
+    border-radius: 8px;
+  }
+  
+  .form-row { 
+    grid-template-columns: 1fr !important; 
+    gap: 0; 
+  }
+
+  /* Footer */
+  .footer { padding: 40px 0 20px; }
+  .footer-bottom { 
+    margin-top: 30px;
+    text-align: center; 
+  }
+
+  /* Ajustement des boutons pour mobile */
+  .btn-gold, .btn-ghost, .btn-emerald, .btn-white, .btn-submit {
+    width: 100%;
+    justify-content: center;
+    padding: 14px 20px;
+    font-size: 13px;
+  }
+  
+  .hero-page-cta, .cta-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+}
+
+/* Correction spécifique pour les très petits écrans */
+@media (max-width: 480px) {
+  .section-title { font-size: 24px !important; }
+  .hero-stat { flex: 1 1 100%; }
 }
 
 nav {
