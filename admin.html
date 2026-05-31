@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,25 +7,20 @@
   <link rel="icon" type="image/png" href="images/logos/Talentyah Logo onglet.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/admin.css">
 </head>
-
 <body>
 
-  <!-- ════════════════════════════════
-     PAGE LOGIN
-  ════════════════════════════════ -->
+  <!-- ═══════════════════ PAGE LOGIN ═══════════════════ -->
   <section class="admin-login-page" id="adminLoginSection">
     <div class="admin-login-wrap">
       <div class="admin-login-header">
         <a href="index.html" class="admin-login-logo">Talentyah<span>.</span></a>
         <div class="admin-lock-icon">
           <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="11" width="18" height="11" rx="2" />
-            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            <rect x="3" y="11" width="18" height="11" rx="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
           </svg>
         </div>
         <h1 class="admin-login-title">Espace administrateur</h1>
@@ -53,77 +47,578 @@
     </div>
   </section>
 
-  <!-- ════════════════════════════════
-     DASHBOARD
-  ════════════════════════════════ -->
- <div id="adminDashboardSection" class="admin-dashboard-page" style="display:none;">
-    
+  <!-- ═══════════════════ DASHBOARD ═══════════════════ -->
+  <div id="adminDashboardSection" class="admin-dashboard-page" style="display:none;">
+
+    <!-- SIDEBAR -->
     <aside class="admin-sidebar">
       <div class="admin-sidebar-brand">
         <a href="index.html" class="admin-sidebar-logo">Talentyah<span>.</span></a>
       </div>
+
       <nav class="admin-nav">
-        <button class="admin-nav-btn active">
-          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+
+        <!-- Candidatures -->
+        <button type="button" class="admin-nav-btn active"
+                data-panel="panelCandidates"
+                data-title="Gestion des Candidatures"
+                data-sub="Consultez et filtrez les CV reçus">
+          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
           Candidatures
           <span class="nav-badge" id="countCandidates">0</span>
         </button>
+
+        <!-- Entreprises -->
+        <button type="button" class="admin-nav-btn"
+                data-panel="panelCompanies"
+                data-title="Demandes Entreprises"
+                data-sub="Sociétés ayant contacté Talentyah">
+          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+          Entreprises
+          <span class="nav-badge" id="countCompanies">0</span>
+        </button>
+
+        <!-- Offres d'emploi -->
+        <button type="button" class="admin-nav-btn"
+                data-panel="panelJobs"
+                data-title="Offres d'emploi"
+                data-sub="Publiez et gérez les offres actives">
+          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none">
+            <rect x="2" y="7" width="20" height="14" rx="2"/>
+            <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
+          </svg>
+          Offres d'emploi
+          <span class="nav-badge" id="countJobs">0</span>
+        </button>
+
+        <!-- Partenaires -->
+        <button type="button" class="admin-nav-btn"
+                data-panel="panelPartners"
+                data-title="Partenaires"
+                data-sub="Gérez les logos et noms des partenaires">
+          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 11l-4 4-2-2"/>
+          </svg>
+          Partenaires
+          <span class="nav-badge" id="countPartners">0</span>
+        </button>
+
+        <!-- Publications -->
+        <button type="button" class="admin-nav-btn"
+                data-panel="panelPublications"
+                data-title="Publications & Blog"
+                data-sub="Rédigez et gérez les articles">
+          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+            <polyline points="10 9 9 9 8 9"/>
+          </svg>
+          Publications
+          <span class="nav-badge" id="countPublications">0</span>
+        </button>
+
+
+
+        <!-- Carousel / Slides -->
+        <button type="button" class="admin-nav-btn"
+                data-panel="panelCarousel"
+                data-title="Carousel & Slides"
+                data-sub="Gérez les images et textes du carousel principal">
+          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none">
+            <rect x="2" y="5" width="20" height="14" rx="2"/>
+            <line x1="8" y1="12" x2="16" y2="12"/>
+            <line x1="2" y1="12" x2="5" y2="12"/>
+            <line x1="19" y1="12" x2="22" y2="12"/>
+          </svg>
+          Carousel
+          <span class="nav-badge" id="countCarousel">0</span>
+        </button>
+        <!-- Accès & Rôles (superadmin) -->
+        <button type="button" class="admin-nav-btn"
+                data-panel="panelAccess"
+                data-title="Accès &amp; Rôles"
+                data-sub="Gérez les comptes administrateurs">
+          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none">
+            <rect x="3" y="11" width="18" height="11" rx="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+          </svg>
+          Accès &amp; Rôles
+        </button>
+
       </nav>
+
       <div class="admin-sidebar-footer">
+        <span class="admin-user-role"></span>
+        <a href="#" id="tabAccess" style="font-size:11px;color:rgba(255,255,255,0.4);text-decoration:none;margin-bottom:6px;">Gérer les accès →</a>
         <button type="button" class="btn-logout" id="logoutBtn">Déconnexion</button>
       </div>
     </aside>
 
+    <!-- MAIN -->
     <main class="admin-main">
+
+      <!-- TOPBAR -->
       <div class="admin-topbar">
         <div class="admin-topbar-inner">
           <div>
-            <h1 class="admin-topbar-title">Gestion des Candidatures</h1>
-            <p class="admin-topbar-subtitle">Consultez les CV reçus via Talents et les Offres d'emploi</p>
+            <h1 class="admin-topbar-title" id="topbarTitle">Gestion des Candidatures</h1>
+            <p class="admin-topbar-subtitle" id="topbarSub">Consultez et filtrez les CV reçus</p>
+          </div>
+          <div class="admin-topbar-actions">
+            <span class="admin-date" id="adminDate"></span>
           </div>
         </div>
       </div>
 
-      <div class="admin-panel active">
+      <!-- ══════════ PANEL : CANDIDATURES ══════════ -->
+      <div class="admin-panel active" id="panelCandidates">
+
         <div class="admin-stats">
           <div class="admin-stat-card">
             <div class="stat-num" id="statTotalCandidates">0</div>
             <div class="stat-label">CV Reçus</div>
           </div>
           <div class="admin-stat-card">
+            <div class="stat-num" id="statWithCV">0</div>
+            <div class="stat-label">Avec CV joint</div>
+          </div>
+          <div class="admin-stat-card">
             <div class="stat-num" id="statCountries">—</div>
-            <div class="stat-label">Pays différents</div>
+            <div class="stat-label">Pays représentés</div>
           </div>
         </div>
 
         <div class="admin-filters-bar">
-          <input type="text" id="filterSector" placeholder="Métier (ex: DAF)...">
-          <input type="text" id="filterCountry" placeholder="Pays (ex: Sénégal)...">
+          <input type="text" id="filterSector" class="admin-filter-input" placeholder="Métier / secteur (ex: DAF, Finance)…">
+          <input type="text" id="filterCountry" class="admin-filter-input" placeholder="Pays (ex: Sénégal)…">
           <button class="btn-filter" id="applyFiltersBtn">Filtrer</button>
+          <button class="btn-filter btn-reset" id="resetFiltersBtn" style="background:transparent;color:var(--muted);border:1px solid var(--border);">Réinitialiser</button>
         </div>
 
         <div class="admin-table-wrap">
           <table class="admin-table">
             <thead>
               <tr>
-                <th>Date d'envoi</th>
+                <th>Date</th>
                 <th>Candidat</th>
+                <th>Email</th>
                 <th>Métier / Fonction</th>
                 <th>Pays</th>
                 <th>Expérience</th>
-                <th>Action CV</th>
+                <th>CV</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody id="candidatesTbody">
-              <tr class="empty-row"><td colspan="6">Chargement des candidatures...</td></tr>
+              <tr class="empty-row"><td colspan="8">Chargement des candidatures…</td></tr>
             </tbody>
           </table>
         </div>
       </div>
+
+      <!-- ══════════ PANEL : ENTREPRISES ══════════ -->
+      <div class="admin-panel" id="panelCompanies" style="display:none;">
+
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Société</th>
+                <th>Email</th>
+                <th>Région</th>
+                <th>Poste recherché</th>
+                <th>Urgence</th>
+                <th>Message</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="companiesTbody">
+              <tr class="empty-row"><td colspan="8">Chargement…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ══════════ PANEL : OFFRES D'EMPLOI ══════════ -->
+      <div class="admin-panel" id="panelJobs" style="display:none;">
+
+        <!-- Formulaire nouvelle offre -->
+        <div class="admin-section" style="margin-bottom:32px;">
+          <div class="admin-section-header" style="margin-bottom:16px;">
+            <h2 class="admin-section-title" style="font-size:17px;font-weight:600;color:var(--dark);">Publier une nouvelle offre</h2>
+          </div>
+          <form id="jobForm" class="job-form-grid">
+            <div class="job-form-field full">
+              <label>Intitulé du poste *</label>
+              <input type="text" name="title" placeholder="Ex : Responsable Administratif et Financier" required>
+            </div>
+            <div class="job-form-field">
+              <label>Ville</label>
+              <input type="text" name="city" placeholder="Ex : Dakar">
+            </div>
+            <div class="job-form-field">
+              <label>Pays</label>
+              <input type="text" name="country" placeholder="Ex : Sénégal">
+            </div>
+            <div class="job-form-field">
+              <label>Secteur <span style="font-size:11px;color:var(--muted);font-weight:400;">— existant ou nouveau</span></label>
+              <input type="text" name="sector" id="sectorInput" list="sectorSuggestions"
+                     placeholder="Ex : Finance, RH, Tech, Juridique…"
+                     style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;box-sizing:border-box;">
+              <datalist id="sectorSuggestions">
+                <option value="Finance">
+                <option value="RH">
+                <option value="Tech">
+                <option value="Commercial">
+                <option value="Juridique">
+                <option value="Marketing">
+                <option value="Direction Générale">
+                <option value="Opérations">
+                <option value="Logistique">
+                <option value="Santé">
+                <option value="Éducation">
+                <option value="Immobilier">
+                <option value="Industrie">
+              </datalist>
+            </div>
+            <div class="job-form-field">
+              <label>Type de contrat</label>
+              <select name="contract_type">
+                <option value="">— Sélectionner —</option>
+                <option>CDI</option>
+                <option>CDD</option>
+                <option>Freelance</option>
+                <option>Stage</option>
+                <option>Alternance</option>
+              </select>
+            </div>
+            <div class="job-form-field">
+              <label>Rémunération</label>
+              <input type="text" name="salary" placeholder="Ex : 2 500–3 500 EUR/mois">
+            </div>
+            <div class="job-form-field">
+              <label>Tags (séparés par virgules)</label>
+              <input type="text" name="tags" placeholder="Ex : CDI, Senior, Dakar">
+            </div>
+            <div class="job-form-field full">
+              <label>Description du poste</label>
+              <textarea name="description" rows="4" placeholder="Décrivez le rôle, les missions, le contexte…"></textarea>
+            </div>
+            <div class="job-form-field full">
+              <label>Profil recherché / Exigences</label>
+              <textarea name="requirements" rows="3" placeholder="Expérience, diplômes, compétences clés…"></textarea>
+            </div>
+            <div class="job-form-actions full">
+              <button type="submit" class="btn-publish-gold">Publier l'offre</button>
+              <span class="job-form-msg" id="jobMsg"></span>
+            </div>
+          </form>
+        </div>
+
+        <!-- Liste des offres existantes -->
+        <div class="admin-section">
+          <h2 class="admin-section-title" style="font-size:17px;font-weight:600;color:var(--dark);margin-bottom:16px;">Offres publiées</h2>
+          <div id="adminJobsList">
+            <p style="color:var(--muted);font-size:14px;">Chargement…</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════ PANEL : CAROUSEL ══════════ -->
+      <div class="admin-panel" id="panelCarousel" style="display:none;">
+
+        <p style="font-size:14px;color:var(--muted);margin-bottom:24px;">
+          Ajoutez, modifiez ou supprimez les slides du carousel principal de la page d'accueil.
+        </p>
+
+        <!-- Ajouter un slide -->
+        <div style="background:#f9fbf9;border:1px solid var(--border);border-radius:10px;padding:24px;margin-bottom:32px;">
+          <h3 style="font-size:15px;font-weight:600;color:var(--dark);margin-bottom:16px;">Ajouter un nouveau slide</h3>
+          <form id="carouselForm" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+            <div class="job-form-field full" style="grid-column:1/-1;">
+              <label>Image de fond * <span style="font-size:11px;color:var(--muted);">(recommandé 1920×1080, max 10Mo)</span></label>
+              <input type="file" id="slideImageInput" name="image" accept="image/*" required
+                     style="border:1px solid var(--border);border-radius:6px;padding:8px 12px;font-size:13px;width:100%;box-sizing:border-box;cursor:pointer;">
+            </div>
+            <div class="job-form-field">
+              <label>Sous-titre (eyebrow)</label>
+              <input type="text" name="eyebrow" placeholder="Cabinet de recrutement et accompagnement"
+                     style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;box-sizing:border-box;">
+            </div>
+            <div class="job-form-field">
+              <label>Titre principal *</label>
+              <input type="text" name="title" placeholder="Des talents d'exception pour des entreprises ambitieuses."
+                     style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;box-sizing:border-box;">
+            </div>
+            <div class="job-form-field full" style="grid-column:1/-1;">
+              <label>Description</label>
+              <textarea name="subtitle" rows="2" placeholder="Texte descriptif sous le titre…"
+                        style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;resize:vertical;width:100%;box-sizing:border-box;"></textarea>
+            </div>
+            <div class="job-form-field">
+              <label>Bouton 1 — texte</label>
+              <input type="text" name="cta1_text" placeholder="Je recrute →"
+                     style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;box-sizing:border-box;">
+            </div>
+            <div class="job-form-field">
+              <label>Bouton 1 — lien</label>
+              <input type="text" name="cta1_url" placeholder="entreprises.html"
+                     style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;box-sizing:border-box;">
+            </div>
+            <div class="job-form-field">
+              <label>Bouton 2 — texte <span style="font-size:11px;color:var(--muted);">(optionnel)</span></label>
+              <input type="text" name="cta2_text" placeholder="Je cherche une opportunité →"
+                     style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;box-sizing:border-box;">
+            </div>
+            <div class="job-form-field">
+              <label>Bouton 2 — lien</label>
+              <input type="text" name="cta2_url" placeholder="talents.html"
+                     style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;box-sizing:border-box;">
+            </div>
+
+            <!-- Pages cibles -->
+            <div style="grid-column:1/-1;">
+              <label style="font-size:13px;font-weight:500;color:var(--dark);display:block;margin-bottom:10px;">
+                Pages où afficher ce slide
+                <span style="font-size:11px;color:var(--muted);font-weight:400;margin-left:6px;">— cocher les pages cibles, ou laisser "Toutes les pages"</span>
+              </label>
+              <div style="display:flex;flex-wrap:wrap;gap:10px;">
+                <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:7px 14px;border:1px solid var(--border);border-radius:20px;background:#fff;">
+                  <input type="checkbox" name="pages" value="all" checked style="accent-color:var(--emerald);"> Toutes les pages
+                </label>
+                <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:7px 14px;border:1px solid var(--border);border-radius:20px;background:#fff;">
+                  <input type="checkbox" name="pages" value="index" style="accent-color:var(--emerald);"> Accueil
+                </label>
+                <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:7px 14px;border:1px solid var(--border);border-radius:20px;background:#fff;">
+                  <input type="checkbox" name="pages" value="talents" style="accent-color:var(--emerald);"> Talents
+                </label>
+                <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:7px 14px;border:1px solid var(--border);border-radius:20px;background:#fff;">
+                  <input type="checkbox" name="pages" value="entreprises" style="accent-color:var(--emerald);"> Entreprises
+                </label>
+                <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:7px 14px;border:1px solid var(--border);border-radius:20px;background:#fff;">
+                  <input type="checkbox" name="pages" value="carrieres" style="accent-color:var(--emerald);"> Carrières
+                </label>
+                <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:7px 14px;border:1px solid var(--border);border-radius:20px;background:#fff;">
+                  <input type="checkbox" name="pages" value="apropos" style="accent-color:var(--emerald);"> À propos
+                </label>
+                <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:7px 14px;border:1px solid var(--border);border-radius:20px;background:#fff;">
+                  <input type="checkbox" name="pages" value="notre-approche" style="accent-color:var(--emerald);"> Notre approche
+                </label>
+                <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:7px 14px;border:1px solid var(--border);border-radius:20px;background:#fff;">
+                  <input type="checkbox" name="pages" value="ressources" style="accent-color:var(--emerald);"> Ressources
+                </label>
+              </div>
+            </div>
+
+            <div style="grid-column:1/-1;display:flex;align-items:center;gap:14px;">
+              <button type="submit" class="btn-publish-gold">Ajouter ce slide →</button>
+              <span id="carouselMsg" style="font-size:13px;font-weight:500;"></span>
+            </div>
+          </form>
+        </div>
+
+        <!-- Liste des slides -->
+        <h3 style="font-size:15px;font-weight:600;color:var(--dark);margin-bottom:16px;">Slides actifs</h3>
+        <div id="carouselList" style="display:flex;flex-direction:column;gap:12px;">
+          <p style="color:var(--muted);font-size:14px;">Chargement…</p>
+        </div>
+      </div>
+
+      <!-- ══════════ PANEL : PARTENAIRES ══════════ -->
+      <div class="admin-panel" id="panelPartners" style="display:none;">
+
+        <p style="font-size:14px;color:var(--muted);margin-bottom:24px;">
+          Gérez les logos affichés sur le site. Cliquez sur un emplacement pour uploader une image.
+        </p>
+
+        <div class="partners-grid" id="partnersGrid">
+          <!-- généré par JS -->
+        </div>
+
+        <div style="margin-top:28px;">
+          <h3 style="font-size:14px;font-weight:600;color:var(--dark);margin-bottom:12px;">Noms &amp; descriptions</h3>
+          <div id="partnerNamesList" style="display:flex;flex-direction:column;gap:10px;">
+            <!-- généré par JS -->
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:16px;margin-top:24px;">
+          <button type="button" class="btn-publish-gold" id="addPartnerSlotBtn" style="font-size:13px;padding:10px 20px;">+ Ajouter un partenaire</button>
+          <button type="button" class="btn-publish-gold" id="savePartnersBtn" style="font-size:13px;padding:10px 20px;background:var(--emerald);">Enregistrer les modifications</button>
+          <span id="partnersMsg" style="font-size:13px;color:var(--emerald);font-weight:500;"></span>
+        </div>
+      </div>
+
+      <!-- ══════════ PANEL : PUBLICATIONS ══════════ -->
+      <div class="admin-panel" id="panelPublications" style="display:none;">
+
+        <!-- Formulaire création / édition -->
+        <div style="margin-bottom:36px;">
+          <h2 class="admin-section-title" id="pubFormTitle" style="font-size:17px;font-weight:600;color:var(--dark);margin-bottom:16px;">Nouvelle publication</h2>
+
+          <form id="pubForm" class="pub-form">
+            <input type="hidden" id="pub-id" name="id">
+
+            <div class="full">
+              <label class="job-form-field" style="gap:6px;">
+                <span style="font-size:13px;font-weight:500;color:var(--dark);">Titre de l'article *</span>
+                <input type="text" id="pub-title" name="title" placeholder="Ex : Les profils les plus recherchés en 2026" required
+                       style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;box-sizing:border-box;">
+              </label>
+            </div>
+
+            <div>
+              <label class="job-form-field" style="gap:6px;">
+                <span style="font-size:13px;font-weight:500;color:var(--dark);">Catégorie</span>
+                <select id="pub-category" name="category"
+                        style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;cursor:pointer;">
+                  <option>Conseil carrière</option>
+                  <option>Marché de l'emploi</option>
+                  <option>Actualités Talentyah</option>
+                  <option>International</option>
+                </select>
+              </label>
+            </div>
+
+            <div>
+              <label class="job-form-field" style="gap:6px;">
+                <span style="font-size:13px;font-weight:500;color:var(--dark);">Statut</span>
+                <select id="pub-status" name="status"
+                        style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;cursor:pointer;">
+                  <option value="draft">Brouillon</option>
+                  <option value="published">Publié</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="full">
+              <label class="job-form-field" style="gap:6px;">
+                <span style="font-size:13px;font-weight:500;color:var(--dark);">Extrait / Résumé</span>
+                <textarea id="pub-excerpt" name="excerpt" rows="2" placeholder="Court résumé affiché sur la page blog…"
+                          style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;resize:vertical;width:100%;box-sizing:border-box;"></textarea>
+              </label>
+            </div>
+
+            <div class="full">
+              <label class="job-form-field" style="gap:6px;">
+                <span style="font-size:13px;font-weight:500;color:var(--dark);">Contenu complet</span>
+                <textarea id="pub-content" name="content" rows="8" placeholder="Rédigez votre article ici…"
+                          style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;resize:vertical;width:100%;box-sizing:border-box;"></textarea>
+              </label>
+            </div>
+
+            <div class="full">
+              <span style="font-size:13px;font-weight:500;color:var(--dark);display:block;margin-bottom:8px;">Image de couverture</span>
+              <div class="img-upload-area" style="position:relative;cursor:pointer;">
+                <input type="file" id="pub-img" name="img" accept="image/*" style="position:absolute;inset:0;opacity:0;cursor:pointer;z-index:2;">
+                <div id="pubImgPreviewWrap">
+                  <div class="img-upload-icon">
+                    <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3" y="3" width="18" height="18" rx="2"/>
+                      <circle cx="8.5" cy="8.5" r="1.5"/>
+                      <polyline points="21 15 16 10 5 21"/>
+                    </svg>
+                  </div>
+                  <div class="img-upload-label"><strong>Cliquez pour ajouter</strong> une image de couverture</div>
+                  <div style="font-size:12px;color:var(--muted);margin-top:4px;">JPG, PNG — recommandé 1200×630 px</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="full" style="display:flex;align-items:center;gap:16px;margin-top:4px;">
+              <button type="submit" class="btn-publish-gold" id="pubSubmitBtn">Publier l'article →</button>
+              <button type="button" id="pubCancelBtn" class="btn-delete" style="display:none;">Annuler</button>
+              <span id="pubMsg" style="font-size:13px;font-weight:500;"></span>
+            </div>
+          </form>
+        </div>
+
+        <!-- Liste des publications -->
+        <div>
+          <h2 style="font-size:17px;font-weight:600;color:var(--dark);margin-bottom:16px;">Articles publiés</h2>
+          <div class="pub-list" id="pubList">
+            <p style="color:var(--muted);font-size:14px;">Chargement…</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════ PANEL : ACCÈS & RÔLES ══════════ -->
+      <div class="admin-panel" id="panelAccess" style="display:none;">
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start;">
+
+          <!-- Liste des accès existants -->
+          <div>
+            <h2 style="font-size:17px;font-weight:600;color:var(--dark);margin-bottom:16px;">Comptes administrateurs</h2>
+            <div class="admin-table-wrap">
+              <table class="admin-table">
+                <thead>
+                  <tr>
+                    <th>Email</th>
+                    <th>Rôle</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="accessList">
+                  <tr class="empty-row"><td colspan="3">Chargement…</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Formulaire ajout d'accès -->
+          <div>
+            <h2 style="font-size:17px;font-weight:600;color:var(--dark);margin-bottom:16px;">Créer un accès</h2>
+            <form id="accessForm" style="display:flex;flex-direction:column;gap:14px;">
+              <div class="job-form-field">
+                <label>Email *</label>
+                <input type="email" name="email" placeholder="prenom@talentyah.com" required>
+              </div>
+              <div class="job-form-field">
+                <label>Rôle *</label>
+                <select name="role">
+                  <option value="editor">Éditeur (blog uniquement)</option>
+                  <option value="admin">Admin (candidats, offres…)</option>
+                  <option value="superadmin">Super Admin (accès complet)</option>
+                </select>
+              </div>
+              <div class="job-form-field">
+                <label>Mot de passe temporaire</label>
+                <input type="text" name="password" placeholder="Laisser vide pour auto-générer">
+              </div>
+              <div style="display:flex;align-items:center;gap:14px;">
+                <button type="submit" class="btn-publish-gold" style="font-size:13px;padding:10px 20px;">Créer l'accès →</button>
+                <span id="accessMsg" style="font-size:13px;font-weight:500;"></span>
+              </div>
+            </form>
+
+            <div style="margin-top:28px;padding:16px;background:rgba(83,74,183,0.06);border:1px solid rgba(83,74,183,0.15);border-radius:8px;">
+              <p style="font-size:12px;color:var(--muted);margin:0;line-height:1.7;">
+                <strong style="color:var(--dark);">Rôles &amp; permissions</strong><br>
+                🟣 <strong>Super Admin</strong> — accès complet à tous les panels<br>
+                🟢 <strong>Admin</strong> — candidats, entreprises, offres, partenaires, publications<br>
+                🟡 <strong>Éditeur</strong> — publications uniquement
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </main>
-  </div>
+  </div><!-- fin adminDashboardSection -->
 
   <script src="js/admin.js"></script>
 </body>
-
 </html>

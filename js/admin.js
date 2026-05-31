@@ -16,24 +16,27 @@ const PRIVILEGES = {
     panelCandidates:   true,
     panelCompanies:    true,
     panelJobs:         true,
+    panelCarousel:     true,
     panelPartners:     true,
     panelPublications: true,
-    panelAccess:       true,   // gestion des utilisateurs
+    panelAccess:       true,
   },
   admin: {
     panelCandidates:   true,
     panelCompanies:    true,
     panelJobs:         true,
+    panelCarousel:     true,
     panelPartners:     true,
     panelPublications: true,
-    panelAccess:       false,  // ne gère pas les accès
+    panelAccess:       false,
   },
   editor: {
     panelCandidates:   false,
     panelCompanies:    false,
     panelJobs:         false,
+    panelCarousel:     false,
     panelPartners:     false,
-    panelPublications: true,   // blog uniquement
+    panelPublications: true,
     panelAccess:       false,
   },
 };
@@ -85,6 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = await res.json();
         if (res.ok && data.token) {
           sessionStorage.setItem('talentyah_token', data.token);
+          sessionStorage.setItem('talentyah_email', email);
           showDashboard();
         } else {
           if (msgEl) { msgEl.textContent = 'Email ou mot de passe incorrect.'; msgEl.style.color = '#c0392b'; }
@@ -125,15 +129,31 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.admin-nav-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.admin-nav-btn').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.admin-panel').forEach(p => {
+        p.classList.remove('active');
+        p.style.display = 'none'; // force hide via inline pour tous
+      });
       btn.classList.add('active');
       const panel = document.getElementById(btn.dataset.panel);
-      if (panel) panel.classList.add('active');
+      if (panel) {
+        panel.style.display = ''; // retire le inline, laisse CSS .active gérer
+        panel.classList.add('active');
+      }
       const titleEl = document.getElementById('topbarTitle');
       const subEl   = document.getElementById('topbarSub');
       if (titleEl && btn.dataset.title) titleEl.textContent = btn.dataset.title;
       if (subEl   && btn.dataset.sub)   subEl.textContent   = btn.dataset.sub;
-      if (btn.dataset.panel === 'panelAccess') loadAccessList();
+      // Recharger les données du panel au clic
+      const reloadMap = {
+        panelCandidates:   loadCandidates,
+        panelCompanies:    loadCompanies,
+        panelJobs:         loadJobs,
+        panelCarousel:     loadCarousel,
+        panelPartners:     loadPartners,
+        panelPublications: loadPublications,
+        panelAccess:       loadAccessList,
+      };
+      if (reloadMap[btn.dataset.panel]) reloadMap[btn.dataset.panel]();
     });
   });
 
@@ -201,35 +221,118 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('countPartners').textContent = partners.length;
     renderPartnersGrid(); renderPartnerNames();
   });
-  document.getElementById('savePartnersBtn')?.addEventListener('click', () => {
+  document.getElementById('savePartnersBtn')?.addEventListener('click', async () => {
     const msg = document.getElementById('partnersMsg');
-    if (msg) { msg.textContent = '✓ Modifications enregistrées.'; msg.style.color = 'var(--emerald)'; setTimeout(() => { msg.textContent = ''; }, 3000); }
+    const token = sessionStorage.getItem('talentyah_token');
+    if (msg) { msg.textContent = 'Enregistrement…'; msg.style.color = 'var(--muted)'; }
+
+    try {
+      // Pour chaque partenaire : PUT si id existant, POST si nouveau
+      for (let i = 0; i < partners.length; i++) {
+        const p = partners[i];
+        const fd = new FormData();
+        fd.append('name', p.name);
+        fd.append('description', p.desc || '');
+        fd.append('sort_order', i);
+        // Ne pas renvoyer les base64 — l'image est déjà uploadée via handlePartnerImg
+        // Si p.img est une URL serveur (/uploads/...), on la passe en texte
+        if (p.img && !p.img.startsWith('data:')) {
+          fd.append('existing_image_url', p.img);
+        }
+
+        if (p.id) {
+          await fetch(API + '/api/partners/' + p.id, {
+            method: 'PUT',
+            headers: { 'Authorization': 'Bearer ' + token },
+            body: fd
+          });
+        } else {
+          const res = await fetch(API + '/api/partners', {
+            method: 'POST',
+            headers: { 'Authorization': 'Bearer ' + token },
+            body: fd
+          });
+          if (res.ok) {
+            const data = await res.json();
+            partners[i].id = data.id; // assigner l'id reçu
+          }
+        }
+      }
+
+      if (msg) { msg.textContent = '✓ Partenaires enregistrés.'; msg.style.color = 'var(--emerald)'; setTimeout(() => { msg.textContent = ''; }, 3000); }
+      loadPartners();
+    } catch {
+      if (msg) { msg.textContent = 'Erreur lors de l\'enregistrement.'; msg.style.color = '#c0392b'; }
+    }
+  });
+
+  /* ── Carousel upload ── */
+  document.getElementById('carouselUploadForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = e.target.querySelector('button[type="submit"]');
+    const msg = document.getElementById('carouselMsg');
+    btn.disabled = true; btn.textContent = 'Upload en cours…';
+    try {
+      const token = sessionStorage.getItem('talentyah_token');
+      const fd    = new FormData(e.target);
+      const res   = await fetch(API + '/api/carousel', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + token },
+        body: fd
+      });
+      if (res.ok) {
+        if (msg) { msg.textContent = '✓ Slide ajouté !'; msg.style.color = 'var(--emerald)'; setTimeout(() => { msg.textContent = ''; }, 3000); }
+        e.target.reset();
+        loadCarousel();
+      } else {
+        const d = await res.json();
+        if (msg) { msg.textContent = d.error || 'Erreur upload'; msg.style.color = '#c0392b'; }
+      }
+    } catch {
+      if (msg) { msg.textContent = 'Erreur réseau'; msg.style.color = '#c0392b'; }
+    }
+    btn.disabled = false; btn.textContent = 'Ajouter ce slide →';
   });
 
   /* ── Publications ── */
-  document.getElementById('pubForm')?.addEventListener('submit', (e) => {
+  document.getElementById('pubForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const f  = e.target;
-    const id = document.getElementById('pub-id').value;
-    const pub = {
-      id:       id ? parseInt(id) : Date.now(),
-      title:    f['title'].value.trim(),
-      category: f['category'].value,
-      status:   f['status'].value,
-      excerpt:  f['excerpt'].value.trim(),
-      content:  f['content'].value.trim(),
-      image:    currentPubImg || null,
-      date:     new Date().toISOString().slice(0, 10),
-    };
-    if (id) {
-      const idx = publications.findIndex(p => p.id === parseInt(id));
-      if (idx !== -1) publications[idx] = pub;
-    } else {
-      publications.unshift(pub);
-    }
-    renderPubList(); resetPubForm();
+    const btn = document.getElementById('pubSubmitBtn');
     const msg = document.getElementById('pubMsg');
-    if (msg) { msg.textContent = '✓ Publication enregistrée.'; msg.style.color = 'var(--emerald)'; setTimeout(() => { msg.textContent = ''; }, 3000); }
+    const f   = e.target;
+    const id  = document.getElementById('pub-id').value;
+
+    btn.disabled = true; btn.textContent = 'Enregistrement…';
+
+    // Build FormData for potential image upload
+    const fd = new FormData();
+    fd.append('title',    f['title'].value.trim());
+    fd.append('category', f['category'].value);
+    fd.append('status',   f['status'].value);
+    fd.append('excerpt',  f['excerpt'].value.trim());
+    fd.append('content',  f['content'].value.trim());
+    if (f['img'] && f['img'].files[0]) fd.append('image', f['img'].files[0]);
+
+    try {
+      const token  = sessionStorage.getItem('talentyah_token');
+      const url    = id ? `${API}/api/publications/${id}` : `${API}/api/publications`;
+      const method = id ? 'PUT' : 'POST';
+      const res    = await fetch(url, { method, headers: { 'Authorization': 'Bearer ' + token }, body: fd });
+      if (res.ok) {
+        if (msg) { msg.textContent = '✓ Publication enregistrée.'; msg.style.color = 'var(--emerald)'; setTimeout(() => { msg.textContent = ''; }, 3000); }
+        resetPubForm(); loadPublications();
+      } else {
+        const d = await res.json();
+        if (msg) { msg.textContent = d.error || 'Erreur.'; msg.style.color = '#c0392b'; }
+      }
+    } catch {
+      // Mode démo local
+      const pub = { id: id ? parseInt(id) : Date.now(), title: f['title'].value.trim(), category: f['category'].value, status: f['status'].value, excerpt: f['excerpt'].value.trim(), content: f['content'].value.trim(), image: currentPubImg || null, date: new Date().toISOString().slice(0,10) };
+      if (id) { const idx = publications.findIndex(p => p.id === parseInt(id)); if (idx !== -1) publications[idx] = pub; } else { publications.unshift(pub); }
+      renderPubList(); resetPubForm();
+      if (msg) { msg.textContent = '✓ Enregistré (mode démo).'; msg.style.color = 'var(--emerald)'; setTimeout(() => { msg.textContent = ''; }, 3000); }
+    }
+    btn.disabled = false; btn.textContent = id ? 'Enregistrer les modifications →' : "Publier l'article →";
   });
 
   document.getElementById('pubCancelBtn')?.addEventListener('click', resetPubForm);
@@ -245,28 +348,76 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ── Formulaire ajout d'accès ── */
   document.getElementById('accessForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const f     = e.target;
-    const email = f.email.value.trim();
-    const role  = f.role.value;
-    const msg   = document.getElementById('accessMsg');
+    const f    = e.target;
+    const msg  = document.getElementById('accessMsg');
+    const btn  = f.querySelector('button[type="submit"]');
+    btn.disabled = true; btn.textContent = 'Création…';
+
     try {
       const token = sessionStorage.getItem('talentyah_token');
       const res   = await fetch(API + '/api/admin/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-        body: JSON.stringify({ email, role })
+        body: JSON.stringify({
+          email:    f.email.value.trim(),
+          role:     f.role.value,
+          password: f.password?.value || undefined
+        })
       });
+      const data = await res.json();
       if (res.ok) {
-        if (msg) { msg.textContent = '✓ Accès créé.'; msg.style.color = 'var(--emerald)'; }
+        // Afficher le mot de passe temporaire généré
+        if (data.tempPassword) {
+          alert(`✅ Accès créé pour ${data.email}\n\nMot de passe :\n${data.tempPassword}\n\n⚠️ Notez-le — il ne sera plus affiché.`);
+        } else {
+          if (msg) { msg.textContent = `✓ Accès créé pour ${data.email}`; msg.style.color = 'var(--emerald)'; setTimeout(() => { msg.textContent = ''; }, 4000); }
+        }
         f.reset(); loadAccessList();
       } else {
-        const d = await res.json();
-        if (msg) { msg.textContent = d.error || 'Erreur.'; msg.style.color = '#c0392b'; }
+        if (msg) { msg.textContent = data.error || 'Erreur.'; msg.style.color = '#c0392b'; }
       }
     } catch {
-      if (msg) { msg.textContent = '✓ Accès ajouté (mode démo).'; msg.style.color = 'var(--emerald)'; }
-      f.reset(); loadAccessList();
+      if (msg) { msg.textContent = 'Impossible de joindre le serveur.'; msg.style.color = '#c0392b'; }
     }
+    btn.disabled = false; btn.textContent = "Créer l'accès →";
+  });
+
+  /* ── Formulaire carousel ── */
+  document.getElementById('carouselForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const msg  = document.getElementById('carouselMsg');
+    const btn  = e.target.querySelector('button[type="submit"]');
+    const file = document.getElementById('slideImageInput')?.files[0];
+    if (!file) { if (msg) { msg.textContent = 'Sélectionnez une image.'; msg.style.color='#c0392b'; } return; }
+    btn.disabled = true; btn.textContent = 'Envoi en cours…';
+
+    const fd = new FormData(e.target);
+
+    // Récupérer les pages cochées et les envoyer proprement
+    const checkedPages = [...e.target.querySelectorAll('input[name="pages"]:checked')].map(cb => cb.value);
+    fd.delete('pages'); // supprimer les entrées multiples auto
+    fd.append('pages', checkedPages.length ? checkedPages.join(',') : 'all');
+
+    const token = sessionStorage.getItem('talentyah_token');
+    try {
+      const res = await fetch(API + '/api/carousel', {
+        method: 'POST', headers: { 'Authorization': 'Bearer ' + token }, body: fd
+      });
+      if (res.ok) {
+        if (msg) { msg.textContent = '✓ Slide ajouté !'; msg.style.color='var(--emerald)'; setTimeout(() => { msg.textContent=''; }, 3000); }
+        e.target.reset();
+        // Remettre "Toutes les pages" coché par défaut
+        const allCb = e.target.querySelector('input[name="pages"][value="all"]');
+        if (allCb) allCb.checked = true;
+        loadCarousel();
+      } else {
+        const d = await res.json();
+        if (msg) { msg.textContent = d.error || 'Erreur.'; msg.style.color='#c0392b'; }
+      }
+    } catch {
+      if (msg) { msg.textContent = 'Impossible de joindre le serveur.'; msg.style.color='#c0392b'; }
+    }
+    btn.disabled = false; btn.textContent = 'Ajouter ce slide →';
   });
 
 });
@@ -277,12 +428,140 @@ document.addEventListener('DOMContentLoaded', () => {
 function showDashboard() {
   document.getElementById('adminLoginSection').style.display     = 'none';
   document.getElementById('adminDashboardSection').style.display = 'flex';
+  loadStats();
+  loadCarousel();
   loadCandidates();
   loadCompanies();
   loadJobs();
-  initPartners();
-  initPublications();
+  loadPartners();
+  loadPublications();
   applyPermissions();
+  initNotifications(); // démarrer les notifications
+}
+
+/* ══════════════════════════════════════════
+   SYSTÈME DE NOTIFICATIONS (sans config)
+   Polling toutes les 30s + Web Push API
+══════════════════════════════════════════ */
+
+let _lastCandidates = null;
+let _lastCompanies  = null;
+let _notifInterval  = null;
+
+async function initNotifications() {
+  // Demander permission notifications navigateur
+  if ('Notification' in window && Notification.permission === 'default') {
+    const perm = await Notification.requestPermission();
+    if (perm === 'granted') showToast('✅ Notifications activées', 'success');
+  }
+
+  // Snapshot initial des compteurs
+  try {
+    const token = sessionStorage.getItem('talentyah_token');
+    const res   = await fetch(API + '/api/admin/stats', { headers: { 'Authorization': 'Bearer ' + token } });
+    const data  = await res.json();
+    _lastCandidates = data.candidates;
+    _lastCompanies  = data.companies;
+  } catch {}
+
+  // Polling toutes les 30 secondes
+  clearInterval(_notifInterval);
+  _notifInterval = setInterval(checkNewEntries, 30000);
+}
+
+async function checkNewEntries() {
+  try {
+    const token = sessionStorage.getItem('talentyah_token');
+    if (!token) { clearInterval(_notifInterval); return; }
+
+    const res  = await fetch(API + '/api/admin/stats', { headers: { 'Authorization': 'Bearer ' + token } });
+    const data = await res.json();
+
+    // Nouvelle candidature ?
+    if (_lastCandidates !== null && data.candidates > _lastCandidates) {
+      const n = data.candidates - _lastCandidates;
+      pushNotif(
+        `🧑‍💼 Nouvelle candidature${n > 1 ? 's' : ''} (${n})`,
+        `${n} nouveau${n > 1 ? 'x' : ''} CV reçu${n > 1 ? 's' : ''} — cliquez pour voir`
+      );
+      showToast(`🧑‍💼 ${n} nouvelle${n > 1 ? 's' : ''} candidature${n > 1 ? 's' : ''} reçue${n > 1 ? 's' : ''}`, 'info');
+      loadStats(); loadCandidates();
+    }
+
+    // Nouvelle demande entreprise ?
+    if (_lastCompanies !== null && data.companies > _lastCompanies) {
+      const n = data.companies - _lastCompanies;
+      pushNotif(
+        `🏢 Nouvelle demande entreprise${n > 1 ? 's' : ''} (${n})`,
+        `${n} nouvelle${n > 1 ? 's' : ''} demande${n > 1 ? 's' : ''} reçue${n > 1 ? 's' : ''} — cliquez pour voir`
+      );
+      showToast(`🏢 ${n} nouvelle${n > 1 ? 's' : ''} demande${n > 1 ? 's' : ''} entreprise`, 'info');
+      loadStats(); loadCompanies();
+    }
+
+    _lastCandidates = data.candidates;
+    _lastCompanies  = data.companies;
+  } catch {}
+}
+
+function pushNotif(title, body) {
+  if ('Notification' in window && Notification.permission === 'granted') {
+    const n = new Notification(title, {
+      body,
+      icon:  '/images/logos/Talentyah Logo onglet.png',
+      badge: '/images/logos/Talentyah Logo onglet.png',
+      tag:   'talentyah-admin',
+    });
+    n.onclick = () => { window.focus(); n.close(); };
+  }
+}
+
+// Toast in-app (bannière en haut à droite du dashboard)
+function showToast(message, type = 'info') {
+  let toast = document.getElementById('adminToast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'adminToast';
+    toast.style.cssText = `
+      position:fixed;top:20px;right:24px;z-index:9999;
+      padding:14px 20px;border-radius:8px;font-size:14px;font-weight:500;
+      box-shadow:0 4px 20px rgba(0,0,0,0.15);cursor:pointer;
+      transition:all .3s ease;max-width:320px;line-height:1.4;
+    `;
+    toast.onclick = () => { toast.style.opacity = '0'; setTimeout(() => { toast.style.display = 'none'; }, 300); };
+    document.body.appendChild(toast);
+  }
+  const colors = {
+    success: { bg:'#1a5233', color:'#fff' },
+    info:    { bg:'#1a3a5c', color:'#fff' },
+    error:   { bg:'#c0392b', color:'#fff' },
+  };
+  const c = colors[type] || colors.info;
+  toast.style.background = c.bg;
+  toast.style.color      = c.color;
+  toast.textContent      = message;
+  toast.style.display    = 'block';
+  toast.style.opacity    = '1';
+  clearTimeout(toast._timeout);
+  toast._timeout = setTimeout(() => {
+    toast.style.opacity = '0';
+    setTimeout(() => { toast.style.display = 'none'; }, 300);
+  }, 5000);
+}
+
+/* ── Chargement des stats globales depuis l'API ── */
+async function loadStats() {
+  try {
+    const token = sessionStorage.getItem('talentyah_token');
+    const res   = await fetch(API + '/api/admin/stats', { headers: { 'Authorization': 'Bearer ' + token } });
+    const data  = await res.json();
+    const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+    set('countCandidates',    data.candidates   || 0);
+    set('countCompanies',     data.companies    || 0);
+    set('countJobs',          data.jobs         || 0);
+    set('countPublications',  data.publications || 0);
+    set('countPartners',      data.partners     || 0);
+  } catch { /* silencieux */ }
 }
 
 /* ══════════════════════════════
@@ -334,7 +613,7 @@ function applyPermissions() {
     const allowed = perms[btn.dataset.panel] !== false;
     btn.style.display = allowed ? '' : 'none';
     const panel = document.getElementById(btn.dataset.panel);
-    if (panel && !allowed) panel.style.display = 'none';
+    if (panel) panel.style.display = allowed ? 'none' : 'none'; // tous cachés par défaut, le premier sera affiché après
     if (allowed && !firstAllowedBtn) firstAllowedBtn = btn;
   });
 
@@ -365,7 +644,7 @@ async function loadCandidates() {
   const sector  = document.getElementById('filterSector')?.value.trim()  || '';
   const country = document.getElementById('filterCountry')?.value.trim() || '';
   if (!tbody) return;
-  tbody.innerHTML = '<tr class="empty-row"><td colspan="7">Chargement…</td></tr>';
+  tbody.innerHTML = '<tr class="empty-row"><td colspan="8">Chargement…</td></tr>';
 
   let rows = [];
   try {
@@ -397,7 +676,7 @@ async function loadCandidates() {
   if (stat3) stat3.textContent = new Set(rows.map(r => r.country).filter(Boolean)).size || '—';
 
   if (!rows.length) {
-    tbody.innerHTML = '<tr class="empty-row"><td colspan="7">Aucune candidature reçue pour le moment.</td></tr>';
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="8">Aucune candidature reçue pour le moment.</td></tr>';
     return;
   }
   tbody.innerHTML = rows.map(r => `
@@ -409,10 +688,25 @@ async function loadCandidates() {
       <td style="color:var(--muted);">${_esc(r.country || '—')}</td>
       <td style="color:var(--muted);">${_esc(r.experience_level || '—')}</td>
       <td>${r.cv_url
-        ? '<a href="' + _esc(r.cv_url) + '" target="_blank" rel="noopener" class="badge-cv">📎 Voir CV</a>'
+        ? '<a href="' + API + _esc(r.cv_url) + '" target="_blank" rel="noopener" download class="badge-cv">⬇ Télécharger CV</a>'
         : '<span style="color:var(--border);">—</span>'
       }</td>
+      <td>
+        <button class="btn-delete" onclick="deleteCandidate(${r.id}, this)">Supprimer</button>
+      </td>
     </tr>`).join('');
+}
+
+async function deleteCandidate(id, btn) {
+  if (!confirm('Supprimer définitivement cette candidature ?')) return;
+  btn.textContent = '…'; btn.disabled = true;
+  try {
+    const token = sessionStorage.getItem('talentyah_token');
+    await fetch(API + '/api/candidates/' + id, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token } });
+  } catch { /* silencieux */ }
+  btn.closest('tr').remove();
+  const badge = document.getElementById('countCandidates');
+  if (badge) badge.textContent = Math.max(0, parseInt(badge.textContent) - 1);
 }
 
 /* ══════════════════════════════
@@ -421,7 +715,7 @@ async function loadCandidates() {
 async function loadCompanies() {
   const tbody = document.getElementById('companiesTbody');
   if (!tbody) return;
-  tbody.innerHTML = '<tr class="empty-row"><td colspan="7">Chargement…</td></tr>';
+  tbody.innerHTML = '<tr class="empty-row"><td colspan="8">Chargement…</td></tr>';
 
   let rows = [];
   try {
@@ -447,19 +741,76 @@ async function loadCompanies() {
   };
 
   if (!rows.length) {
-    tbody.innerHTML = '<tr class="empty-row"><td colspan="7">Aucune demande reçue pour le moment.</td></tr>';
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="8">Aucune demande reçue pour le moment.</td></tr>';
     return;
   }
-  tbody.innerHTML = rows.map(r => `
+
+  // Stocker les données pour y accéder depuis showCompanyMsg
+  window._companiesData = rows;
+
+  tbody.innerHTML = rows.map((r, idx) => {
+    const msgBtn = r.message
+      ? '<button onclick="showCompanyMsg(' + idx + ')" style="background:none;border:1px solid var(--border);border-radius:4px;padding:4px 10px;cursor:pointer;font-size:12px;color:var(--muted);">📩 Voir message</button>'
+      : '—';
+    return `
     <tr>
       <td style="color:var(--muted);white-space:nowrap;">${_fmtDate(r.created_at)}</td>
       <td><strong>${_esc(r.company_name || '—')}</strong></td>
-      <td><a href="mailto:${_esc(r.email)}" style="color:var(--emerald);text-decoration:none;">${_esc(r.email)}</a></td>
+      <td>
+        <a href="mailto:${_esc(r.email)}?subject=Suite à votre demande — Talentyah"
+           style="color:var(--emerald);text-decoration:none;">${_esc(r.email)}</a>
+      </td>
       <td style="color:var(--muted);">${_esc(r.region || '—')}</td>
       <td>${_esc(r.role_needed || '—')}</td>
       <td>${urgencyMap[r.urgency] || '—'}</td>
-      <td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--muted);" title="${_esc(r.message||'')}">${_esc(r.message || '—')}</td>
-    </tr>`).join('');
+      <td>${msgBtn}</td>
+      <td><button class="btn-delete" onclick="deleteCompany(${r.id}, this)">Supprimer</button></td>
+    </tr>`;
+  }).join('');
+}
+
+async function deleteCompany(id, btn) {
+  if (!confirm('Supprimer définitivement cette demande entreprise ?')) return;
+  btn.textContent = '…'; btn.disabled = true;
+  try {
+    const token = sessionStorage.getItem('talentyah_token');
+    await fetch(API + '/api/companies/' + id, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token } });
+  } catch { /* silencieux */ }
+  btn.closest('tr').remove();
+  const badge = document.getElementById('countCompanies');
+  if (badge) badge.textContent = Math.max(0, parseInt(badge.textContent) - 1);
+}
+
+function showCompanyMsg(idx) {
+  const r = (window._companiesData || [])[idx];
+  if (!r) return;
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
+  modal.innerHTML = `
+    <div style="background:#fff;border-radius:12px;max-width:520px;width:100%;padding:28px;position:relative;max-height:80vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+      <button onclick="this.closest('[style*=fixed]').remove()"
+              style="position:absolute;top:14px;right:16px;background:none;border:none;font-size:22px;cursor:pointer;color:#aaa;line-height:1;">✕</button>
+      <div style="font-size:11px;color:#999;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Message de</div>
+      <h3 style="margin:0 0 4px;font-size:18px;color:#1a2a1a;">${_esc(r.company_name || '—')}</h3>
+      <a href="mailto:${_esc(r.email)}" style="color:#1a5233;font-size:13px;text-decoration:none;">${_esc(r.email)}</a>
+      ${r.phone ? `<span style="color:#999;font-size:13px;margin-left:12px;">📞 ${_esc(r.phone)}</span>` : ''}
+      <hr style="margin:16px 0;border:none;border-top:1px solid #eee;">
+      <table style="width:100%;font-size:13px;margin-bottom:16px;">
+        <tr><td style="color:#999;padding:4px 0;width:120px;">Région</td><td style="font-weight:500;">${_esc(r.region||'—')}</td></tr>
+        <tr><td style="color:#999;padding:4px 0;">Poste recherché</td><td style="font-weight:500;">${_esc(r.role_needed||'—')}</td></tr>
+        <tr><td style="color:#999;padding:4px 0;">Urgence</td><td style="font-weight:500;">${r.urgency||'—'}</td></tr>
+      </table>
+      <div style="font-size:13px;color:#666;font-weight:600;margin-bottom:8px;">Message :</div>
+      <div style="white-space:pre-wrap;font-size:14px;color:#1a2a1a;line-height:1.75;background:#f8f8f8;border-radius:8px;padding:14px;">${_esc(r.message || 'Aucun message')}</div>
+      <div style="margin-top:20px;">
+        <a href="mailto:${_esc(r.email)}?subject=Suite à votre demande — Talentyah&body=Bonjour%2C%0A%0ANous avons bien reçu votre demande concernant le poste de ${_esc(r.role_needed||'')}. %0A%0ACordialement%2C%0AL'équipe Talentyah"
+           style="display:inline-block;background:#1a5233;color:#fff;padding:10px 20px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">
+          ✉️ Répondre par email →
+        </a>
+      </div>
+    </div>`;
+  document.body.appendChild(modal);
+  modal.addEventListener('click', e => { if (e.target === modal) modal.remove(); });
 }
 
 /* ══════════════════════════════
@@ -525,6 +876,9 @@ async function deleteJob(index, id) {
 }
 
 /* ══════════════════════════════
+   CAROUSEL
+══════════════════════════════ */
+/* ══════════════════════════════
    PARTENAIRES
 ══════════════════════════════ */
 let partners = [
@@ -532,29 +886,111 @@ let partners = [
   { name:'Ecobank',         desc:'Services financiers', img:null },
   { name:'NSIA Banque',     desc:'Banque & Assurances', img:null },
   { name:'Africa Finance',  desc:'Conseil & Finance',   img:null },
-  { name:'Partenaire 5',    desc:'',                    img:null },
-  { name:'Partenaire 6',    desc:'',                    img:null },
 ];
 
-function initPartners() {
+/* ══════════════════════════════
+   CAROUSEL
+══════════════════════════════ */
+
+async function loadCarousel() {
+  const token = sessionStorage.getItem('talentyah_token');
+  try {
+    const res  = await fetch(API + '/api/carousel/all', { headers: { 'Authorization': 'Bearer ' + token } });
+    const data = await res.json();
+    const slides = data.slides || [];
+    const badge  = document.getElementById('countCarousel');
+    if (badge) badge.textContent = slides.length;
+    renderCarouselList(slides);
+  } catch {
+    const list = document.getElementById('carouselList');
+    if (list) list.innerHTML = '<p style="color:var(--muted);font-size:14px;">Impossible de charger les slides.</p>';
+  }
+}
+
+function renderCarouselList(slides) {
+  const list = document.getElementById('carouselList');
+  if (!list) return;
+  if (!slides.length) {
+    list.innerHTML = '<p style="color:var(--muted);font-size:14px;">Aucun slide. Ajoutez-en un ci-dessus.</p>';
+    return;
+  }
+
+  const pageLabels = {
+    all: 'Toutes', index: 'Accueil', talents: 'Talents',
+    entreprises: 'Entreprises', carrieres: 'Carrières',
+    apropos: 'À propos', 'notre-approche': 'Notre approche', ressources: 'Ressources'
+  };
+
+  list.innerHTML = slides.map(s => {
+    const pagesList = (s.pages || 'all').split(',').map(p => p.trim());
+    const pagesBadges = pagesList.map(p =>
+      `<span style="font-size:11px;padding:2px 8px;background:rgba(26,82,51,0.08);color:var(--emerald);border-radius:10px;border:1px solid rgba(26,82,51,0.15);">${pageLabels[p] || p}</span>`
+    ).join('');
+
+    return `
+    <div style="display:grid;grid-template-columns:120px 1fr auto;gap:16px;align-items:center;background:#fff;border:1px solid var(--border);border-radius:8px;padding:12px 16px;">
+      <img src="${API}${s.image_url}" alt="${_esc(s.title)}"
+           style="width:120px;height:70px;object-fit:cover;border-radius:6px;background:#eee;">
+      <div>
+        <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">${_esc(s.eyebrow||'')}</div>
+        <div style="font-weight:600;color:var(--dark);font-size:14px;margin:2px 0;">${_esc(s.title||'')}</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:6px;">${_esc((s.subtitle||'').substring(0,60))}${s.subtitle&&s.subtitle.length>60?'…':''}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;">${pagesBadges}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
+        <span style="font-size:11px;padding:3px 8px;border-radius:12px;background:${s.active?'#e8f5e9':'#f5f5f5'};color:${s.active?'var(--emerald)':'var(--muted)'};">${s.active?'Actif':'Masqué'}</span>
+        <button class="btn-delete" onclick="deleteSlide(${s.id})" style="font-size:12px;padding:5px 12px;">Supprimer</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function deleteSlide(id) {
+  if (!confirm('Supprimer ce slide ?')) return;
+  const token = sessionStorage.getItem('talentyah_token');
+  try {
+    await fetch(API + '/api/carousel/' + id, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token } });
+    loadCarousel();
+  } catch { alert('Erreur lors de la suppression.'); }
+}
+
+async function loadPartners() {
+  try {
+    const token = sessionStorage.getItem('talentyah_token');
+    const res   = await fetch(API + '/api/partners/all', { headers: { 'Authorization': 'Bearer ' + token } });
+    const data  = await res.json();
+    partners = (data.partners || []).map(p => ({ id: p.id, name: p.name, desc: p.description || '', img: p.image_url || null }));
+  } catch { /* garde les données locales */ }
   const badge = document.getElementById('countPartners');
   if (badge) badge.textContent = partners.length;
   renderPartnersGrid();
   renderPartnerNames();
 }
 
+function initPartners() { loadPartners(); }
+
 function renderPartnersGrid() {
   const grid = document.getElementById('partnersGrid');
   if (!grid) return;
-  grid.innerHTML = partners.map((p, i) => `
-    <div class="partner-slot ${p.img ? 'filled' : ''}" id="pslot-${i}">
-      <input type="file" accept="image/*" onchange="handlePartnerImg(this, ${i})">
-      ${p.img
-        ? '<img src="' + p.img + '" alt="' + _esc(p.name) + '"><button class="partner-remove" onclick="removePartnerImg(event,' + i + ')">✕</button>'
-        : '<div class="partner-slot-placeholder"><svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>' + _esc(p.name) + '</span></div>'
+  grid.innerHTML = partners.map((p, i) => {
+    // Construire l'URL complète de l'image
+    let imgSrc = null;
+    if (p.img) {
+      if (p.img.startsWith('data:') || p.img.startsWith('http')) {
+        imgSrc = p.img;
+      } else {
+        imgSrc = 'http://localhost:4000' + p.img;
       }
-    </div>
-  `).join('');
+    }
+    return `
+    <div class="partner-slot ${imgSrc ? 'filled' : ''}" id="pslot-${i}">
+      <input type="file" accept="image/*" onchange="handlePartnerImg(this, ${i})">
+      ${imgSrc
+        ? `<img src="${imgSrc}" alt="${_esc(p.name)}" onerror="this.style.display='none'"><button class="partner-remove" onclick="removePartnerImg(event,${i})">✕</button>`
+        : `<div class="partner-slot-placeholder"><svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>${_esc(p.name)}</span></div>`
+      }
+    </div>`;
+  }).join('');
 }
 
 function renderPartnerNames() {
@@ -571,12 +1007,33 @@ function renderPartnerNames() {
   `).join('');
 }
 
-function handlePartnerImg(input, i) {
+async function handlePartnerImg(input, i) {
   const file = input.files[0];
   if (!file) return;
+
+  // Aperçu local immédiat
   const reader = new FileReader();
   reader.onload = (e) => { partners[i].img = e.target.result; renderPartnersGrid(); renderPartnerNames(); };
   reader.readAsDataURL(file);
+
+  // Upload réel au backend si le partenaire a un id
+  if (partners[i].id) {
+    try {
+      const token = sessionStorage.getItem('talentyah_token');
+      const fd = new FormData();
+      fd.append('image', file);
+      fd.append('name', partners[i].name);
+      const res = await fetch(API + '/api/partners/' + partners[i].id, {
+        method: 'PUT',
+        headers: { 'Authorization': 'Bearer ' + token },
+        body: fd
+      });
+      if (res.ok) {
+        const data = await res.json();
+        partners[i].img = data.image_url; // URL serveur
+      }
+    } catch { /* garde l'aperçu local */ }
+  }
 }
 
 function removePartnerImg(e, i) {
@@ -584,7 +1041,19 @@ function removePartnerImg(e, i) {
   partners[i].img = null; renderPartnersGrid();
 }
 
-function removePartner(i) {
+async function removePartner(i) {
+  if (!confirm('Supprimer ce partenaire ?')) return;
+  const p = partners[i];
+  // Supprimer en DB si le partenaire a un id
+  if (p.id) {
+    try {
+      const token = sessionStorage.getItem('talentyah_token');
+      await fetch(API + '/api/partners/' + p.id, {
+        method: 'DELETE',
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+    } catch { /* silencieux */ }
+  }
   partners.splice(i, 1);
   const badge = document.getElementById('countPartners');
   if (badge) badge.textContent = partners.length;
@@ -602,11 +1071,29 @@ let publications = [
 
 let currentPubImg = null;
 
-function initPublications() {
+async function loadPublications() {
+  try {
+    const token = sessionStorage.getItem('talentyah_token');
+    const res   = await fetch(API + '/api/publications/all', { headers: { 'Authorization': 'Bearer ' + token } });
+    const data  = await res.json();
+    // Normalize API response to match local format (image_url→image, published_at→date)
+    publications = (data.publications || []).map(p => ({
+      id:       p.id,
+      title:    p.title,
+      category: p.category,
+      status:   p.status,
+      excerpt:  p.excerpt || '',
+      content:  p.content || '',
+      image:    p.image_url || null,
+      date:     p.published_at || p.created_at || '',
+    }));
+  } catch { /* garde les données locales */ }
   const badge = document.getElementById('countPublications');
   if (badge) badge.textContent = publications.length;
   renderPubList();
 }
+
+function initPublications() { loadPublications(); }
 
 function renderPubList() {
   const container = document.getElementById('pubList');
@@ -666,14 +1153,27 @@ function editPub(i) {
   document.getElementById('pub-title').scrollIntoView({ behavior:'smooth', block:'center' });
 }
 
-function togglePubStatus(i) {
+async function togglePubStatus(i) {
   publications[i].status = publications[i].status === 'published' ? 'draft' : 'published';
   renderPubList();
+  try {
+    const token = sessionStorage.getItem('talentyah_token');
+    await fetch(API + '/api/publications/' + publications[i].id + '/status', {
+      method: 'PATCH', headers: { 'Authorization': 'Bearer ' + token }
+    });
+  } catch { /* silencieux */ }
 }
 
-function deletePub(i) {
+async function deletePub(i) {
   if (!confirm('Supprimer cette publication ?')) return;
+  const id = publications[i].id;
   publications.splice(i, 1); renderPubList();
+  try {
+    const token = sessionStorage.getItem('talentyah_token');
+    await fetch(API + '/api/publications/' + id, {
+      method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token }
+    });
+  } catch { /* silencieux */ }
 }
 
 function resetPubForm() {
@@ -729,18 +1229,51 @@ function renderAccessList(users) {
     admin:      'background:rgba(15,110,86,0.1);color:#0F6E56;border:1px solid rgba(15,110,86,0.25)',
     editor:     'background:rgba(186,117,23,0.1);color:#BA7517;border:1px solid rgba(186,117,23,0.25)',
   };
+  const roleLabel = { superadmin: 'Super Admin', admin: 'Admin', editor: 'Éditeur' };
 
   list.innerHTML = users.map(u => {
     const s = roleStyle[u.role] || roleStyle['editor'];
+    const isSelf = u.email === sessionStorage.getItem('talentyah_email');
     return `<tr>
-      <td><strong>${_esc(u.email)}</strong></td>
-      <td><span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;font-size:11px;font-weight:600;border-radius:4px;${s}">${_esc(u.role)}</span></td>
-      <td>${u.role !== 'superadmin'
-        ? `<button class="btn-delete" onclick="deleteAccess(${u.id})">Révoquer</button>`
-        : '—'
-      }</td>
+      <td>
+        <strong>${_esc(u.email)}</strong>
+        ${isSelf ? '<span style="font-size:10px;color:var(--muted);margin-left:6px;">(vous)</span>' : ''}
+      </td>
+      <td><span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;font-size:11px;font-weight:600;border-radius:4px;${s}">${roleLabel[u.role] || u.role}</span></td>
+      <td style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button onclick="resetPassword(${u.id}, '${_esc(u.email)}')"
+                style="background:none;border:1px solid var(--border);border-radius:4px;padding:4px 10px;cursor:pointer;font-size:12px;color:var(--dark);">
+          🔑 Réinitialiser
+        </button>
+        ${u.role !== 'superadmin' && !isSelf
+          ? `<button class="btn-delete" onclick="deleteAccess(${u.id})" style="font-size:12px;padding:4px 10px;">Révoquer</button>`
+          : ''
+        }
+      </td>
     </tr>`;
   }).join('');
+}
+
+async function resetPassword(id, email) {
+  const newPwd = prompt(`Nouveau mot de passe pour ${email} :\n(laisser vide pour générer automatiquement)`);
+  if (newPwd === null) return; // annulé
+
+  try {
+    const token = sessionStorage.getItem('talentyah_token');
+    const res   = await fetch(API + '/api/admin/reset-password/' + id, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ password: newPwd || undefined })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      alert(`✅ Mot de passe réinitialisé pour ${data.email}\n\nNouveau mot de passe :\n${data.tempPassword}\n\nCommuniquez-le à l'utilisateur.`);
+    } else {
+      alert('Erreur : ' + (data.error || 'Impossible de réinitialiser'));
+    }
+  } catch {
+    alert('Impossible de joindre le serveur.');
+  }
 }
 
 async function deleteAccess(id) {

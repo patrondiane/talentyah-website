@@ -121,64 +121,31 @@
 }
 
 .jobs-preview {
-  display: grid; grid-template-columns: repeat(3, 1fr);
-  gap: 2px; background: var(--border);
-}
-
-.job-preview-card {
-  background: var(--white); padding: 36px 32px;
   display: flex; flex-direction: column;
-  transition: var(--transition); position: relative; overflow: hidden;
-}
-.job-preview-card::before {
-  content: ''; position: absolute;
-  left: 0; top: 0; width: 3px; height: 100%;
-  background: var(--gold); transform: scaleY(0);
-  transform-origin: top; transition: transform 0.4s ease;
-}
-.job-preview-card:hover::before { transform: scaleY(1); }
-.job-preview-card:hover { background: var(--bg-off); }
-
-.job-preview-top {
-  display: flex; justify-content: space-between;
-  align-items: center; margin-bottom: 14px;
+  gap: 1px; background: var(--border);
+  border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
 }
 
-.job-preview-location {
-  font-size: 11px; font-weight: 700;
-  letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted);
+/* Réutilise les classes .job-card de carrieres.css via styles.css */
+.jobs-preview .job-card {
+  background: var(--white);
+  padding: 22px 26px;
+  display: grid; grid-template-columns: 1fr auto;
+  gap: 16px; align-items: center;
+  cursor: pointer; text-decoration: none; color: inherit;
+  transition: background 0.2s ease, border-color 0.2s ease;
+  position: relative; border-left: 3px solid transparent;
 }
+.jobs-preview .job-card:hover { background: var(--bg-off); border-left-color: var(--gold); }
+.jobs-preview .job-title { font-size: 17px; margin-bottom: 6px; }
+.jobs-preview .job-desc  { font-size: 12px; }
+.jobs-preview .job-salary { font-size: 13px; }
+.jobs-preview .job-link { font-size: 12px; padding: 8px 14px; }
 
-.job-preview-type {
-  font-size: 11px; font-weight: 700; letter-spacing: 1px;
-  text-transform: uppercase; color: var(--emerald);
-  background: rgba(26,92,69,0.08); padding: 4px 10px; border-radius: 999px;
-}
-
-.job-preview-title {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 20px; font-weight: 600;
-  color: var(--dark); line-height: 1.25; margin-bottom: 12px;
-}
-
-.job-preview-desc {
-  font-size: 13px; color: var(--muted);
-  line-height: 1.65; margin-bottom: 24px; flex-grow: 1;
-}
-
-.job-preview-footer {
-  display: flex; justify-content: space-between;
-  align-items: center; gap: 12px;
-  border-top: 1px solid var(--border); padding-top: 18px; margin-top: auto;
-}
-
-.job-preview-salary { font-size: 13px; font-weight: 600; color: var(--dark); }
-
-.job-preview-link {
-  font-size: 13px; font-weight: 700; color: var(--emerald);
-  text-decoration: none; transition: var(--transition);
-}
-.job-preview-link:hover { color: var(--gold); }
+/* legacy classes pour compatibilité */
+.job-preview-card, .job-preview-title, .job-preview-desc,
+.job-preview-location, .job-preview-type, .job-preview-salary,
+.job-preview-link, .job-preview-footer, .job-preview-top { display: revert; }
 
 /* =====================
    RESPONSIVE TALENTS

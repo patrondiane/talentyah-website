@@ -1077,9 +1077,13 @@ textarea { resize: vertical; min-height: 120px; }
   display: block;
   margin-bottom: 16px;
 }
-.footer-brand .logo .logo-img {
-  height: 40px;
+.footer-brand .logo .logo-img,
+.footer-brand img.logo-img,
+.footer-brand .logo img {
+  height: 36px;
   width: auto;
+  max-width: 160px;
+  object-fit: contain;
   margin-bottom: 0;
 }
 .footer-brand p {
@@ -1092,4 +1096,275 @@ textarea { resize: vertical; min-height: 120px; }
 /* ── Footer grid : colonne brand moins large ── */
 .footer-grid {
   grid-template-columns: 1.4fr 1fr 1fr 1fr;  /* était 2fr — trop large */
+}
+/* ============================================================
+   PATCH RESPONSIVE & IMAGES — tous écrans
+   ============================================================ */
+
+/* ── Images globales ── */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ── Logos partenaires (section "Ils nous font confiance") ── */
+.client-logo-img {
+  width: 120px;
+  height: 60px;
+  object-fit: contain;
+  display: block;
+}
+.client-logo img,
+.client-logo .client-logo-img {
+  max-height: 60px;
+  width: auto;
+  max-width: 140px;
+  object-fit: contain;
+}
+.client-logo {
+  padding: 12px 24px;
+  min-width: 140px;
+}
+
+/* ── Carousel hero ── */
+.carousel-slide-media {
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+}
+
+/* ── Images dans articles / publications ── */
+.article-card-thumb img,
+.pub-img-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ── Images partenaires dans l'admin ── */
+.partner-slot img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 8px;
+}
+
+/* ============================================================
+   RESPONSIVE MOBILE — 768px
+   ============================================================ */
+@media (max-width: 768px) {
+
+  /* Conteneur */
+  .container { padding: 0 16px; }
+
+  /* Typographie */
+  h1, .hero-page h1, .carousel-slide-title { font-size: 28px !important; line-height: 1.25 !important; }
+  h2, .section-title { font-size: 22px !important; }
+  h3 { font-size: 18px !important; }
+
+  /* Header */
+  .nav { height: 60px; }
+  .logo-img { height: 26px; }
+
+  /* Hero carousel */
+  .hero-carousel { min-height: 60vh !important; }
+  .carousel-slide-content { padding: 80px 16px 40px; }
+  .carousel-slide-ctas { flex-direction: column; gap: 10px; }
+  .carousel-slide-ctas .btn-gold,
+  .carousel-slide-ctas .btn-ghost { width: 100%; text-align: center; justify-content: center; }
+  .carousel-controls { bottom: 16px; }
+
+  /* Section partenaires */
+  .client-logo { padding: 10px 16px; min-width: 110px; }
+  .client-logo-img,
+  .client-logo img { max-height: 44px; max-width: 110px; }
+  .clients-track { gap: 24px; }
+
+  /* Grilles → 1 colonne */
+  .services-grid,
+  .why-grid,
+  .why-right,
+  .why-choose-grid,
+  .form-grid,
+  .footer-grid,
+  .offres-intro,
+  .jobs-preview,
+  .programme-grid,
+  .stats-grid { grid-template-columns: 1fr !important; gap: 16px !important; }
+
+  /* Offres */
+  .offre-header { grid-template-columns: 48px 1fr auto; gap: 12px; padding: 18px 16px; }
+  .offre-body   { padding: 0 16px 24px; }
+  .offre-num    { font-size: 22px; }
+
+  /* Formulaires */
+  .form-box { padding: 24px 16px !important; }
+  .form-row { grid-template-columns: 1fr !important; gap: 0 !important; }
+
+  /* Boutons */
+  .btn-gold, .btn-ghost, .btn-emerald, .btn-submit, .btn-outline {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+    padding: 14px 20px;
+    font-size: 14px;
+  }
+  .hero-actions,
+  .hero-page-cta,
+  .cta-actions { flex-direction: column; align-items: stretch; gap: 10px; }
+
+  /* Section CTA */
+  .cta-section { padding: 60px 0; }
+
+  /* Footer */
+  .footer { padding: 40px 0 20px; }
+  .footer-grid { grid-template-columns: 1fr; gap: 24px; }
+  .footer-bottom { flex-direction: column; gap: 8px; text-align: center; }
+
+  /* Stats hero */
+  .hero-stats { flex-wrap: wrap; position: relative; bottom: auto; margin-top: 32px; }
+  .hero-stat  { flex: 1 1 140px; border-left: none; border-top: 1px solid rgba(255,255,255,0.1); padding: 14px 16px; }
+
+  /* Sections espacement */
+  section { padding: 48px 0 !important; }
+
+  /* Page talents — offres preview */
+  .job-preview-card { padding: 20px 16px; }
+
+  /* Page carrieres */
+  .carrieres-filters { flex-direction: column; gap: 10px; }
+  .filter-btn       { width: 100%; }
+
+  /* Page ressources */
+  .articles-grid { grid-template-columns: 1fr !important; }
+}
+
+/* ============================================================
+   RESPONSIVE — 480px (très petits écrans)
+   ============================================================ */
+@media (max-width: 480px) {
+
+  h1, .hero-page h1, .carousel-slide-title { font-size: 24px !important; }
+  h2, .section-title { font-size: 20px !important; }
+
+  .logo-img { height: 22px; }
+
+  .hero-carousel { min-height: 55vh !important; }
+
+  .client-logo { min-width: 90px; padding: 8px 12px; }
+  .client-logo-img,
+  .client-logo img { max-height: 36px; max-width: 90px; }
+
+  .form-box { padding: 20px 12px !important; border-radius: 8px; }
+
+  /* Admin sidebar sur mobile — masquer sur très petit */
+  .admin-sidebar { display: none; }
+  .admin-main    { padding: 0; }
+}
+
+/* ============================================================
+   TABLET — 1024px
+   ============================================================ */
+@media (max-width: 1024px) {
+  .services-header   { grid-template-columns: 1fr; }
+  .why-grid          { grid-template-columns: 1fr; gap: 40px; }
+  .why-choose-grid   { grid-template-columns: 1fr 1fr; }
+  .form-grid         { grid-template-columns: 1fr; gap: 32px; }
+  .footer-grid       { grid-template-columns: 1fr 1fr; gap: 24px; }
+  .offres-intro      { grid-template-columns: 1fr; gap: 20px; }
+}
+
+/* ── Footer logo — taille fixe ── */
+.footer-brand .logo img,
+.footer-brand .logo .logo-img {
+  height: 34px !important;
+  width: auto !important;
+  max-width: 150px !important;
+  object-fit: contain !important;
+}
+
+/* ── Nav mobile — ne doit pas déborder sur le footer ── */
+nav.open {
+  z-index: 1000;
+}
+
+/* ── CORRECTION LOGO FOOTER ── */
+.footer-brand .logo img,
+.footer-brand .logo .logo-img,
+.footer-brand img.logo-img {
+  height: 36px !important;
+  width: auto !important;
+  max-width: 180px !important;
+  object-fit: contain !important;
+  display: block;
+  margin-bottom: 16px;
+}
+
+.footer-brand {
+  overflow: hidden; /* empêche le débordement */
+}
+
+/* ── CORRECTION FOOTER CHEVAUCHEMENT COLONNES ── */
+.footer-grid {
+  display: grid !important;
+  grid-template-columns: 2fr 1fr 1fr 1fr !important;
+  gap: 40px !important;
+  align-items: start !important;  /* colonnes alignées en haut, pas étirées */
+}
+
+.footer-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+  min-width: 0;
+  overflow: visible;
+}
+
+/* Logo footer : forcer petite taille quelle que soit l'image */
+.footer-brand .logo {
+  display: block !important;
+  font-size: 0 !important;       /* masque le texte "Talentyah." si image absente */
+  margin-bottom: 16px;
+  line-height: 0;
+}
+.footer-brand .logo img,
+.footer-brand .logo .logo-img,
+.footer-brand img.logo-img {
+  height: 40px !important;
+  width: auto !important;
+  max-width: 160px !important;
+  object-fit: contain !important;
+  display: block !important;
+  margin: 0 0 16px 0 !important;
+}
+
+/* Colonnes footer : pas de débordement */
+.footer-col {
+  min-width: 0;
+  overflow: visible;
+}
+
+/* Responsive footer : empilement propre */
+@media (max-width: 900px) {
+  .footer-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 32px !important;
+  }
+  .footer-brand {
+    grid-column: 1 / -1; /* prend toute la largeur en premier */
+  }
+}
+
+@media (max-width: 600px) {
+  .footer-grid {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+  }
+  .footer-brand .logo img,
+  .footer-brand .logo .logo-img {
+    height: 32px !important;
+  }
 }

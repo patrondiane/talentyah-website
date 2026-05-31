@@ -3,7 +3,80 @@
    Scripts spécifiques à la page Talents
 ===================================================== */
 
+window._talentsJsLoaded = true;
+
 document.addEventListener('DOMContentLoaded', () => {
+
+  /* ── Charger max 4 offres depuis l'API ── */
+  (async function loadJobsPreview() {
+    const container = document.getElementById('jobsPreview');
+    const section   = document.getElementById('offres');
+    if (!container) return;
+
+    function _sectorBadge(sector) {
+      if (!sector) return '';
+      const map = {
+        'Finance':    ['rgba(26,92,69,0.10)',   '#085041'],
+        'RH':         ['rgba(186,117,23,0.15)', '#633806'],
+        'Tech':       ['rgba(24,95,165,0.10)',  '#0C447C'],
+        'Commercial': ['rgba(180,40,40,0.10)',  '#791F1F'],
+        'Juridique':  ['rgba(83,74,183,0.10)',  '#3C3489'],
+        'Marketing':  ['rgba(216,90,48,0.10)',  '#4A1B0C'],
+      };
+      const [bg, col] = map[sector] || ['rgba(100,100,100,0.10)', '#555'];
+      return `<span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px;background:${bg};color:${col};">${sector}</span>`;
+    }
+
+    function cardHTML(job) {
+      return `
+        <article class="job-card" onclick="window.location='offre.html?id=${job.id}'">
+          <div>
+            <div class="job-top">
+              ${_sectorBadge(job.sector)}
+              <span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px;background:rgba(83,74,183,0.10);color:#3C3489;">${job.contract_type || ''}</span>
+              <span class="job-location">📍 ${[job.city, job.country].filter(Boolean).join(', ')}</span>
+            </div>
+            <h3 class="job-title">${job.title}</h3>
+            ${job.description ? `<p class="job-desc">${job.description.substring(0, 110)}…</p>` : ''}
+          </div>
+          <div class="job-footer">
+            ${job.salary ? `<span class="job-salary">${job.salary}</span>` : ''}
+            <a href="offre.html?id=${job.id}" class="job-link" onclick="event.stopPropagation()">Postuler →</a>
+          </div>
+        </article>`;
+    }
+
+    try {
+      const res  = await fetch('http://localhost:4000/api/jobs');
+      const data = await res.json();
+      const jobs = (data.jobs || []).slice(0, 4);
+
+      if (!jobs.length) {
+        container.innerHTML = `
+          <div style="text-align:center;padding:48px 20px;background:var(--white);border:1px solid var(--border);border-radius:10px;">
+            <p style="font-size:15px;color:var(--muted);margin-bottom:20px;">Aucune offre disponible en ce moment.</p>
+            <a href="talents.html#candidature" style="display:inline-block;background:var(--emerald);color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-size:14px;font-weight:600;">
+              Déposer une candidature spontanée →
+            </a>
+          </div>`;
+        return;
+      }
+      container.innerHTML = jobs.map(cardHTML).join('');
+
+    } catch {
+      if (typeof JOBS_DATA !== 'undefined' && JOBS_DATA.length) {
+        container.innerHTML = JOBS_DATA.slice(0, 4).map(cardHTML).join('');
+      } else {
+        container.innerHTML = `
+          <div style="text-align:center;padding:48px 20px;background:var(--white);border:1px solid var(--border);border-radius:10px;">
+            <p style="font-size:15px;color:var(--muted);margin-bottom:20px;">Aucune offre disponible en ce moment.</p>
+            <a href="talents.html#candidature" style="display:inline-block;background:var(--emerald);color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-size:14px;font-weight:600;">
+              Déposer une candidature spontanée →
+            </a>
+          </div>`;
+      }
+    }
+  })();
 
   /* =====================
      FILE UPLOAD — affichage nom du fichier

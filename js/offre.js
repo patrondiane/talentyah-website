@@ -1,132 +1,142 @@
 /* =====================================================
    TALENTYAH — offre.js
-   Gestion dynamique de l'affichage et postulation
+   Affichage dynamique d'une offre + postulation
 ===================================================== */
 
-document.addEventListener('DOMContentLoaded', () => {
-    
-    // 1. Récupération de l'ID dans l'URL (ex: offre.html?id=12)
-    const params = new URLSearchParams(window.location.search);
-    const jobId = parseInt(params.get('id'), 10);
+const API_OFFRE = 'http://localhost:4000';
 
-    // 2. Recherche du job dans JOBS_DATA (chargé via jobs-data.js)
-    const job = (typeof JOBS_DATA !== 'undefined') ? JOBS_DATA.find(j => j.id === jobId) : null;
+document.addEventListener('DOMContentLoaded', async () => {
 
-    if (job) {
-        renderJobDetails(job);
-    } else {
-        showError();
-    }
+  const params = new URLSearchParams(window.location.search);
+  const jobId  = parseInt(params.get('id'), 10);
 
-    // 3. Gestion du label de fichier (Input CV)
-    const fileInput = document.getElementById('cv_upload');
-    const fileLabel = document.getElementById('fileLabel');
-    if (fileInput && fileLabel) {
-        fileInput.addEventListener('change', () => {
-            const fileName = fileInput.files[0]?.name;
-            fileLabel.textContent = fileName ? `✓ ${fileName}` : 'Cliquez pour ajouter votre CV';
-            if (fileName) fileLabel.parentElement.classList.add('has-file');
+  // 1. Charger l'offre depuis l'API, fallback JOBS_DATA
+  let job = null;
+  try {
+    const res = await fetch(API_OFFRE + '/api/jobs/' + jobId);
+    if (res.ok) job = await res.json();
+  } catch { /* silencieux */ }
+
+  // Fallback fichier statique
+  if (!job && typeof JOBS_DATA !== 'undefined') {
+    job = JOBS_DATA.find(j => j.id === jobId) || null;
+  }
+
+  if (job) {
+    renderJobDetails(job);
+  } else {
+    showError();
+    return;
+  }
+
+  // 2. Label fichier CV
+  const fileInput  = document.getElementById('cv_upload');
+  const fileLabel  = document.getElementById('fileLabel');
+  if (fileInput && fileLabel) {
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files[0];
+      fileLabel.textContent = file ? `✓ ${file.name}` : 'Cliquez pour ajouter votre CV';
+      if (file) fileLabel.parentElement.classList.add('has-file');
+      else      fileLabel.parentElement.classList.remove('has-file');
+    });
+  }
+
+  // 3. Soumission formulaire candidature
+  const form = document.getElementById('offreForm');
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn        = form.querySelector('.btn-submit');
+      const successBox = document.getElementById('offreSuccess');
+
+      btn.textContent = 'Envoi en cours…';
+      btn.disabled    = true;
+
+      try {
+        const formData = new FormData(form);
+        // S'assurer que le champ CV s'appelle "cv" pour multer
+        if (fileInput && fileInput.files[0]) {
+          formData.set('cv', fileInput.files[0]);
+        }
+
+        const res = await fetch(API_OFFRE + '/api/candidates', {
+          method: 'POST',
+          body: formData
+          // Pas de Content-Type : le navigateur gère le boundary multipart
         });
-    }
 
-    // 4. Envoi du formulaire
-    const form = document.getElementById('offreForm');
-    if (form) {
-        form.addEventListener('submit', handleFormSubmit);
-    }
+        if (res.ok) {
+          form.style.opacity      = '0.3';
+          form.style.pointerEvents = 'none';
+          if (successBox) successBox.style.display = 'block';
+          btn.textContent = 'Candidature envoyée !';
+        } else {
+          const data = await res.json();
+          alert(data.error || 'Erreur lors de l\'envoi. Veuillez réessayer.');
+          btn.disabled    = false;
+          btn.textContent = 'Réessayer';
+        }
+      } catch (err) {
+        console.error('Erreur soumission:', err);
+        alert('Une erreur réseau est survenue. Veuillez réessayer.');
+        btn.disabled    = false;
+        btn.textContent = 'Réessayer';
+      }
+    });
+  }
 });
 
-/**
- * Remplit la page avec les données du job
- */
 function renderJobDetails(job) {
-    document.title = `${job.title} - Talentyah`;
-    document.getElementById('jobTitle').textContent = job.title;
-    document.getElementById('jobSector').textContent = job.sector;
-    document.getElementById('jobLocation').textContent = `${job.city}, ${job.country}`;
-    document.getElementById('jobContract').textContent = job.contract_type;
-    document.getElementById('offreDescription').textContent = job.description;
-    document.getElementById('hiddenJobId').value = job.id;
+  document.title = `${job.title} — Talentyah`;
 
-    // Ajout dynamique du profil recherché (si disponible dans tes données)
-    const profilList = document.getElementById('profilList');
-    if (profilList && job.requirements) {
-        job.requirements.forEach(req => {
-            const li = document.createElement('li');
-            li.textContent = req;
-            profilList.appendChild(li);
-        });
-    }
-}
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val || ''; };
+  set('jobTitle',    job.title);
+  set('jobSector',   job.sector);
+  set('jobLocation', [job.city, job.country].filter(Boolean).join(', '));
+  set('jobContract', job.contract_type);
 
-/**
- * Gère l'envoi API
- */
-async function handleFormSubmit(e) {
-    e.preventDefault();
-    const form = e.target;
-    const btn = form.querySelector('.btn-submit');
-    const successBox = document.getElementById('offreSuccess');
+  const descEl = document.getElementById('offreDescription');
+  if (descEl) descEl.textContent = job.description || '';
 
-    btn.textContent = 'Envoi en cours...';
-    btn.disabled = true;
+  const hiddenId = document.getElementById('hiddenJobId');
+  if (hiddenId) hiddenId.value = job.id;
 
-    try {
-        const formData = new FormData(form);
-        
-        // Appel à ton utilitaire apiFetch défini dans api.js
-        await window.apiFetch('/applications', {
-            method: 'POST',
-            body: formData
-        });
+  // Remplir les champs cachés pour la candidature
+  const hiddenTitle = document.getElementById('hiddenJobTitle');
+  if (hiddenTitle) hiddenTitle.value = job.title || '';
 
-        form.style.opacity = '0.3';
-        form.style.pointerEvents = 'none';
-        successBox.style.display = 'block';
-        btn.textContent = 'Candidature envoyée !';
+  const hiddenSector = document.getElementById('hiddenJobSector');
+  if (hiddenSector) hiddenSector.value = job.sector || '';
 
-    } catch (err) {
-        console.error("Erreur soumission:", err);
-        alert("Une erreur est survenue. Veuillez réessayer.");
-        btn.disabled = false;
-        btn.textContent = 'Réessayer';
-    }
+  // Profil recherché
+  const profilList = document.getElementById('profilList');
+  if (profilList && job.requirements) {
+    const reqs = Array.isArray(job.requirements)
+      ? job.requirements
+      : job.requirements.split('\n').filter(Boolean);
+    profilList.innerHTML = reqs.map(r => `<li>${r}</li>`).join('');
+  }
+
+  // Tags
+  const tagsEl = document.getElementById('jobTags');
+  if (tagsEl && job.tags) {
+    const tags = Array.isArray(job.tags) ? job.tags : (job.tags || '').split(',').filter(Boolean);
+    tagsEl.innerHTML = tags.map(t => `<span class="job-tag">${t.trim()}</span>`).join('');
+  }
+
+  // Salaire
+  const salaryEl = document.getElementById('jobSalary');
+  if (salaryEl && job.salary) salaryEl.textContent = job.salary;
 }
 
 function showError() {
-    const container = document.querySelector('.offre-grid');
-    if (container) {
-        container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 100px 0;">
-            <h2 class="section-title">Offre introuvable</h2>
-            <p>Ce poste n'est plus disponible ou le lien est incorrect.</p>
-            <a href="carrieres.html" class="btn-gold" style="margin-top:20px; display:inline-block;">Voir les offres</a>
-        </div>`;
-    }
+  const container = document.querySelector('.offre-grid') || document.querySelector('main');
+  if (container) {
+    container.innerHTML = `
+      <div style="text-align:center;padding:100px 0;">
+        <h2>Offre introuvable</h2>
+        <p>Ce poste n'est plus disponible ou le lien est incorrect.</p>
+        <a href="carrieres.html" style="display:inline-block;margin-top:20px;">← Voir toutes les offres</a>
+      </div>`;
+  }
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-    // 1. On récupère l'ID depuis l'URL (?id=X)
-    const params = new URLSearchParams(window.location.search);
-    const jobId = parseInt(params.get('id'), 10);
-
-    // 2. On cherche l'offre correspondante dans JOBS_DATA
-    // (Assure-toi que jobs-data.js est bien appelé AVANT offre.js dans ton HTML)
-    const job = JOBS_DATA.find(item => item.id === jobId);
-
-    if (job) {
-        // 3. On remplit les éléments de la page
-        document.getElementById('jobTitle').textContent = job.title;
-        document.getElementById('jobSector').textContent = job.sector;
-        document.getElementById('jobLocation').textContent = `${job.city}, ${job.country}`;
-        document.getElementById('jobContract').textContent = job.contract_type;
-        document.getElementById('offreDescription').textContent = job.description;
-        
-        // On remplit aussi le champ caché du formulaire pour savoir quel poste est postulé
-        const hiddenInput = document.getElementById('hiddenJobId');
-        if (hiddenInput) hiddenInput.value = job.id;
-        
-    } else {
-        // Si l'ID n'existe pas ou est erroné
-        document.body.innerHTML = "<h1>Offre introuvable</h1><a href='index.html'>Retour à l'accueil</a>";
-    }
-});

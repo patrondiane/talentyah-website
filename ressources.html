@@ -11,9 +11,6 @@
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="css/ressources.css">
   <link rel="stylesheet" href="css/carousel.css">
-  <script src="js/carousel.js"></script>
-  <script src="js/script.js"></script>
-  <script src="js/ressources.js"></script>
 </head>
 <body>
 
@@ -141,9 +138,9 @@
   <section class="ressources-content" id="articles">
     <div class="container">
       <div class="articles-header">
-        <p class="articles-count"><span>6</span> articles disponibles</p>
+        <p class="articles-count"><span id="articlesCountNum">6</span> articles disponibles</p>
       </div>
-      <div class="articles-grid">
+      <div class="articles-grid" id="articlesGrid">
 
         <article class="article-card reveal" data-category="recrutement">
           <div class="article-card-thumb thumb-recrutement">
@@ -368,5 +365,10 @@
       </div>
     </div>
   </footer>
+
+  <script src="js/carousel.js"></script>
+  <script src="js/carousel-dynamic.js"></script>
+  <script src="js/script.js"></script>
+  <script src="js/ressources.js"></script>
 </body>
 </html>

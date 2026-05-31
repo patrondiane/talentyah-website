@@ -10,8 +10,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="css/carousel.css">
-  <script src="js/script.js"></script>
-  <script src="js/carousel.js"></script>
 
 </head>
 <body>
@@ -43,7 +41,7 @@
   <!-- HERO -->
  <section class="hero-carousel" aria-label="Carousel principal">
  
-    <div class="carousel-slides">
+    <div class="carousel-slides" id="carouselSlides">
  
       <!-- SLIDE 1 -->
       <div class="carousel-slide">
@@ -280,7 +278,7 @@
       <h2 class="clients-title">Ils nous font confiance</h2>
     </div>
     <div class="clients-track-wrap">
-  <div class="clients-track">
+  <div class="clients-track" id="clientsTrack">
     
     <div class="client-logo">
       <img src="images/logos/Deloitte.jpg" alt="Deloitte" class="client-logo-img">
@@ -391,5 +389,9 @@
       </div>
     </div>
   </footer>
+  <script src="js/api.js"></script>
+  <script src="js/script.js"></script>
+  <script src="js/carousel.js"></script>
+  <script src="js/carousel-dynamic.js"></script>
 </body>
 </html>
