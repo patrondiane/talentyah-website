@@ -4,7 +4,7 @@ const multer = require('multer');
 const db     = require('../db');
 const { auth } = require('../middleware/auth');
 const { notifyNewCandidate } = require('../mailer');
-const { uploadBuffer, deleteByUrl, getSignedUrl } = require('../cloudinary');
+const { uploadBuffer, deleteByUrl } = require('../cloudinary');
 
 // Multer en mémoire (pas de disque — on envoie direct à Cloudinary)
 const upload = multer({
@@ -30,9 +30,10 @@ router.post('/', upload.single('cv'), async (req, res) => {
       cv_filename = req.file.originalname;
       try {
         cv_url = await uploadBuffer(req.file.buffer, 'talentyah/cv', {
-          resource_type: 'raw',
-          type: 'upload',
-          access_mode: 'public',
+          resource_type: 'auto',
+          access_mode:   'public',
+          type:          'upload',
+          upload_preset: process.env.CLOUDINARY_UPLOAD_PRESET || undefined,
           public_id: `cv_${Date.now()}_${cv_filename.replace(/[^a-zA-Z0-9._-]/g, '_')}`,
         });
       } catch (uploadErr) {
@@ -71,12 +72,7 @@ router.get('/', auth, async (req, res) => {
   }
   sql += ` ORDER BY created_at DESC`;
   const candidates = await db.all(sql, params);
-  // Générer des URLs signées pour les CVs Cloudinary
-  const signed = candidates.map(c => ({
-    ...c,
-    cv_url: c.cv_url ? getSignedUrl(c.cv_url) : null,
-  }));
-  res.json({ candidates: signed, total: signed.length });
+  res.json({ candidates, total: candidates.length });
 });
 
 // GET /api/candidates/:id — admin only
