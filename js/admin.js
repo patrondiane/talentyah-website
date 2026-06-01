@@ -640,6 +640,18 @@ function applyPermissions() {
 /* ══════════════════════════════
    CANDIDATURES
 ══════════════════════════════ */
+
+// Construit l'URL de téléchargement du CV
+// Cloudinary raw → ajouter fl_attachment pour forcer le download
+function _cvDownloadUrl(url) {
+  if (!url) return '#';
+  if (url.startsWith('http') && url.includes('cloudinary.com')) {
+    // Insérer fl_attachment dans l'URL Cloudinary
+    return url.replace('/upload/', '/upload/fl_attachment/');
+  }
+  return url.startsWith('http') ? url : API + url;
+}
+
 async function loadCandidates() {
   const tbody   = document.getElementById('candidatesTbody');
   const sector  = document.getElementById('filterSector')?.value.trim()  || '';
@@ -689,7 +701,7 @@ async function loadCandidates() {
       <td style="color:var(--muted);">${_esc(r.country || '—')}</td>
       <td style="color:var(--muted);">${_esc(r.experience_level || '—')}</td>
       <td>${r.cv_url
-        ? '<a href="' + (r.cv_url.startsWith('http') ? _esc(r.cv_url) : API + _esc(r.cv_url)) + '" target="_blank" rel="noopener" class="badge-cv">⬇ Télécharger CV</a>'
+        ? '<a href="' + _cvDownloadUrl(r.cv_url) + '" target="_blank" rel="noopener" download class="badge-cv">⬇ Télécharger CV</a>'
         : '<span style="color:var(--border);">—</span>'
       }</td>
       <td>
