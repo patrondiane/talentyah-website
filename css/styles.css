@@ -1204,12 +1204,21 @@ img {
   .form-row { grid-template-columns: 1fr !important; gap: 0 !important; }
 
   /* Boutons */
-  .btn-gold, .btn-ghost, .btn-emerald, .btn-submit, .btn-outline {
+  /* Boutons pleine largeur SAUF dans le carousel */
+  .btn-gold:not(.carousel-slide-ctas .btn-gold):not(.carousel-slide-ctas *),
+  .btn-ghost:not(.carousel-slide-ctas .btn-ghost):not(.carousel-slide-ctas *),
+  .btn-emerald, .btn-submit, .btn-outline {
     width: 100%;
     text-align: center;
     justify-content: center;
     padding: 14px 20px;
     font-size: 14px;
+  }
+  /* Carousel CTA — garder taille naturelle */
+  .carousel-slide-ctas .btn-gold,
+  .carousel-slide-ctas .btn-ghost {
+    width: auto !important;
+    display: inline-flex !important;
   }
   .hero-actions,
   .hero-page-cta,
