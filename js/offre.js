@@ -136,7 +136,11 @@ function renderJobDetails(job) {
     const reqs = Array.isArray(job.requirements)
       ? job.requirements
       : job.requirements.split('\n').filter(Boolean);
-    profilList.innerHTML = reqs.map(r => `<li>${r}</li>`).join('');
+    profilList.innerHTML = reqs.map(r => `
+      <li style="display:flex;align-items:flex-start;gap:10px;font-size:14px;color:var(--dark);line-height:1.6;">
+        <span style="color:var(--emerald);font-size:16px;flex-shrink:0;margin-top:1px;">✓</span>
+        <span>${r}</span>
+      </li>`).join('');
   }
 
   // Tags
