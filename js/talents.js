@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     try {
-      const res  = await fetch('http://localhost:4000/api/jobs');
+      const res  = await fetch('https://talentyah-website.onrender.com/api/jobs');
       const data = await res.json();
       const jobs = (data.jobs || []).slice(0, 4);
 

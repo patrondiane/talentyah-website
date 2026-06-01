@@ -3,7 +3,7 @@
    Shared scripts + formulaires connectés au backend
 ===================================================== */
 
-const BACKEND = 'http://localhost:4000';
+const BACKEND = 'https://talentyah-website.onrender.com';
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -223,7 +223,7 @@ function _showError(btn, errorEl, message) {
   if (!track) return;
 
   try {
-    const res  = await fetch('http://localhost:4000/api/partners');
+    const res  = await fetch('https://talentyah-website.onrender.com/api/partners');
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const data     = await res.json();
     const partners = data.partners || [];
@@ -231,7 +231,7 @@ function _showError(btn, errorEl, message) {
 
     track.innerHTML = [...partners, ...partners].map(p => `
       <div class="client-logo">
-        <img src="http://localhost:4000${p.image_url}"
+        <img src="https://talentyah-website.onrender.com${p.image_url}"
              alt="${p.name}"
              class="client-logo-img"
              onerror="this.parentElement.style.display='none'">
@@ -252,7 +252,7 @@ function _showError(btn, errorEl, message) {
   if (!slidesWrap) return;
 
   try {
-    const res  = await fetch('http://localhost:4000/api/carousel');
+    const res  = await fetch('https://talentyah-website.onrender.com/api/carousel');
     if (!res.ok) throw new Error();
     const data = await res.json();
     const slides = data.slides || [];
@@ -261,7 +261,7 @@ function _showError(btn, errorEl, message) {
     slidesWrap.innerHTML = slides.map(s => `
       <div class="carousel-slide">
         <div class="carousel-slide-media"
-             style="background-image: url('http://localhost:4000${s.image_url}')">
+             style="background-image: url('https://talentyah-website.onrender.com${s.image_url}')">
         </div>
         <div class="carousel-slide-overlay"></div>
         <div class="carousel-slide-content">

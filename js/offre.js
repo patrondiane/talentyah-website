@@ -3,7 +3,7 @@
    Affichage dynamique d'une offre + postulation
 ===================================================== */
 
-const API_OFFRE = 'http://localhost:4000';
+const API_OFFRE = 'https://talentyah-website.onrender.com';
 
 document.addEventListener('DOMContentLoaded', async () => {
 

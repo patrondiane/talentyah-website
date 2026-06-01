@@ -23,7 +23,7 @@ async function initDynamicCarousel() {
 
   try {
     const page = _getCurrentPage();
-    const res  = await fetch('http://localhost:4000/api/carousel?page=' + page + '&_=' + Date.now());
+    const res  = await fetch('https://talentyah-website.onrender.com/api/carousel?page=' + page + '&_=' + Date.now());
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const data   = await res.json();
     const slides = data.slides || [];
@@ -32,7 +32,7 @@ async function initDynamicCarousel() {
     slidesContainer.innerHTML = slides.map(s => `
       <div class="carousel-slide">
         <div class="carousel-slide-media"
-             style="background-image:url('http://localhost:4000${s.image_url}');background-size:cover;background-position:center;"></div>
+             style="background-image:url('https://talentyah-website.onrender.com{s.image_url}');background-size:cover;background-position:center;"></div>
         <div class="carousel-slide-overlay"></div>
         <div class="carousel-slide-content">
           <div class="carousel-slide-inner">

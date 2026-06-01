@@ -3,7 +3,7 @@
    Rôles : superadmin | admin | editor
 ===================================================== */
 
-const API = 'http://localhost:4000';
+const API = 'https://talentyah-website.onrender.com';
 
 /* ══════════════════════════════
    MATRICE DES PRIVILÈGES
@@ -979,7 +979,7 @@ function renderPartnersGrid() {
       if (p.img.startsWith('data:') || p.img.startsWith('http')) {
         imgSrc = p.img;
       } else {
-        imgSrc = 'http://localhost:4000' + p.img;
+        imgSrc = 'https://talentyah-website.onrender.com' + p.img;
       }
     }
     return `

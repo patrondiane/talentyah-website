@@ -47,7 +47,7 @@ function renderArticles(pubs) {
       <article class="article-card reveal visible" data-category="${cat}">
         <div class="article-card-thumb thumb-${cat}">
           ${p.image_url
-            ? `<img src="http://localhost:4000${p.image_url}" alt="${_esc(p.title)}" style="width:100%;height:100%;object-fit:cover;">`
+            ? `<img src="https://talentyah-website.onrender.com${p.image_url}" alt="${_esc(p.title)}" style="width:100%;height:100%;object-fit:cover;">`
             : `<div class="article-card-thumb-placeholder"><svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>`
           }
         </div>
@@ -78,7 +78,7 @@ async function loadArticles() {
   grid.innerHTML = '<p style="color:var(--muted);font-size:14px;padding:20px 0;">Chargement des articles…</p>';
 
   try {
-    const res  = await fetch('http://localhost:4000/api/publications');
+    const res  = await fetch('https://talentyah-website.onrender.com/api/publications');
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
     const pubs = data.publications || [];
@@ -122,7 +122,7 @@ function init() {
       const btn   = nlForm.querySelector('.newsletter-submit') || nlForm.querySelector('button');
       if (!input?.value.trim()) return;
       try {
-        await fetch('http://localhost:4000/api/contact', {
+        await fetch('https://talentyah-website.onrender.com/api/contact', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: input.value.trim(), subject: 'newsletter', message: 'Inscription newsletter' })

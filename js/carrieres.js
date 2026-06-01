@@ -3,7 +3,7 @@
    Filtrage, recherche et affichage des offres
 ===================================================== */
 
-const API = 'http://localhost:4000';
+const API = 'https://talentyah-website.onrender.com';
 let allJobs = [];
 
 document.addEventListener('DOMContentLoaded', () => {

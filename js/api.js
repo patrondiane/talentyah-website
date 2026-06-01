@@ -1,5 +1,5 @@
 // js/api.js
-window.API_BASE = "http://localhost:4000/api";
+window.API_BASE = "https://talentyah-website.onrender.com";
 
 window.apiFetch = async function (path, options = {}) {
   const res = await fetch(`${window.API_BASE}${path}`, options);
