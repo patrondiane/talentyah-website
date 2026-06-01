@@ -79,7 +79,7 @@
 .job-description-text {
     font-size: 18px;
     line-height: 1.8;
-    color: black;
+    color: rgba(255, 255, 255, 0.85);
 }
 
 .job-description-text h3 {
