@@ -4,7 +4,7 @@ const multer = require('multer');
 const db     = require('../db');
 const { auth } = require('../middleware/auth');
 const { notifyNewCandidate } = require('../mailer');
-const { uploadBuffer, deleteByUrl } = require('../cloudinary');
+const { uploadCV, deleteCV } = require('../supabase-storage');
 
 // Multer en mémoire (pas de disque — on envoie direct à Cloudinary)
 const upload = multer({
@@ -29,13 +29,7 @@ router.post('/', upload.single('cv'), async (req, res) => {
     if (req.file) {
       cv_filename = req.file.originalname;
       try {
-        cv_url = await uploadBuffer(req.file.buffer, 'talentyah/cv', {
-          resource_type: 'auto',
-          access_mode:   'public',
-          type:          'upload',
-          upload_preset: process.env.CLOUDINARY_UPLOAD_PRESET || undefined,
-          public_id: `cv_${Date.now()}_${cv_filename.replace(/[^a-zA-Z0-9._-]/g, '_')}`,
-        });
+        cv_url = await uploadCV(req.file.buffer, cv_filename, req.file.mimetype);
       } catch (uploadErr) {
         console.warn('[CLOUDINARY] Upload CV échoué, candidature sauvegardée sans CV:', uploadErr.message);
         // On continue sans CV plutôt que de faire crasher la route
@@ -85,7 +79,7 @@ router.get('/:id', auth, async (req, res) => {
 // DELETE /api/candidates/:id — admin only
 router.delete('/:id', auth, async (req, res) => {
   const c = await db.get(`SELECT cv_url FROM candidates WHERE id = ?`, [req.params.id]);
-  await deleteByUrl(c?.cv_url);   // supprime le CV de Cloudinary
+  await deleteCV(c?.cv_url);   // supprime le CV de Supabase
   await db.run(`DELETE FROM candidates WHERE id = ?`, [req.params.id]);
   res.json({ ok: true });
 });

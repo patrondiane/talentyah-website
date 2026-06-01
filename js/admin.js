@@ -642,12 +642,9 @@ function applyPermissions() {
 ══════════════════════════════ */
 
 
-// Passe le CV via le proxy backend pour contourner les restrictions Cloudinary
+// URL du CV — Supabase Storage = URL publique directe
 function _fixCvUrl(url) {
   if (!url) return '#';
-  if (url.includes('cloudinary.com')) {
-    return API + '/api/cv-proxy?url=' + encodeURIComponent(url);
-  }
   return url.startsWith('http') ? url : API + url;
 }
 
