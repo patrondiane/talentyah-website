@@ -53,8 +53,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       btn.disabled    = true;
 
       try {
+        // Vérifier la taille du CV (max 4 Mo pour Render)
+        if (fileInput && fileInput.files[0] && fileInput.files[0].size > 4 * 1024 * 1024) {
+          btn.disabled = false; btn.textContent = 'Postuler →';
+          alert('Votre CV est trop lourd (' + (fileInput.files[0].size / 1024 / 1024).toFixed(1) + ' Mo).\nTaille maximum : 4 Mo.\nCompressez votre PDF avant de l\'envoyer.');
+          return;
+        }
+
         const formData = new FormData(form);
-        // S'assurer que le champ CV s'appelle "cv" pour multer
         if (fileInput && fileInput.files[0]) {
           formData.set('cv', fileInput.files[0]);
         }

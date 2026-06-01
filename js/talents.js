@@ -130,18 +130,14 @@ document.addEventListener('DOMContentLoaded', () => {
           return;
         }
 
-        const fd = new FormData(form);
-
-        for (const [k, v] of fd.entries()) {
-          console.log(k, v);
+        // Vérifier la taille du fichier (max 4 Mo pour Render)
+        const cvFile = fileInput?.files[0];
+        if (cvFile && cvFile.size > 4 * 1024 * 1024) {
+          alert('Votre CV est trop lourd (' + (cvFile.size / 1024 / 1024).toFixed(1) + ' Mo).\nTaille maximum : 4 Mo.\nCompressez votre PDF avant de l\'envoyer.');
+          return;
         }
 
-
-        // IMPORTANT : le champ fichier doit s'appeler "cv"
-        // Ton input est name="cv" => OK.
-        // Si jamais tu changes le name, il faudra faire : fd.set('cv', fileInput.files[0]);
-
-        console.log("Submit OK — envoi en cours...");
+        const fd = new FormData(form);
 
         await window.apiFetch('/api/candidates', {
           method: 'POST',
