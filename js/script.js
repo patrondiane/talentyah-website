@@ -218,6 +218,13 @@ function _showError(btn, errorEl, message) {
    PARTENAIRES — section "Ils nous font confiance" (index.html)
    Charge depuis l'API, garde les logos statiques en fallback
 ══════════════════════════════════════════ */
+
+// Résout une URL d'image (Cloudinary = déjà absolue, sinon préfixer avec le backend)
+function _imgUrl(url) {
+  if (!url) return '';
+  return url.startsWith('http') ? url : 'https://talentyah-website.onrender.com' + url;
+}
+
 (async function loadClientLogos() {
   const track = document.getElementById('clientsTrack');
   if (!track) return;
@@ -231,7 +238,7 @@ function _showError(btn, errorEl, message) {
 
     track.innerHTML = [...partners, ...partners].map(p => `
       <div class="client-logo">
-        <img src="https://talentyah-website.onrender.com${p.image_url}"
+        <img src="${_imgUrl(p.image_url)}"
              alt="${p.name}"
              class="client-logo-img"
              onerror="this.parentElement.style.display='none'">
@@ -261,7 +268,7 @@ function _showError(btn, errorEl, message) {
     slidesWrap.innerHTML = slides.map(s => `
       <div class="carousel-slide">
         <div class="carousel-slide-media"
-             style="background-image: url('https://talentyah-website.onrender.com${s.image_url}')">
+             style="background-image: url('${_imgUrl(s.image_url)}')">
         </div>
         <div class="carousel-slide-overlay"></div>
         <div class="carousel-slide-content">

@@ -938,7 +938,7 @@ function renderCarouselList(slides) {
 
     return `
     <div style="display:grid;grid-template-columns:120px 1fr auto;gap:16px;align-items:center;background:#fff;border:1px solid var(--border);border-radius:8px;padding:12px 16px;">
-      <img src="${API}${s.image_url}" alt="${_esc(s.title)}"
+      <img src="${s.image_url && s.image_url.startsWith('http') ? s.image_url : API + s.image_url}" alt="${_esc(s.title)}"
            style="width:120px;height:70px;object-fit:cover;border-radius:6px;background:#eee;">
       <div>
         <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">${_esc(s.eyebrow||'')}</div>
@@ -988,7 +988,7 @@ function renderPartnersGrid() {
       if (p.img.startsWith('data:') || p.img.startsWith('http')) {
         imgSrc = p.img;
       } else {
-        imgSrc = 'https://talentyah-website.onrender.com' + p.img;
+        imgSrc = p.img.startsWith('http') ? p.img : 'https://talentyah-website.onrender.com' + p.img;
       }
     }
     return `

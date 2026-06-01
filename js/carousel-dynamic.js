@@ -32,7 +32,7 @@ async function initDynamicCarousel() {
     slidesContainer.innerHTML = slides.map(s => `
       <div class="carousel-slide">
         <div class="carousel-slide-media"
-             style="background-image:url('https://talentyah-website.onrender.com${s.image_url}');background-size:cover;background-position:center;"></div>
+             style="background-image:url('${s.image_url && s.image_url.startsWith('http') ? s.image_url : 'https://talentyah-website.onrender.com' + s.image_url}');background-size:cover;background-position:center;"></div>
         <div class="carousel-slide-overlay"></div>
         <div class="carousel-slide-content">
           <div class="carousel-slide-inner">
