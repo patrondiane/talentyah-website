@@ -27,20 +27,20 @@ const upload = multer({
   },
 });
 
-// POST /api/candidates — public (candidature avec CV)
-router.post('/', upload.single('cv'), (req, res) => {
+// POST /api/candidates — public
+router.post('/', upload.single('cv'), async (req, res) => {
   const { first_name, last_name, email, phone, role_target, sector, country, experience_level, message, job_id } = req.body;
   if (!first_name || !last_name || !email) return res.status(400).json({ error: 'Prénom, nom et email requis' });
 
   const cv_filename = req.file ? req.file.filename : null;
   const cv_url      = cv_filename ? `/uploads/${cv_filename}` : null;
 
-  db.run(
+  const result = await db.run(
     `INSERT INTO candidates (first_name, last_name, email, phone, role_target, sector, country, experience_level, message, cv_url, cv_filename, job_id)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [first_name, last_name, email, phone||null, role_target||null, sector||null, country||null, experience_level||null, message||null, cv_url, cv_filename, job_id||null]
   );
-  const id = db.lastInsertRowId();
+  const id = db.lastInsertRowId(result);
 
   notifyNewCandidate({ first_name, last_name, email, phone, role_target, sector, country, experience_level, message, cv_url }).catch(() => {});
 
@@ -48,7 +48,7 @@ router.post('/', upload.single('cv'), (req, res) => {
 });
 
 // GET /api/candidates — admin only
-router.get('/', auth, (req, res) => {
+router.get('/', auth, async (req, res) => {
   const { sector, country, search } = req.query;
   let sql    = `SELECT * FROM candidates WHERE 1=1`;
   const params = [];
@@ -62,27 +62,26 @@ router.get('/', auth, (req, res) => {
   }
 
   sql += ` ORDER BY created_at DESC`;
-  const candidates = db.all(sql, params);
-  const total = candidates.length;
-  res.json({ candidates, total });
+  const candidates = await db.all(sql, params);
+  res.json({ candidates, total: candidates.length });
 });
 
 // GET /api/candidates/:id — admin only
-router.get('/:id', auth, (req, res) => {
-  const c = db.get(`SELECT * FROM candidates WHERE id = ?`, [req.params.id]);
+router.get('/:id', auth, async (req, res) => {
+  const c = await db.get(`SELECT * FROM candidates WHERE id = ?`, [req.params.id]);
   if (!c) return res.status(404).json({ error: 'Candidat introuvable' });
   res.json(c);
 });
 
 // DELETE /api/candidates/:id — admin only
-router.delete('/:id', auth, (req, res) => {
-  const c = db.get(`SELECT cv_filename FROM candidates WHERE id = ?`, [req.params.id]);
+router.delete('/:id', auth, async (req, res) => {
+  const c = await db.get(`SELECT cv_filename FROM candidates WHERE id = ?`, [req.params.id]);
   if (c?.cv_filename) {
     const fs    = require('fs');
-    const fpath = require('path').join(__dirname, '../uploads', c.cv_filename);
+    const fpath = path.join(__dirname, '../uploads', c.cv_filename);
     if (fs.existsSync(fpath)) fs.unlinkSync(fpath);
   }
-  db.run(`DELETE FROM candidates WHERE id = ?`, [req.params.id]);
+  await db.run(`DELETE FROM candidates WHERE id = ?`, [req.params.id]);
   res.json({ ok: true });
 });
 

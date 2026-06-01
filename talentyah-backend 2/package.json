@@ -16,7 +16,6 @@
     "jsonwebtoken": "^9.0.0",
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^8.0.10",
-    "sql.js": "^1.10.3",
     "uuid": "^9.0.0"
   }
 }

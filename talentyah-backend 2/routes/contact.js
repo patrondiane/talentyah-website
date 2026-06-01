@@ -4,11 +4,11 @@ const db     = require('../db');
 const { auth } = require('../middleware/auth');
 
 // POST /api/contact — public
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   const { fullname, name, email, subject, type, message } = req.body;
   if (!email) return res.status(400).json({ error: 'Email requis' });
   const now = new Date().toISOString();
-  db.run(
+  await db.run(
     `INSERT INTO contacts (fullname, email, subject, type, message, created_at) VALUES (?,?,?,?,?,?)`,
     [fullname || name || null, email, subject || type || null, type || subject || null, message || null, now]
   );
@@ -16,8 +16,8 @@ router.post('/', (req, res) => {
 });
 
 // GET /api/contact — admin
-router.get('/', auth, (req, res) => {
-  const contacts = db.all(`SELECT * FROM contacts ORDER BY created_at DESC`);
+router.get('/', auth, async (req, res) => {
+  const contacts = await db.all(`SELECT * FROM contacts ORDER BY created_at DESC`);
   res.json({ contacts, total: contacts.length });
 });
 
