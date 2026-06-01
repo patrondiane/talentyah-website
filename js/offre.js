@@ -96,13 +96,29 @@ function renderJobDetails(job) {
   document.title = `${job.title} — Talentyah`;
 
   const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val || ''; };
-  set('jobTitle',    job.title);
-  set('jobSector',   job.sector);
-  set('jobLocation', [job.city, job.country].filter(Boolean).join(', '));
-  set('jobContract', job.contract_type);
+  set('jobTitle',  job.title);
+  set('jobSector', job.sector);
 
+  // jobMeta = localisation + contrat + salaire dans le hero
+  const location = [job.city, job.country].filter(Boolean).join(', ');
+  const meta     = [location, job.contract_type, job.salary].filter(Boolean).join(' · ');
+  set('jobMeta',   meta);
+
+  // IDs optionnels si présents dans le HTML
+  const showBadge = (id, val) => {
+    const el = document.getElementById(id);
+    if (el && val) { el.textContent = val; el.style.display = 'inline-block'; }
+  };
+  showBadge('jobLocation', '📍 ' + location);
+  showBadge('jobContract', job.contract_type);
+  showBadge('jobSalary',   job.salary);
+
+  // Description
   const descEl = document.getElementById('offreDescription');
-  if (descEl) descEl.textContent = job.description || '';
+  if (descEl) {
+    // Préserver les sauts de ligne
+    descEl.innerHTML = (job.description || '').split('\n').join('<br>');
+  }
 
   const hiddenId = document.getElementById('hiddenJobId');
   if (hiddenId) hiddenId.value = job.id;

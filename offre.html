@@ -113,12 +113,22 @@
         
         <div id="jobDetails" class="reveal">
           <div class="section-label"><span class="section-label-line"></span><span class="section-label-text">Détails du poste</span></div>
-          <h2 class="section-title" style="color: white; margin-bottom: 30px;">Description & Missions</h2>
-          
+          <h2 class="section-title" style="color: white; margin-bottom: 16px;">Description & Missions</h2>
+
+          <!-- Infos clés du poste -->
+          <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:28px;">
+            <span id="jobLocation" style="display:none;font-size:12px;font-weight:600;padding:5px 12px;border-radius:999px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.8);">📍</span>
+            <span id="jobContract" style="display:none;font-size:12px;font-weight:600;padding:5px 12px;border-radius:999px;background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.8);"></span>
+            <span id="jobSalary"   style="display:none;font-size:12px;font-weight:600;padding:5px 12px;border-radius:999px;background:rgba(200,168,75,0.2);color:#C8A84B;"></span>
+          </div>
+
           <div id="offreDescription" class="programme-desc" style="font-size: 16px; margin-bottom: 30px;"></div>
           
           <h3 class="programme-title" style="font-size: 20px;">Profil recherché</h3>
           <ul id="profilList" class="programme-points"></ul>
+
+          <!-- Tags -->
+          <div id="jobTags" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:20px;"></div>
           
           <div style="margin-top: 40px;">
             <a href="carrieres.html" class="programme-link">← Retour aux offres</a>
