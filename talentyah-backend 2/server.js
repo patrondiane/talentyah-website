@@ -10,7 +10,18 @@ const app  = express();
 const PORT = process.env.PORT || 4000;
 
 app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:5500', 'http://127.0.0.1:5500', 'https://talentyah.com'],
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:5500',
+    'http://127.0.0.1:5500',
+    'https://talentyah.com',
+    'https://www.talentyah.com',
+    'https://patrondiane.github.io/talentyah-website/',
+    /\.talentyah\.com$/,
+    /\.github\.io$/,
+    /\.netlify\.app$/,
+    /\.vercel\.app$/,
+  ],
   methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
   allowedHeaders: ['Content-Type','Authorization'],
   credentials: true,
