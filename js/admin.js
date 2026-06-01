@@ -641,6 +641,16 @@ function applyPermissions() {
    CANDIDATURES
 ══════════════════════════════ */
 
+
+// Passe le CV via le proxy backend pour contourner les restrictions Cloudinary
+function _fixCvUrl(url) {
+  if (!url) return '#';
+  if (url.includes('cloudinary.com')) {
+    return API + '/api/cv-proxy?url=' + encodeURIComponent(url);
+  }
+  return url.startsWith('http') ? url : API + url;
+}
+
 async function loadCandidates() {
   const tbody   = document.getElementById('candidatesTbody');
   const sector  = document.getElementById('filterSector')?.value.trim()  || '';
@@ -690,7 +700,7 @@ async function loadCandidates() {
       <td style="color:var(--muted);">${_esc(r.country || '—')}</td>
       <td style="color:var(--muted);">${_esc(r.experience_level || '—')}</td>
       <td>${r.cv_url
-        ? '<a href="' + (r.cv_url.startsWith('http') ? r.cv_url : API + r.cv_url) + '" target="_blank" rel="noopener" class="badge-cv">⬇ Télécharger CV</a>'
+        ? '<a href="' + _fixCvUrl(r.cv_url) + '" target="_blank" rel="noopener" class="badge-cv">⬇ Télécharger CV</a>'
         : '<span style="color:var(--border);">—</span>'
       }</td>
       <td>

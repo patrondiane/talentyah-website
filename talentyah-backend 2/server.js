@@ -42,6 +42,28 @@ app.use('/api/candidate',    require('./routes/candidates'));
 app.use('/api/company',      require('./routes/companies'));
 app.use('/api/applications', require('./routes/candidates'));
 
+// Route proxy pour servir les CVs Cloudinary (contourne les restrictions d'accès)
+app.get('/api/cv-proxy', async (req, res) => {
+  const { url } = req.query;
+  if (!url || !url.includes('cloudinary.com')) {
+    return res.status(400).json({ error: 'URL invalide' });
+  }
+  try {
+    const https  = require('https');
+    const urlObj = new URL(url);
+    https.get(urlObj.href, (cloudRes) => {
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'inline; filename="cv.pdf"');
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      cloudRes.pipe(res);
+    }).on('error', (err) => {
+      res.status(500).json({ error: 'Impossible de récupérer le CV' });
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // 404
 app.use((req, res) => res.status(404).json({ error: `Route ${req.method} ${req.path} introuvable` }));
 
