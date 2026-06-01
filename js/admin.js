@@ -11,6 +11,28 @@ const API = 'https://talentyah-website.onrender.com';
    true  = panel visible
    false = panel masqué
 ══════════════════════════════ */
+// Helper API centralisé — gère automatiquement les 401
+async function _api(path, options = {}) {
+  const token = sessionStorage.getItem('talentyah_token');
+  const res = await fetch(API + path, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + token,
+      ...(options.headers || {}),
+    },
+  });
+  if (res.status === 401) {
+    alert('⚠️ Session expirée. Veuillez vous reconnecter.');
+    sessionStorage.removeItem('talentyah_token');
+    sessionStorage.removeItem('talentyah_email');
+    document.getElementById('adminDashboardSection').style.display = 'none';
+    document.getElementById('adminLoginSection').style.display = 'flex';
+    throw new Error('401 Session expirée');
+  }
+  return res;
+}
+
 const PRIVILEGES = {
   superadmin: {
     panelCandidates:   true,
@@ -80,38 +102,40 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.textContent = 'Connexion…'; btn.disabled = true;
       if (msgEl) msgEl.textContent = '';
 
-      try {
-        const res  = await fetch(API + '/api/admin/login', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password })
-        });
-        const data = await res.json();
-        if (res.ok && data.token) {
-          sessionStorage.setItem('talentyah_token', data.token);
-          sessionStorage.setItem('talentyah_email', email);
-          showDashboard();
-        } else {
-          if (msgEl) { msgEl.textContent = 'Email ou mot de passe incorrect.'; msgEl.style.color = '#c0392b'; }
-          btn.textContent = 'Se connecter'; btn.disabled = false;
-        }
-      } catch {
-        /* Mode démo : vérification locale */
-        const account = DEMO_ACCOUNTS[email];
-        if (account && account.password === password) {
-          /* Faux token encodé avec le rôle */
-          const fakePayload = btoa(JSON.stringify({ email, role: account.role }));
-          sessionStorage.setItem('talentyah_token', 'demo.' + fakePayload + '.sig');
-          showDashboard();
-        } else {
+      // Tenter le login avec retry (cold start Render peut prendre 30-50s)
+      async function tryLogin(attempt) {
+        try {
+          const controller = new AbortController();
+          const timeout    = setTimeout(() => controller.abort(), 55000);
+          const res  = await fetch(API + '/api/admin/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password }),
+            signal: controller.signal,
+          });
+          clearTimeout(timeout);
+          const data = await res.json();
+          if (res.ok && data.token) {
+            sessionStorage.setItem('talentyah_token', data.token);
+            sessionStorage.setItem('talentyah_email', email);
+            sessionStorage.removeItem('talentyah_demo'); // s'assurer qu'on n'est pas en mode démo
+            showDashboard();
+          } else {
+            if (msgEl) { msgEl.textContent = 'Email ou mot de passe incorrect.'; msgEl.style.color = '#c0392b'; }
+            btn.textContent = 'Se connecter'; btn.disabled = false;
+          }
+        } catch (err) {
+          if (err.name === 'AbortError' && attempt === 1) {
+            // Cold start — on réessaie une fois
+            if (msgEl) { msgEl.textContent = 'Serveur en démarrage, nouvelle tentative…'; msgEl.style.color = 'var(--muted)'; }
+            return tryLogin(2);
+          }
+          // Erreur réseau — ne pas basculer en mode démo (token invalide)
           if (msgEl) {
-            msgEl.innerHTML =
-              'Identifiants incorrects.<br>' +
-              '<span style="font-size:11px;opacity:.75;">' +
-              'Démo : admin@talentyah.com/admin &nbsp;·&nbsp; manager@talentyah.com/manager &nbsp;·&nbsp; editor@talentyah.com/editor' +
-              '</span>';
+            msgEl.innerHTML = '⚠️ Serveur injoignable.<br><span style="font-size:12px;">Attendez 30 secondes et réessayez (cold start Render).</span>';
             msgEl.style.color = '#c0392b';
           }
-          btn.textContent = 'Se connecter'; btn.disabled = false;
+          btn.textContent = 'Réessayer'; btn.disabled = false;
         }
       }
     });
@@ -428,6 +452,11 @@ document.addEventListener('DOMContentLoaded', () => {
 function showDashboard() {
   document.getElementById('adminLoginSection').style.display     = 'none';
   document.getElementById('adminDashboardSection').style.display = 'flex';
+
+  // Ping keep-alive toutes les 14 min pour éviter le sleep Render (plan gratuit)
+  _keepAlive();
+  setInterval(_keepAlive, 14 * 60 * 1000);
+
   loadStats();
   loadCarousel();
   loadCandidates();
@@ -550,6 +579,11 @@ function showToast(message, type = 'info') {
 }
 
 /* ── Chargement des stats globales depuis l'API ── */
+// Ping le backend pour éviter le cold start sur Render (plan gratuit)
+async function _keepAlive() {
+  try { await fetch(API + '/api/health'); } catch { /* silencieux */ }
+}
+
 async function loadStats() {
   try {
     const token = sessionStorage.getItem('talentyah_token');
@@ -702,11 +736,12 @@ async function deleteCandidate(id, btn) {
   btn.textContent = '…'; btn.disabled = true;
   try {
     const token = sessionStorage.getItem('talentyah_token');
-    await fetch(API + '/api/candidates/' + id, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token } });
-  } catch { /* silencieux */ }
-  btn.closest('tr').remove();
-  const badge = document.getElementById('countCandidates');
-  if (badge) badge.textContent = Math.max(0, parseInt(badge.textContent) - 1);
+    const res = await fetch(API + '/api/candidates/' + id, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token } });
+    if (!res.ok) { const d = await res.json(); alert('Erreur : ' + (d.error || res.status)); btn.textContent = 'Supprimer'; btn.disabled = false; return; }
+    btn.closest('tr').remove();
+    const badge = document.getElementById('countCandidates');
+    if (badge) badge.textContent = Math.max(0, parseInt(badge.textContent) - 1);
+  } catch { alert('Impossible de joindre le serveur.'); btn.textContent = 'Supprimer'; btn.disabled = false; }
 }
 
 /* ══════════════════════════════
@@ -774,11 +809,12 @@ async function deleteCompany(id, btn) {
   btn.textContent = '…'; btn.disabled = true;
   try {
     const token = sessionStorage.getItem('talentyah_token');
-    await fetch(API + '/api/companies/' + id, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token } });
-  } catch { /* silencieux */ }
-  btn.closest('tr').remove();
-  const badge = document.getElementById('countCompanies');
-  if (badge) badge.textContent = Math.max(0, parseInt(badge.textContent) - 1);
+    const res = await fetch(API + '/api/companies/' + id, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token } });
+    if (!res.ok) { const d = await res.json(); alert('Erreur : ' + (d.error || res.status)); btn.textContent = 'Supprimer'; btn.disabled = false; return; }
+    btn.closest('tr').remove();
+    const badge = document.getElementById('countCompanies');
+    if (badge) badge.textContent = Math.max(0, parseInt(badge.textContent) - 1);
+  } catch { alert('Impossible de joindre le serveur.'); btn.textContent = 'Supprimer'; btn.disabled = false; }
 }
 
 function showCompanyMsg(idx) {
@@ -865,14 +901,16 @@ function renderAdminJobs(jobs) {
 
 async function deleteJob(index, id) {
   if (!confirm('Supprimer cette offre définitivement ?')) return;
+  if (!id) return;
   try {
     const token = sessionStorage.getItem('talentyah_token');
-    if (id) await fetch(API + '/api/jobs/' + id, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token }});
-  } catch { /* silencieux en démo */ }
-  adminJobsDemo.splice(index, 1);
-  const badge = document.getElementById('countJobs');
-  if (badge) badge.textContent = adminJobsDemo.length;
-  renderAdminJobs(adminJobsDemo);
+    const res = await fetch(API + '/api/jobs/' + id, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token }});
+    if (!res.ok) { const d = await res.json(); alert('Erreur : ' + (d.error || res.status)); return; }
+    adminJobsDemo.splice(index, 1);
+    const badge = document.getElementById('countJobs');
+    if (badge) badge.textContent = adminJobsDemo.length;
+    renderAdminJobs(adminJobsDemo);
+  } catch { alert('Impossible de joindre le serveur. Vérifiez votre connexion.'); }
 }
 
 /* ══════════════════════════════
@@ -1166,14 +1204,18 @@ async function togglePubStatus(i) {
 
 async function deletePub(i) {
   if (!confirm('Supprimer cette publication ?')) return;
-  const id = publications[i].id;
-  publications.splice(i, 1); renderPubList();
+  const pub = publications[i];
+  if (!pub) return;
   try {
     const token = sessionStorage.getItem('talentyah_token');
-    await fetch(API + '/api/publications/' + id, {
+    const res = await fetch(API + '/api/publications/' + pub.id, {
       method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token }
     });
-  } catch { /* silencieux */ }
+    if (!res.ok) { const d = await res.json(); alert('Erreur : ' + (d.error || res.status)); return; }
+    publications.splice(i, 1); renderPubList();
+    const badge = document.getElementById('countPublications');
+    if (badge) badge.textContent = publications.length;
+  } catch { alert('Impossible de joindre le serveur.'); }
 }
 
 function resetPubForm() {
@@ -1256,23 +1298,41 @@ function renderAccessList(users) {
 
 async function resetPassword(id, email) {
   const newPwd = prompt(`Nouveau mot de passe pour ${email} :\n(laisser vide pour générer automatiquement)`);
-  if (newPwd === null) return; // annulé
+  if (newPwd === null) return;
+
+  const token = sessionStorage.getItem('talentyah_token');
+
+  // Avertir si le serveur est en cold start (Render plan gratuit)
+  const loadingAlert = setTimeout(() => {
+    console.log('[Talentyah] Serveur en démarrage, patience…');
+  }, 3000);
 
   try {
-    const token = sessionStorage.getItem('talentyah_token');
-    const res   = await fetch(API + '/api/admin/reset-password/' + id, {
-      method: 'PUT',
+    const controller = new AbortController();
+    const timeout    = setTimeout(() => controller.abort(), 60000); // 60s timeout
+
+    const res = await fetch(API + '/api/admin/reset-password/' + id, {
+      method:  'PUT',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-      body: JSON.stringify({ password: newPwd || undefined })
+      body:    JSON.stringify({ password: newPwd || undefined }),
+      signal:  controller.signal,
     });
+    clearTimeout(timeout);
+    clearTimeout(loadingAlert);
+
     const data = await res.json();
     if (res.ok) {
       alert(`✅ Mot de passe réinitialisé pour ${data.email}\n\nNouveau mot de passe :\n${data.tempPassword}\n\nCommuniquez-le à l'utilisateur.`);
     } else {
       alert('Erreur : ' + (data.error || 'Impossible de réinitialiser'));
     }
-  } catch {
-    alert('Impossible de joindre le serveur.');
+  } catch (err) {
+    clearTimeout(loadingAlert);
+    if (err.name === 'AbortError') {
+      alert('⏱ Le serveur met trop de temps à répondre (cold start Render).\nAttendez 30 secondes et réessayez.');
+    } else {
+      alert('Impossible de joindre le serveur.\nVérifiez que le backend Render est bien déployé.');
+    }
   }
 }
 
