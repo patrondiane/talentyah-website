@@ -22,6 +22,11 @@ async function runMigrations() {
   const migrations = [
     `ALTER TABLE candidates ADD COLUMN job_id INTEGER`,
     `ALTER TABLE carousel_slides ADD COLUMN pages TEXT DEFAULT 'all'`,
+    `ALTER TABLE jobs ADD COLUMN description TEXT`,
+    `ALTER TABLE jobs ADD COLUMN requirements TEXT`,
+    `ALTER TABLE jobs ADD COLUMN tags TEXT`,
+    `ALTER TABLE jobs ADD COLUMN salary TEXT`,
+    `ALTER TABLE jobs ADD COLUMN is_new INTEGER DEFAULT 0`,
   ];
   for (const sql of migrations) {
     try { await db.execute(sql); } catch { /* colonne existe déjà */ }
