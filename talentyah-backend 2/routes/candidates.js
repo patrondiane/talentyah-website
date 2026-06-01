@@ -30,9 +30,10 @@ router.post('/', upload.single('cv'), async (req, res) => {
       cv_filename = req.file.originalname;
       try {
         cv_url = await uploadCV(req.file.buffer, cv_filename, req.file.mimetype);
+        console.log('[CV] Upload réussi:', cv_url);
       } catch (uploadErr) {
-        console.warn('[CLOUDINARY] Upload CV échoué, candidature sauvegardée sans CV:', uploadErr.message);
-        // On continue sans CV plutôt que de faire crasher la route
+        console.error('[CV] Upload échoué:', uploadErr.message);
+        // On continue sans CV
       }
     }
 
