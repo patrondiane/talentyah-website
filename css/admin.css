@@ -512,17 +512,119 @@ body { font-family: 'DM Sans', sans-serif; background: #f0f4f1; color: var(--dar
 /* =====================
    RESPONSIVE
 ===================== */
-@media (max-width: 900px) {
-  .admin-sidebar { transform: translateX(-100%); transition: transform 0.3s ease; }
-  .admin-sidebar.open { transform: none; }
-  .admin-main { margin-left: 0; }
-  .admin-stats { grid-template-columns: 1fr 1fr; }
-  .pub-form, .job-form-grid { grid-template-columns: 1fr; }
-  .pub-form .full, .job-form-field.full { grid-column: unset; }
-  .admin-panel { padding: 24px 20px 48px; }
-  .admin-topbar { padding: 0 20px; }
+/* ═══════════════════════════════════
+   RESPONSIVE MOBILE — ADMIN DASHBOARD
+═══════════════════════════════════ */
+
+/* Bouton hamburger — caché sur desktop */
+.admin-menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--dark);
+  padding: 4px;
+  border-radius: 6px;
+  flex-shrink: 0;
 }
-@media (max-width: 560px) {
+.admin-menu-toggle:hover { background: var(--bg-off); }
+
+/* Overlay sidebar mobile */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 99;
+}
+.sidebar-overlay.active { display: block; }
+
+@media (max-width: 900px) {
+
+  /* Dashboard layout */
+  .admin-dashboard-page { flex-direction: column; }
+  .admin-main { margin-left: 0; width: 100%; min-height: calc(100vh - 60px); }
+
+  /* Sidebar — tiroir latéral */
+  .admin-sidebar {
+    position: fixed;
+    left: 0; top: 0; bottom: 0;
+    z-index: 100;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    width: 260px;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.2);
+  }
+  .admin-sidebar.open { transform: translateX(0); }
+
+  /* Bouton hamburger visible */
+  .admin-menu-toggle { display: flex; }
+
+  /* Topbar compacte */
+  .admin-topbar { height: auto; padding: 0 16px; }
+  .admin-topbar-inner { padding: 12px 0; flex-wrap: wrap; gap: 8px; }
+  .admin-topbar-title { font-size: 16px !important; }
+  .admin-topbar-subtitle { font-size: 12px; }
+  .admin-date { display: none; }
+
+  /* Panels */
+  .admin-panel { padding: 20px 16px 48px; }
+
+  /* Stats cards — 2 colonnes */
+  .admin-stats { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .admin-stat-card { padding: 16px; }
+  .stat-num { font-size: 28px; }
+
+  /* Filtres candidats */
+  .admin-filters-bar { flex-direction: column; gap: 8px; }
+  .admin-filter-input { width: 100%; }
+
+  /* Tables — scroll horizontal */
+  .admin-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .admin-table { min-width: 600px; font-size: 13px; }
+  .admin-table th, .admin-table td { padding: 10px 12px; }
+
+  /* Formulaires — 1 colonne */
+  .pub-form,
+  .job-form-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
+  .pub-form .full,
+  .job-form-field.full { grid-column: unset !important; }
+  .job-form-field input,
+  .job-form-field select,
+  .job-form-field textarea { font-size: 16px; } /* évite le zoom iOS */
+
+  /* Formulaire accès */
+  .admin-panel > div[style*="grid-template-columns:1fr 1fr"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Partenaires */
+  .partners-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+
+  /* Carousel list */
+  #carouselList > div { grid-template-columns: 80px 1fr !important; }
+  #carouselList img { width: 80px !important; height: 50px !important; }
+
+  /* Boutons */
+  .btn-publish-gold { width: 100%; text-align: center; }
+  .btn-delete { font-size: 12px; padding: 4px 8px; }
+
+  /* Jobs list */
+  .admin-job-row { flex-direction: column; gap: 8px; }
+}
+
+@media (max-width: 480px) {
+
+  /* Stats — 1 colonne */
   .admin-stats { grid-template-columns: 1fr; }
-  .partners-grid { grid-template-columns: repeat(2, 1fr); }
+
+  /* Login */
+  .admin-login-box { padding: 24px 20px; }
+
+  /* Partenaires */
+  .partners-grid { grid-template-columns: 1fr 1fr; }
+
+  /* Table encore plus compacte */
+  .admin-table { min-width: 500px; font-size: 12px; }
+  .admin-table th, .admin-table td { padding: 8px 10px; }
 }

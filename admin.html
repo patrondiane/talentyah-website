@@ -49,6 +49,8 @@
 
   <!-- ═══════════════════ DASHBOARD ═══════════════════ -->
   <div id="adminDashboardSection" class="admin-dashboard-page" style="display:none;">
+    <!-- Overlay mobile pour fermer la sidebar -->
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
 
     <!-- SIDEBAR -->
     <aside class="admin-sidebar">
@@ -171,9 +173,19 @@
       <!-- TOPBAR -->
       <div class="admin-topbar">
         <div class="admin-topbar-inner">
-          <div>
-            <h1 class="admin-topbar-title" id="topbarTitle">Gestion des Candidatures</h1>
-            <p class="admin-topbar-subtitle" id="topbarSub">Consultez et filtrez les CV reçus</p>
+          <div style="display:flex;align-items:center;gap:14px;">
+            <!-- Bouton menu mobile -->
+            <button class="admin-menu-toggle" id="adminMenuToggle" aria-label="Menu">
+              <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none">
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <line x1="3" y1="12" x2="21" y2="12"/>
+                <line x1="3" y1="18" x2="21" y2="18"/>
+              </svg>
+            </button>
+            <div>
+              <h1 class="admin-topbar-title" id="topbarTitle">Gestion des Candidatures</h1>
+              <p class="admin-topbar-subtitle" id="topbarSub">Consultez et filtrez les CV reçus</p>
+            </div>
           </div>
           <div class="admin-topbar-actions">
             <span class="admin-date" id="adminDate"></span>
@@ -620,5 +632,32 @@
   </div><!-- fin adminDashboardSection -->
 
   <script src="js/admin.js"></script>
+  <script>
+    // Toggle sidebar mobile
+    const toggle   = document.getElementById('adminMenuToggle');
+    const sidebar  = document.querySelector('.admin-sidebar');
+    const overlay  = document.getElementById('sidebarOverlay');
+    if (toggle) {
+      toggle.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+        overlay.classList.toggle('active');
+      });
+    }
+    if (overlay) {
+      overlay.addEventListener('click', () => {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('active');
+      });
+    }
+    // Fermer la sidebar quand on clique sur un item nav (mobile)
+    document.querySelectorAll('.admin-nav-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (window.innerWidth <= 900) {
+          sidebar.classList.remove('open');
+          overlay.classList.remove('active');
+        }
+      });
+    });
+  </script>
 </body>
 </html>
