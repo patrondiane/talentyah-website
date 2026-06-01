@@ -1,20 +1,13 @@
 // routes/publications.js
 const router = require('express').Router();
 const multer = require('multer');
-const path   = require('path');
 const db     = require('../db');
 const { auth } = require('../middleware/auth');
+const { uploadBuffer, deleteByUrl } = require('../cloudinary');
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, path.join(__dirname, '../uploads')),
-  filename:    (req, file, cb) => {
-    const safe = file.originalname.replace(/[^a-zA-Z0-9._-]/g, '_');
-    cb(null, `pub_${Date.now()}_${safe}`);
-  },
-});
-const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } });
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
 
-// GET /api/publications — public (articles publiés)
+// GET /api/publications — public
 router.get('/', async (req, res) => {
   const { status, category } = req.query;
   let sql = `SELECT * FROM publications WHERE 1=1`;
@@ -27,7 +20,7 @@ router.get('/', async (req, res) => {
   res.json({ publications, total: publications.length });
 });
 
-// GET /api/publications/all — admin (tous statuts)
+// GET /api/publications/all — admin
 router.get('/all', auth, async (req, res) => {
   const publications = await db.all(`SELECT * FROM publications ORDER BY created_at DESC`);
   res.json({ publications, total: publications.length });
@@ -45,7 +38,7 @@ router.post('/', auth, upload.single('image'), async (req, res) => {
   const { title, category, status, excerpt, content } = req.body;
   if (!title) return res.status(400).json({ error: 'Titre requis' });
 
-  const image_url    = req.file ? `/uploads/${req.file.filename}` : null;
+  const image_url    = req.file ? await uploadBuffer(req.file.buffer, 'talentyah/publications', { resource_type: 'image' }) : null;
   const published_at = status === 'published' ? new Date().toISOString().slice(0,10) : null;
 
   const result = await db.run(
@@ -54,8 +47,7 @@ router.post('/', auth, upload.single('image'), async (req, res) => {
     [title, category || 'Conseil carrière', status || 'draft', excerpt || null, content || null, image_url, published_at]
   );
   const id  = db.lastInsertRowId(result);
-  const pub = await db.get(`SELECT * FROM publications WHERE id = ?`, [id]);
-  res.status(201).json(pub);
+  res.status(201).json(await db.get(`SELECT * FROM publications WHERE id = ?`, [id]));
 });
 
 // PUT /api/publications/:id — admin
@@ -64,19 +56,22 @@ router.put('/:id', auth, upload.single('image'), async (req, res) => {
   const existing = await db.get(`SELECT * FROM publications WHERE id = ?`, [req.params.id]);
   if (!existing) return res.status(404).json({ error: 'Article introuvable' });
 
-  const image_url    = req.file ? `/uploads/${req.file.filename}` : existing.image_url;
+  let image_url = existing.image_url;
+  if (req.file) {
+    await deleteByUrl(existing.image_url);
+    image_url = await uploadBuffer(req.file.buffer, 'talentyah/publications', { resource_type: 'image' });
+  }
   const published_at = status === 'published' ? (existing.published_at || new Date().toISOString().slice(0,10)) : null;
 
   await db.run(
-    `UPDATE publications SET title=?, category=?, status=?, excerpt=?, content=?, image_url=?, published_at=?, updated_at=datetime('now')
-     WHERE id=?`,
+    `UPDATE publications SET title=?, category=?, status=?, excerpt=?, content=?, image_url=?, published_at=?, updated_at=datetime('now') WHERE id=?`,
     [title || existing.title, category || existing.category, status || existing.status,
      excerpt || null, content || null, image_url, published_at, req.params.id]
   );
   res.json(await db.get(`SELECT * FROM publications WHERE id = ?`, [req.params.id]));
 });
 
-// PATCH /api/publications/:id/status — toggle publié/brouillon
+// PATCH /api/publications/:id/status
 router.patch('/:id/status', auth, async (req, res) => {
   const pub = await db.get(`SELECT * FROM publications WHERE id = ?`, [req.params.id]);
   if (!pub) return res.status(404).json({ error: 'Article introuvable' });
@@ -89,8 +84,10 @@ router.patch('/:id/status', auth, async (req, res) => {
   res.json({ id: pub.id, status: newStatus });
 });
 
-// DELETE /api/publications/:id — admin
+// DELETE /api/publications/:id
 router.delete('/:id', auth, async (req, res) => {
+  const pub = await db.get(`SELECT image_url FROM publications WHERE id = ?`, [req.params.id]);
+  await deleteByUrl(pub?.image_url);
   await db.run(`DELETE FROM publications WHERE id = ?`, [req.params.id]);
   res.json({ ok: true });
 });

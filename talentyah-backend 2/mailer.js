@@ -1,9 +1,8 @@
 // mailer.js — Envoi d'emails de notification
 const nodemailer = require('nodemailer');
 
-// Configuration — à remplir dans .env
 const transporter = nodemailer.createTransport({
-  host:   process.env.SMTP_HOST   || 'smtp.gmail.com',
+  host:   process.env.SMTP_HOST || 'smtp.gmail.com',
   port:   Number(process.env.SMTP_PORT) || 587,
   secure: false,
   auth: {
@@ -12,11 +11,12 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const FROM      = process.env.SMTP_FROM || process.env.SMTP_USER || 'noreply@talentyah.com';
-const NOTIFY_TO = process.env.NOTIFY_EMAIL || process.env.SMTP_USER || '';
+const FROM        = process.env.SMTP_FROM || process.env.SMTP_USER || 'noreply@talentyah.com';
+const NOTIFY_TO   = process.env.NOTIFY_EMAIL || process.env.SMTP_USER || '';
+const ADMIN_URL   = process.env.ADMIN_URL || 'https://talentyah.com/admin.html';  // ← plus de localhost
 
 async function sendNotification(subject, html) {
-  if (!NOTIFY_TO || !process.env.SMTP_USER) return; // pas configuré
+  if (!NOTIFY_TO || !process.env.SMTP_USER) return;
   try {
     await transporter.sendMail({ from: FROM, to: NOTIFY_TO, subject, html });
     console.log(`[MAIL] Envoyé : ${subject}`);
@@ -41,11 +41,11 @@ async function notifyNewCandidate(candidate) {
           <tr><td style="padding:8px 0;color:#666;">Secteur</td><td style="padding:8px 0;">${candidate.sector || '—'}</td></tr>
           <tr><td style="padding:8px 0;color:#666;">Pays</td><td style="padding:8px 0;">${candidate.country || '—'}</td></tr>
           <tr><td style="padding:8px 0;color:#666;">Expérience</td><td style="padding:8px 0;">${candidate.experience_level || '—'}</td></tr>
-          <tr><td style="padding:8px 0;color:#666;">CV joint</td><td style="padding:8px 0;">${candidate.cv_url ? '✅ Oui' : '❌ Non'}</td></tr>
+          <tr><td style="padding:8px 0;color:#666;">CV joint</td><td style="padding:8px 0;">${candidate.cv_url ? `✅ <a href="${candidate.cv_url}">Télécharger</a>` : '❌ Non'}</td></tr>
           ${candidate.message ? `<tr><td style="padding:8px 0;color:#666;vertical-align:top;">Message</td><td style="padding:8px 0;">${candidate.message}</td></tr>` : ''}
         </table>
         <div style="margin-top:20px;">
-          <a href="http://localhost:5500/admin.html" style="background:#1a5233;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:600;">Voir dans l'admin →</a>
+          <a href="${ADMIN_URL}" style="background:#1a5233;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:600;">Voir dans l'admin →</a>
         </div>
       </div>
     </div>`;
@@ -71,7 +71,7 @@ async function notifyNewCompany(company) {
           ${company.message ? `<tr><td style="padding:8px 0;color:#666;vertical-align:top;">Message</td><td style="padding:8px 0;">${company.message}</td></tr>` : ''}
         </table>
         <div style="margin-top:20px;">
-          <a href="http://localhost:5500/admin.html" style="background:#1a5233;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:600;">Voir dans l'admin →</a>
+          <a href="${ADMIN_URL}" style="background:#1a5233;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:600;">Voir dans l'admin →</a>
         </div>
       </div>
     </div>`;

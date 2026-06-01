@@ -16,11 +16,7 @@ app.use(cors({
   credentials: true,
 }));
 
-// CORS pour les fichiers statiques aussi
-app.use('/uploads', (req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  next();
-}, express.static(path.join(__dirname, 'uploads')));
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

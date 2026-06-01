@@ -1,23 +1,11 @@
 // routes/partners.js
 const router  = require('express').Router();
 const multer  = require('multer');
-const path    = require('path');
-const fs      = require('fs');
 const db      = require('../db');
 const { auth } = require('../middleware/auth');
+const { uploadBuffer, deleteByUrl } = require('../cloudinary');
 
-const UPLOADS_DIR = path.join(__dirname, '../uploads');
-if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, UPLOADS_DIR),
-  filename:    (req, file, cb) => {
-    const ext  = path.extname(file.originalname);
-    const safe = path.basename(file.originalname, ext).replace(/[^a-zA-Z0-9-]/g, '_');
-    cb(null, `partner_${Date.now()}_${safe}${ext}`);
-  },
-});
-const upload = multer({ storage, limits: { fileSize: 2 * 1024 * 1024 } });
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 2 * 1024 * 1024 } });
 
 // GET /api/partners — public
 router.get('/', async (req, res) => {
@@ -37,7 +25,7 @@ router.get('/all', auth, async (req, res) => {
 router.post('/', auth, upload.single('image'), async (req, res) => {
   const { name, description, sort_order } = req.body;
   if (!name) return res.status(400).json({ error: 'Nom requis' });
-  const image_url = req.file ? `/uploads/${req.file.filename}` : null;
+  const image_url = req.file ? await uploadBuffer(req.file.buffer, 'talentyah/partners', { resource_type: 'image' }) : null;
   const result = await db.run(
     `INSERT INTO partners (name, description, image_url, sort_order) VALUES (?,?,?,?)`,
     [name, description || null, image_url, Number(sort_order) || 0]
@@ -51,9 +39,11 @@ router.put('/:id', auth, upload.single('image'), async (req, res) => {
   const existing = await db.get(`SELECT * FROM partners WHERE id = ?`, [req.params.id]);
   if (!existing) return res.status(404).json({ error: 'Partenaire introuvable' });
   const { name, description, sort_order, existing_image_url } = req.body;
-  const image_url = req.file
-    ? `/uploads/${req.file.filename}`
-    : (existing_image_url || existing.image_url);
+  let image_url = existing_image_url || existing.image_url;
+  if (req.file) {
+    await deleteByUrl(existing.image_url);
+    image_url = await uploadBuffer(req.file.buffer, 'talentyah/partners', { resource_type: 'image' });
+  }
   await db.run(
     `UPDATE partners SET name=?, description=?, image_url=?, sort_order=? WHERE id=?`,
     [name || existing.name, description ?? existing.description, image_url, Number(sort_order) || existing.sort_order, req.params.id]
@@ -79,10 +69,7 @@ router.post('/bulk', auth, async (req, res) => {
 // DELETE /api/partners/:id — admin
 router.delete('/:id', auth, async (req, res) => {
   const p = await db.get(`SELECT image_url FROM partners WHERE id = ?`, [req.params.id]);
-  if (p?.image_url) {
-    const fpath = path.join(UPLOADS_DIR, path.basename(p.image_url));
-    if (fs.existsSync(fpath)) fs.unlinkSync(fpath);
-  }
+  await deleteByUrl(p?.image_url);
   await db.run(`DELETE FROM partners WHERE id = ?`, [req.params.id]);
   res.json({ ok: true });
 });

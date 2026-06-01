@@ -1,40 +1,26 @@
 // routes/carousel.js
 const router = require('express').Router();
 const multer = require('multer');
-const path   = require('path');
-const fs     = require('fs');
 const db     = require('../db');
 const { auth } = require('../middleware/auth');
+const { uploadBuffer, deleteByUrl } = require('../cloudinary');
 
-const UPLOADS_DIR = path.join(__dirname, '../uploads');
-if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, UPLOADS_DIR),
-  filename:    (req, file, cb) => {
-    const ext  = path.extname(file.originalname);
-    const safe = path.basename(file.originalname, ext).replace(/[^a-zA-Z0-9-]/g, '_');
-    cb(null, `slide_${Date.now()}_${safe}${ext}`);
-  },
-});
-const upload = multer({ storage, limits: { fileSize: 10 * 1024 * 1024 } });
-
-// GET /api/carousel?page=talents — public, filtré par page
+// GET /api/carousel?page=talents — public
 router.get('/', async (req, res) => {
   res.set('Cache-Control', 'no-store');
   const page   = req.query.page || 'all';
   const slides = await db.all(`SELECT * FROM carousel_slides WHERE active=1 ORDER BY sort_order ASC, created_at ASC`);
-
   const filtered = slides.filter(s => {
     if (!s.pages || s.pages === 'all') return true;
     const list = s.pages.split(',').map(p => p.trim());
     return list.includes('all') || list.includes(page);
   });
-
   res.json({ slides: filtered, total: filtered.length });
 });
 
-// GET /api/carousel/all — admin (tous)
+// GET /api/carousel/all — admin
 router.get('/all', auth, async (req, res) => {
   const slides = await db.all(`SELECT * FROM carousel_slides ORDER BY sort_order ASC, created_at ASC`);
   res.json({ slides, total: slides.length });
@@ -44,8 +30,9 @@ router.get('/all', auth, async (req, res) => {
 router.post('/', auth, upload.single('image'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'Image requise' });
   const { eyebrow, title, subtitle, cta1_text, cta1_url, cta2_text, cta2_url, sort_order, pages } = req.body;
-  const image_url  = `/uploads/${req.file.filename}`;
   const pagesValue = Array.isArray(pages) ? pages.join(',') : (pages || 'all');
+
+  const image_url = await uploadBuffer(req.file.buffer, 'talentyah/slides', { resource_type: 'image' });
 
   const result = await db.run(
     `INSERT INTO carousel_slides (image_url, eyebrow, title, subtitle, cta1_text, cta1_url, cta2_text, cta2_url, pages, sort_order)
@@ -63,8 +50,13 @@ router.put('/:id', auth, upload.single('image'), async (req, res) => {
   const ex = await db.get(`SELECT * FROM carousel_slides WHERE id=?`, [req.params.id]);
   if (!ex) return res.status(404).json({ error: 'Slide introuvable' });
   const { eyebrow, title, subtitle, cta1_text, cta1_url, cta2_text, cta2_url, sort_order, active, pages } = req.body;
-  const image_url  = req.file ? `/uploads/${req.file.filename}` : ex.image_url;
   const pagesValue = Array.isArray(pages) ? pages.join(',') : (pages || ex.pages || 'all');
+
+  let image_url = ex.image_url;
+  if (req.file) {
+    await deleteByUrl(ex.image_url);  // supprime l'ancienne image
+    image_url = await uploadBuffer(req.file.buffer, 'talentyah/slides', { resource_type: 'image' });
+  }
 
   await db.run(
     `UPDATE carousel_slides SET image_url=?,eyebrow=?,title=?,subtitle=?,cta1_text=?,cta1_url=?,cta2_text=?,cta2_url=?,pages=?,sort_order=?,active=? WHERE id=?`,
@@ -81,10 +73,7 @@ router.put('/:id', auth, upload.single('image'), async (req, res) => {
 // DELETE /api/carousel/:id — admin
 router.delete('/:id', auth, async (req, res) => {
   const slide = await db.get(`SELECT image_url FROM carousel_slides WHERE id=?`, [req.params.id]);
-  if (slide?.image_url) {
-    const fpath = path.join(UPLOADS_DIR, path.basename(slide.image_url));
-    if (fs.existsSync(fpath)) fs.unlinkSync(fpath);
-  }
+  await deleteByUrl(slide?.image_url);
   await db.run(`DELETE FROM carousel_slides WHERE id=?`, [req.params.id]);
   res.json({ ok: true });
 });

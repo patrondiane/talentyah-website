@@ -1,28 +1,18 @@
 // routes/candidates.js
 const router = require('express').Router();
 const multer = require('multer');
-const path   = require('path');
 const db     = require('../db');
 const { auth } = require('../middleware/auth');
 const { notifyNewCandidate } = require('../mailer');
+const { uploadBuffer, deleteByUrl } = require('../cloudinary');
 
-const UPLOADS_DIR = path.join(__dirname, '../uploads');
-if (!require('fs').existsSync(UPLOADS_DIR)) require('fs').mkdirSync(UPLOADS_DIR, { recursive: true });
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, UPLOADS_DIR),
-  filename:    (req, file, cb) => {
-    const ext  = path.extname(file.originalname);
-    const safe = path.basename(file.originalname, ext).replace(/[^a-zA-Z0-9-]/g, '_');
-    cb(null, `cv_${Date.now()}_${safe}${ext}`);
-  },
-});
+// Multer en mémoire (pas de disque — on envoie direct à Cloudinary)
 const upload = multer({
-  storage,
+  storage: multer.memoryStorage(),
   limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     const allowed = ['.pdf', '.doc', '.docx'];
-    const ext = path.extname(file.originalname).toLowerCase();
+    const ext = require('path').extname(file.originalname).toLowerCase();
     cb(null, allowed.includes(ext));
   },
 });
@@ -32,8 +22,16 @@ router.post('/', upload.single('cv'), async (req, res) => {
   const { first_name, last_name, email, phone, role_target, sector, country, experience_level, message, job_id } = req.body;
   if (!first_name || !last_name || !email) return res.status(400).json({ error: 'Prénom, nom et email requis' });
 
-  const cv_filename = req.file ? req.file.filename : null;
-  const cv_url      = cv_filename ? `/uploads/${cv_filename}` : null;
+  let cv_url      = null;
+  let cv_filename = null;
+
+  if (req.file) {
+    cv_filename = req.file.originalname;
+    cv_url = await uploadBuffer(req.file.buffer, 'talentyah/cv', {
+      resource_type: 'raw',                        // pour PDF/DOC
+      public_id: `cv_${Date.now()}_${cv_filename.replace(/[^a-zA-Z0-9._-]/g, '_')}`,
+    });
+  }
 
   const result = await db.run(
     `INSERT INTO candidates (first_name, last_name, email, phone, role_target, sector, country, experience_level, message, cv_url, cv_filename, job_id)
@@ -50,9 +48,8 @@ router.post('/', upload.single('cv'), async (req, res) => {
 // GET /api/candidates — admin only
 router.get('/', auth, async (req, res) => {
   const { sector, country, search } = req.query;
-  let sql    = `SELECT * FROM candidates WHERE 1=1`;
+  let sql = `SELECT * FROM candidates WHERE 1=1`;
   const params = [];
-
   if (sector)  { sql += ` AND sector = ?`;  params.push(sector); }
   if (country) { sql += ` AND country = ?`; params.push(country); }
   if (search)  {
@@ -60,7 +57,6 @@ router.get('/', auth, async (req, res) => {
     const q = `%${search}%`;
     params.push(q, q, q, q);
   }
-
   sql += ` ORDER BY created_at DESC`;
   const candidates = await db.all(sql, params);
   res.json({ candidates, total: candidates.length });
@@ -75,12 +71,8 @@ router.get('/:id', auth, async (req, res) => {
 
 // DELETE /api/candidates/:id — admin only
 router.delete('/:id', auth, async (req, res) => {
-  const c = await db.get(`SELECT cv_filename FROM candidates WHERE id = ?`, [req.params.id]);
-  if (c?.cv_filename) {
-    const fs    = require('fs');
-    const fpath = path.join(__dirname, '../uploads', c.cv_filename);
-    if (fs.existsSync(fpath)) fs.unlinkSync(fpath);
-  }
+  const c = await db.get(`SELECT cv_url FROM candidates WHERE id = ?`, [req.params.id]);
+  await deleteByUrl(c?.cv_url);   // supprime le CV de Cloudinary
   await db.run(`DELETE FROM candidates WHERE id = ?`, [req.params.id]);
   res.json({ ok: true });
 });
