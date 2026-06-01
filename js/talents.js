@@ -143,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         console.log("Submit OK — envoi en cours...");
 
-        await window.apiFetch('/candidates', {
+        await window.apiFetch('/api/candidates', {
           method: 'POST',
           body: fd
           // ⚠️ Ne pas mettre Content-Type : le navigateur gère le boundary
