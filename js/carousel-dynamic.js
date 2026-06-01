@@ -29,10 +29,15 @@ async function initDynamicCarousel() {
     const slides = data.slides || [];
     if (!slides.length) return; // fallback slides statiques HTML
 
+    // Utiliser <img> au lieu de background-image pour iOS Safari
+    const resolveUrl = (url) => (url && url.startsWith('http')) ? url : 'https://talentyah-website.onrender.com' + url;
+
     slidesContainer.innerHTML = slides.map(s => `
       <div class="carousel-slide">
-        <div class="carousel-slide-media"
-             style="background-image:url('${s.image_url && s.image_url.startsWith('http') ? s.image_url : 'https://talentyah-website.onrender.com' + s.image_url}');background-size:cover;background-position:center;"></div>
+        <div class="carousel-slide-media" style="overflow:hidden;">
+          <img src="${resolveUrl(s.image_url)}" alt=""
+               style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;display:block;"
+               loading="eager"></div>
         <div class="carousel-slide-overlay"></div>
         <div class="carousel-slide-content">
           <div class="carousel-slide-inner">

@@ -267,8 +267,10 @@ function _imgUrl(url) {
 
     slidesWrap.innerHTML = slides.map(s => `
       <div class="carousel-slide">
-        <div class="carousel-slide-media"
-             style="background-image: url('${_imgUrl(s.image_url)}')">
+        <div class="carousel-slide-media" style="overflow:hidden;">
+          <img src="${_imgUrl(s.image_url)}" alt=""
+               style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;display:block;"
+               loading="eager">
         </div>
         <div class="carousel-slide-overlay"></div>
         <div class="carousel-slide-content">
