@@ -4,7 +4,7 @@ const multer = require('multer');
 const db     = require('../db');
 const { auth } = require('../middleware/auth');
 const { notifyNewCandidate } = require('../mailer');
-const { uploadBuffer, deleteByUrl } = require('../cloudinary');
+const { uploadBuffer, deleteByUrl, getSignedUrl } = require('../cloudinary');
 
 // Multer en mémoire (pas de disque — on envoie direct à Cloudinary)
 const upload = multer({
@@ -19,30 +19,42 @@ const upload = multer({
 
 // POST /api/candidates — public
 router.post('/', upload.single('cv'), async (req, res) => {
-  const { first_name, last_name, email, phone, role_target, sector, country, experience_level, message, job_id } = req.body;
-  if (!first_name || !last_name || !email) return res.status(400).json({ error: 'Prénom, nom et email requis' });
+  try {
+    const { first_name, last_name, email, phone, role_target, sector, country, experience_level, message, job_id } = req.body;
+    if (!first_name || !last_name || !email) return res.status(400).json({ error: 'Prénom, nom et email requis' });
 
-  let cv_url      = null;
-  let cv_filename = null;
+    let cv_url      = null;
+    let cv_filename = null;
 
-  if (req.file) {
-    cv_filename = req.file.originalname;
-    cv_url = await uploadBuffer(req.file.buffer, 'talentyah/cv', {
-      resource_type: 'raw',                        // pour PDF/DOC
-      public_id: `cv_${Date.now()}_${cv_filename.replace(/[^a-zA-Z0-9._-]/g, '_')}`,
-    });
+    if (req.file) {
+      cv_filename = req.file.originalname;
+      try {
+        cv_url = await uploadBuffer(req.file.buffer, 'talentyah/cv', {
+          resource_type: 'raw',
+          type: 'upload',
+          access_mode: 'public',
+          public_id: `cv_${Date.now()}_${cv_filename.replace(/[^a-zA-Z0-9._-]/g, '_')}`,
+        });
+      } catch (uploadErr) {
+        console.warn('[CLOUDINARY] Upload CV échoué, candidature sauvegardée sans CV:', uploadErr.message);
+        // On continue sans CV plutôt que de faire crasher la route
+      }
+    }
+
+    const result = await db.run(
+      `INSERT INTO candidates (first_name, last_name, email, phone, role_target, sector, country, experience_level, message, cv_url, cv_filename, job_id)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [first_name, last_name, email, phone||null, role_target||null, sector||null, country||null, experience_level||null, message||null, cv_url, cv_filename, job_id||null]
+    );
+    const id = db.lastInsertRowId(result);
+
+    notifyNewCandidate({ first_name, last_name, email, phone, role_target, sector, country, experience_level, message, cv_url }).catch(() => {});
+
+    res.status(201).json({ id, message: 'Candidature enregistrée avec succès' });
+  } catch (err) {
+    console.error('[POST /candidates]', err.message);
+    res.status(500).json({ error: 'Erreur lors de l\'enregistrement de la candidature.' });
   }
-
-  const result = await db.run(
-    `INSERT INTO candidates (first_name, last_name, email, phone, role_target, sector, country, experience_level, message, cv_url, cv_filename, job_id)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [first_name, last_name, email, phone||null, role_target||null, sector||null, country||null, experience_level||null, message||null, cv_url, cv_filename, job_id||null]
-  );
-  const id = db.lastInsertRowId(result);
-
-  notifyNewCandidate({ first_name, last_name, email, phone, role_target, sector, country, experience_level, message, cv_url }).catch(() => {});
-
-  res.status(201).json({ id, message: 'Candidature enregistrée avec succès' });
 });
 
 // GET /api/candidates — admin only
@@ -59,7 +71,12 @@ router.get('/', auth, async (req, res) => {
   }
   sql += ` ORDER BY created_at DESC`;
   const candidates = await db.all(sql, params);
-  res.json({ candidates, total: candidates.length });
+  // Générer des URLs signées pour les CVs Cloudinary
+  const signed = candidates.map(c => ({
+    ...c,
+    cv_url: c.cv_url ? getSignedUrl(c.cv_url) : null,
+  }));
+  res.json({ candidates: signed, total: signed.length });
 });
 
 // GET /api/candidates/:id — admin only

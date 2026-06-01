@@ -15,6 +15,11 @@ cloudinary.config({
  * @returns {Promise<string>} — URL sécurisée du fichier
  */
 function uploadBuffer(buffer, folder, options = {}) {
+  // Si Cloudinary n'est pas configuré, retourner null sans crasher
+  if (!process.env.CLOUDINARY_API_KEY) {
+    console.warn('[CLOUDINARY] Variables non configurées — upload ignoré');
+    return Promise.resolve(null);
+  }
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
       { folder, ...options },
@@ -33,8 +38,8 @@ function uploadBuffer(buffer, folder, options = {}) {
  */
 async function deleteByUrl(url) {
   if (!url || !url.includes('cloudinary.com')) return;
+  if (!process.env.CLOUDINARY_API_KEY) return; // pas configuré
   try {
-    // Extraire le public_id depuis l'URL (ex: talentyah/slides/slide_123)
     const matches = url.match(/\/upload\/(?:v\d+\/)?(.+)\.[a-z]+$/i);
     if (matches?.[1]) await cloudinary.uploader.destroy(matches[1]);
   } catch (err) {
@@ -42,4 +47,28 @@ async function deleteByUrl(url) {
   }
 }
 
-module.exports = { uploadBuffer, deleteByUrl };
+/**
+ * Génère une URL signée temporaire (1 heure) pour accéder à un fichier privé Cloudinary
+ * @param {string} url — URL publique Cloudinary
+ * @returns {string} — URL signée valable 1h
+ */
+function getSignedUrl(url) {
+  if (!url || !url.includes('cloudinary.com')) return url;
+  if (!process.env.CLOUDINARY_API_KEY) return url;
+  try {
+    // Extraire le public_id
+    const matches = url.match(/\/upload\/(?:v\d+\/)?(.+)$/i);
+    if (!matches?.[1]) return url;
+    const publicId = matches[1].replace(/\.[^.]+$/, ''); // retirer l'extension
+    return cloudinary.url(publicId, {
+      resource_type: 'raw',
+      type: 'upload',
+      sign_url: true,
+      expires_at: Math.floor(Date.now() / 1000) + 3600, // 1 heure
+    });
+  } catch {
+    return url;
+  }
+}
+
+module.exports = { uploadBuffer, deleteByUrl, getSignedUrl };
