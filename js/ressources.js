@@ -57,7 +57,7 @@ function renderArticles(pubs) {
           <p class="article-card-desc">${_esc((p.excerpt || '').substring(0, 150))}${p.excerpt && p.excerpt.length > 150 ? '…' : ''}</p>
           <div class="article-card-footer">
             <span class="article-card-date">${date}</span>
-            <a href="#" class="article-card-link">Lire &#8594;</a>
+            <a href="article.html?id=${p.id}" class="article-card-link">Lire &#8594;</a>
           </div>
         </div>
       </article>`;

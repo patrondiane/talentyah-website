@@ -6,6 +6,7 @@
   <title>Administration - Talentyah</title>
   <link rel="icon" type="image/png" href="images/logos/Talentyah Logo onglet.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/admin.css">
@@ -272,6 +273,7 @@
             <h2 class="admin-section-title" style="font-size:17px;font-weight:600;color:var(--dark);">Publier une nouvelle offre</h2>
           </div>
           <form id="jobForm" class="job-form-grid">
+            <input type="hidden" id="job-id" name="id">
             <div class="job-form-field full">
               <label>Intitulé du poste *</label>
               <input type="text" name="title" placeholder="Ex : Responsable Administratif et Financier" required>
@@ -332,11 +334,11 @@
               <label>Profil recherché / Exigences</label>
               <textarea name="requirements" rows="3" placeholder="Expérience, diplômes, compétences clés…"></textarea>
             </div>
-            <div class="job-form-actions full">
-              <button type="submit" class="btn-publish-gold">Publier l'offre</button>
+            <div class="job-form-actions full" style="display: flex; align-items: center; gap: 12px;">
+              <button type="submit" class="btn-publish-gold" id="jobSubmitBtn">Publier l'offre</button>
+              <button type="button" id="jobCancelBtn" class="btn-filter btn-reset" style="display: none; background: transparent; color: var(--muted); border: 1px solid var(--border); padding: 12px 24px; border-radius: 6px; font-weight: 600; cursor: pointer;">Annuler</button>
               <span class="job-form-msg" id="jobMsg"></span>
             </div>
-          </form>
         </div>
 
         <!-- Liste des offres existantes -->
@@ -523,12 +525,10 @@
               </label>
             </div>
 
-            <div class="full">
-              <label class="job-form-field" style="gap:6px;">
-                <span style="font-size:13px;font-weight:500;color:var(--dark);">Contenu complet</span>
-                <textarea id="pub-content" name="content" rows="8" placeholder="Rédigez votre article ici…"
-                          style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;resize:vertical;width:100%;box-sizing:border-box;"></textarea>
-              </label>
+            <div class="full" style="margin-bottom: 20px;">
+              <span style="font-size:13px;font-weight:500;color:var(--dark);display:block;margin-bottom:6px;">Contenu complet</span>
+              <!-- Remplacement du textarea par Quill.js -->
+              <div id="pub-content-editor" style="background: #fff; height: 350px; border-bottom-left-radius: 6px; border-bottom-right-radius: 6px;"></div>
             </div>
 
             <div class="full">
@@ -631,6 +631,7 @@
     </main>
   </div><!-- fin adminDashboardSection -->
 
+  <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
   <script src="js/admin.js"></script>
   <script>
     // Toggle sidebar mobile

@@ -55,7 +55,25 @@ const DEMO_ACCOUNTS = {
 /* ══════════════════════════════
    INIT
 ══════════════════════════════ */
+let quillEditor; // Variable globale pour l'éditeur
 document.addEventListener('DOMContentLoaded', () => {
+
+  // Initialisation de Quill.js
+  if (document.getElementById('pub-content-editor')) {
+    quillEditor = new Quill('#pub-content-editor', {
+      theme: 'snow',
+      placeholder: 'Rédigez votre article ici...',
+      modules: {
+        toolbar: [
+          [{ 'header': [1, 2, 3, false] }],
+          ['bold', 'italic', 'underline', 'strike'],
+          [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+          ['link', 'blockquote'],
+          ['clean'] // Bouton pour enlever le formatage
+        ]
+      }
+    });
+  }
 
   /* Date topbar */
   const dateEl = document.getElementById('adminDate');
@@ -171,48 +189,69 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* ── Formulaire offre ── */
-  const jobForm = document.getElementById('jobForm');
+const jobForm = document.getElementById('jobForm');
   if (jobForm) {
     jobForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = jobForm.querySelector('.btn-publish-gold');
       const msg = document.getElementById('jobMsg');
-      btn.textContent = 'Publication…'; btn.disabled = true;
+      const idVal = document.getElementById('job-id').value;
+      
+      btn.textContent = idVal ? 'Mise à jour…' : 'Publication…'; 
+      btn.disabled = true;
 
       const payload = {
         title:         jobForm.title.value.trim(),
         city:          jobForm.city?.value.trim() || '',
         country:       jobForm.country?.value.trim() || '',
-        sector:        jobForm.sector.value,
+        sector:        jobForm.sector.value.trim(),
         contract_type: jobForm.contract_type.value,
         salary:        jobForm.salary?.value.trim() || '',
         tags:          (jobForm.tags?.value || '').split(',').map(t => t.trim()).filter(Boolean),
-        description:   jobForm.description?.value.trim() || '',
-        requirements:  jobForm.requirements?.value.trim() || '',
-        is_new:        true,
+        description:   jobForm.description.value.trim(),
+        requirements:  jobForm.requirements.value.trim(),
+        is_new:        idVal ? false : true,
       };
 
       try {
         const token = sessionStorage.getItem('talentyah_token');
-        const res   = await fetch(API + '/api/jobs', {
-          method: 'POST',
+        // Si idVal existe, on fait un PUT sur /api/jobs/:id, sinon un POST classique
+        const url = idVal ? `${API}/api/jobs/${idVal}` : `${API}/api/jobs`;
+        const method = idVal ? 'PUT' : 'POST';
+
+        const res = await fetch(url, {
+          method: method,
           headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
           body: JSON.stringify(payload)
         });
         if (res.ok) {
-          if (msg) { msg.textContent = '✓ Offre publiée avec succès !'; msg.style.color = 'var(--emerald)'; }
-          jobForm.reset(); loadJobs();
+          if (msg) { 
+            msg.textContent = idVal ? '✓ Offre mise à jour avec succès !' : '✓ Offre publiée avec succès !'; 
+            msg.style.color = 'var(--emerald)'; 
+          }
+          resetJobForm(); loadJobs();
         } else {
           const d = await res.json();
-          if (msg) { msg.textContent = d.error || 'Erreur lors de la publication.'; msg.style.color = '#c0392b'; }
+          if (msg) { msg.textContent = d.error || 'Erreur lors de l\'opération.'; msg.style.color = '#c0392b'; }
         }
       } catch {
-        adminJobsDemo.unshift({ ...payload, id: Date.now(), created_at: new Date().toISOString() });
+        // Fallback Mode Démo local
+        if (idVal) {
+          // Mode modification en démo
+          const idx = adminJobsDemo.findIndex(j => j.id == idVal || adminJobsDemo.indexOf(j) == idVal);
+          if (idx !== -1) {
+            adminJobsDemo[idx] = { ...adminJobsDemo[idx], ...payload };
+          }
+          if (msg) { msg.textContent = '✓ Offre modifiée (mode démo).'; msg.style.color = 'var(--emerald)'; }
+        } else {
+          // Mode ajout en démo
+          adminJobsDemo.unshift({ ...payload, id: Date.now(), created_at: new Date().toISOString() });
+          if (msg) { msg.textContent = '✓ Offre ajoutée (mode démo).'; msg.style.color = 'var(--emerald)'; }
+        }
         renderAdminJobs(adminJobsDemo);
-        if (msg) { msg.textContent = '✓ Offre ajoutée (mode démo).'; msg.style.color = 'var(--emerald)'; }
-        jobForm.reset();
+        resetJobForm();
       }
-      btn.textContent = "Publier l'offre"; btn.disabled = false;
+      btn.disabled = false;
     });
   }
 
@@ -302,6 +341,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const msg = document.getElementById('pubMsg');
     const f   = e.target;
     const id  = document.getElementById('pub-id').value;
+    const contentHtml = quillEditor ? quillEditor.root.innerHTML.trim() : '';
 
     btn.disabled = true; btn.textContent = 'Enregistrement…';
 
@@ -311,7 +351,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fd.append('category', f['category'].value);
     fd.append('status',   f['status'].value);
     fd.append('excerpt',  f['excerpt'].value.trim());
-    fd.append('content',  f['content'].value.trim());
+    fd.append('content',  contentHtml);
     if (f['img'] && f['img'].files[0]) fd.append('image', f['img'].files[0]);
 
     try {
@@ -328,7 +368,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     } catch {
       // Mode démo local
-      const pub = { id: id ? parseInt(id) : Date.now(), title: f['title'].value.trim(), category: f['category'].value, status: f['status'].value, excerpt: f['excerpt'].value.trim(), content: f['content'].value.trim(), image: currentPubImg || null, date: new Date().toISOString().slice(0,10) };
+      const pub = { id: id ? parseInt(id) : Date.now(), title: f['title'].value.trim(), category: f['category'].value, status: f['status'].value, excerpt: f['excerpt'].value.trim(), content: contentHtml, image: currentPubImg || null, date: new Date().toISOString().slice(0,10) };
       if (id) { const idx = publications.findIndex(p => p.id === parseInt(id)); if (idx !== -1) publications[idx] = pub; } else { publications.unshift(pub); }
       renderPubList(); resetPubForm();
       if (msg) { msg.textContent = '✓ Enregistré (mode démo).'; msg.style.color = 'var(--emerald)'; setTimeout(() => { msg.textContent = ''; }, 3000); }
@@ -608,13 +648,16 @@ function applyPermissions() {
       `${ui.label}</span>`;
   }
 
-  /* Masquer les panels et boutons nav non autorisés */
+/* Masquer les panels et boutons nav non autorisés */
   let firstAllowedBtn = null;
   document.querySelectorAll('.admin-nav-btn[data-panel]').forEach(btn => {
     const allowed = perms[btn.dataset.panel] !== false;
     btn.style.display = allowed ? '' : 'none';
     const panel = document.getElementById(btn.dataset.panel);
-    if (panel) panel.style.display = allowed ? 'none' : 'none'; // tous cachés par défaut, le premier sera affiché après
+    if (panel) {
+      // On cache complètement si non autorisé, sinon on retire le display inline
+      panel.style.display = allowed ? 'none' : 'none'; 
+    }
     if (allowed && !firstAllowedBtn) firstAllowedBtn = btn;
   });
 
@@ -857,19 +900,74 @@ function renderAdminJobs(jobs) {
     return;
   }
   container.innerHTML = jobs.map((j, i) => `
-    <div class="admin-job-row">
+    <div class="admin-job-row" style="display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 16px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; margin-bottom: 12px;">
       <div>
-        <div class="admin-job-title">${_esc(j.title)}</div>
-        <div class="admin-job-meta">
+        <div class="admin-job-title" style="font-size: 15px; font-weight: 600; color: var(--dark); margin-bottom: 3px;">${_esc(j.title)}</div>
+        <div class="admin-job-meta" style="font-size: 12px; color: var(--muted); display: flex; gap: 12px; flex-wrap: wrap;">
           <span>📍 ${_esc([j.city, j.country].filter(Boolean).join(', ') || '—')}</span>
           <span>🗂 ${_esc(j.contract_type || '—')}</span>
           <span>💼 ${_esc(j.sector || '—')}</span>
           ${j.salary ? '<span>💶 ' + _esc(j.salary) + '</span>' : ''}
         </div>
       </div>
-      <button class="btn-delete" type="button" onclick="deleteJob(${i}, ${j.id || 'null'})">Supprimer</button>
+      <div style="display: flex; gap: 8px;">
+        <button class="btn-edit-pub" type="button" onclick="editJob(${i})" style="padding: 7px 14px; background: transparent; border: 1px solid var(--border); border-radius: 6px; color: var(--mid); font-size: 12px; font-weight: 600; cursor: pointer;">✎ Modifier</button>
+        <button class="btn-delete" type="button" onclick="deleteJob(${i}, ${j.id || 'null'})">Supprimer</button>
+      </div>
     </div>
   `).join('');
+}
+
+// Charger une offre existante dans le formulaire pour la modifier
+function editJob(index) {
+  const j = adminJobsDemo[index];
+  const form = document.getElementById('jobForm');
+  if (!form) return;
+
+  // Remplissage des champs du formulaire
+  document.getElementById('job-id').value = j.id || index;
+  form.title.value = j.title || '';
+  form.city.value = j.city || '';
+  form.country.value = j.country || '';
+  form.sector.value = j.sector || '';
+  form.contract_type.value = j.contract_type || '';
+  form.salary.value = j.salary || '';
+  form.tags.value = Array.isArray(j.tags) ? j.tags.join(', ') : (j.tags || '');
+  form.description.value = j.description || '';
+  form.requirements.value = j.requirements || '';
+
+  // Adapter les textes des boutons
+  const submitBtn = form.querySelector('.btn-publish-gold');
+  if (submitBtn) submitBtn.textContent = "Enregistrer les modifications";
+
+  // Optionnel : ajouter un bouton d'annulation s'il n'existe pas encore
+  if (!document.getElementById('jobCancelBtn')) {
+    const cancelBtn = document.createElement('button');
+    cancelBtn.type = "button";
+    cancelBtn.id = "jobCancelBtn";
+    cancelBtn.className = "btn-filter btn-reset";
+    cancelBtn.style = "background:transparent; color:var(--muted); border:1px solid var(--border); margin-left: 10px; padding: 12px 24px; border-radius: 6px; font-weight: 600; cursor: pointer;";
+    cancelBtn.textContent = "Annuler";
+    cancelBtn.addEventListener('click', resetJobForm);
+    form.querySelector('.job-form-actions').appendChild(cancelBtn);
+  }
+
+  // Remonter en douceur vers le formulaire
+  form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+// Réinitialiser le formulaire d'offre
+function resetJobForm() {
+  const form = document.getElementById('jobForm');
+  if (!form) return;
+  form.reset();
+  document.getElementById('job-id').value = '';
+  
+  const submitBtn = form.querySelector('.btn-publish-gold');
+  if (submitBtn) submitBtn.textContent = "Publier l'offre";
+
+  const cancelBtn = document.getElementById('jobCancelBtn');
+  if (cancelBtn) cancelBtn.remove();
 }
 
 async function deleteJob(index, id) {
@@ -1154,7 +1252,12 @@ function editPub(i) {
   document.getElementById('pub-category').value = p.category;
   document.getElementById('pub-status').value   = p.status;
   document.getElementById('pub-excerpt').value  = p.excerpt;
-  document.getElementById('pub-content').value  = p.content;
+
+// Insérer le contenu dans Quill
+  if (quillEditor) {
+    quillEditor.clipboard.dangerouslyPasteHTML(p.content || '');
+  }
+
   document.getElementById('pubFormTitle').textContent  = 'Modifier la publication';
   document.getElementById('pubSubmitBtn').textContent  = 'Enregistrer les modifications →';
   document.getElementById('pubCancelBtn').style.display = 'inline-flex';
@@ -1193,6 +1296,11 @@ function resetPubForm() {
   document.getElementById('pubCancelBtn').style.display = 'none';
   currentPubImg = null;
   updatePubImgPreview(null);
+
+  // Vider l'éditeur Quill
+  if (quillEditor) {
+    quillEditor.setContents([]);
+  }
 }
 
 function updatePubImgPreview(src) {
