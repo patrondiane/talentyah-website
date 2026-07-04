@@ -69,10 +69,17 @@ async function loadSingleArticle() {
       ? new Date(article.published_at).toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' })
       : 'Talentyah Editorial';
 
-    // 4. Générer le code HTML du contenu de l'article
-    const imgHtml = article.image_url
-      ? `<img src="${API_BASE}${article.image_url}" class="article-hero-img" alt="${_esc(article.title)}">`
-      : '';
+// Remplacez cette partie dans votre fonction loadSingleArticle :
+
+// 4. Générer le code HTML du contenu de l'article
+// On vérifie si l'URL commence par 'http' ; sinon, on ajoute l'API_BASE
+const imageUrl = article.image_url 
+  ? (article.image_url.startsWith('http') ? article.image_url : API_BASE + article.image_url)
+  : null;
+
+const imgHtml = imageUrl
+  ? `<img src="${imageUrl}" class="article-hero-img" alt="${_esc(article.title)}">`
+  : '';
 
     container.innerHTML =`
       ${imgHtml}
