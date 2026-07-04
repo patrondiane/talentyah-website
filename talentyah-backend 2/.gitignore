@@ -7,3 +7,16 @@ uploads/*
 !uploads/.gitkeep
 data/*
 uploads/*
+
+# Dépendances
+node_modules/
+
+# Variables d'environnement
+.env
+.env.local
+
+# Logs et fichiers système
+*.log
+.DS_Store
+dist/
+build/
