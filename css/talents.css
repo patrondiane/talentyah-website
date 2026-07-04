@@ -2,7 +2,27 @@
    TALENTYAH — talents.css
    Styles specifiques a la page Talents
 ===================================================== */
+.btn-apply {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: var(--gold);
+  color: var(--dark);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: uppercase;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
 
+.btn-apply:hover {
+  background-color: var(--emerald);
+  color: #fff;
+  transform: translateY(-2px);
+}
 /* =====================
    PROGRAMMES (fond sombre)
 ===================== */

@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return `<span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px;background:${bg};color:${col};">${sector}</span>`;
     }
 
-    function cardHTML(job) {
+function cardHTML(job) {
       return `
         <article class="job-card" onclick="window.location='offre.html?id=${job.id}'">
           <div>
@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
           <div class="job-footer">
             ${job.salary ? `<span class="job-salary">${job.salary}</span>` : ''}
-            <a href="offre.html?id=${job.id}" class="job-link" onclick="event.stopPropagation()">Postuler →</a>
+            <a href="offre.html?id=${job.id}" class="btn-apply" onclick="event.stopPropagation()">Postuler <span>&rarr;</span></a>
           </div>
         </article>`;
     }
