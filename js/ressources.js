@@ -46,7 +46,6 @@ function renderArticles(pubs) {
     return `
       <article class="article-card reveal visible" data-category="${cat}">
         <div class="article-card-thumb thumb-${cat}">
-// Version robuste pour renderArticles dans ressources.js
           ${p.image_url 
             ? `<img src="${p.image_url.startsWith('http') ? p.image_url : 'https://talentyah-website.onrender.com' + p.image_url}" 
                     alt="${_esc(p.title)}" 
