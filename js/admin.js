@@ -513,6 +513,7 @@ function showDashboard() {
   loadJobs();
   loadPartners();
   loadPublications();
+  loadCRM();
   applyPermissions();
   initNotifications(); // démarrer les notifications
 }
