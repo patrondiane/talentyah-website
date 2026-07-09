@@ -10,6 +10,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/admin.css">
+  <style>
+    /* Retour visuel pour le glisser-déposer du pipeline CRM (Kanban) */
+    .ats-pipeline-card { cursor: grab; }
+    .ats-pipeline-card.ats-dragging { opacity: .4; cursor: grabbing; }
+    .ats-pipeline-col { transition: background-color .15s ease, box-shadow .15s ease; }
+    .ats-pipeline-col.ats-drop-hover { background-color: rgba(16, 124, 65, .08); box-shadow: inset 0 0 0 2px var(--emerald, #107c41); border-radius: 10px; }
+  </style>
 </head>
 <body>
 
@@ -60,6 +67,17 @@
       </div>
 
       <nav class="admin-nav">
+        <!-- CRM -->
+        <button type="button" class="admin-nav-btn"
+                data-panel="panelCRM"
+                data-title="CRM Prospection B2B"
+                data-sub="Clients, prospects, pipeline et partenariats">
+          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+          CRM Clients
+        </button>
 
         <!-- Candidatures -->
         <button type="button" class="admin-nav-btn active"
@@ -328,17 +346,20 @@
             </div>
             <div class="job-form-field full">
               <label>Description du poste</label>
-              <textarea name="description" rows="4" placeholder="Décrivez le rôle, les missions, le contexte…"></textarea>
+              <div id="job-desc-editor" style="background:#fff;border-bottom-left-radius:6px;border-bottom-right-radius:6px;min-height:140px;"></div>
+              <input type="hidden" name="description" id="job-description-hidden">
             </div>
             <div class="job-form-field full">
               <label>Profil recherché / Exigences</label>
-              <textarea name="requirements" rows="3" placeholder="Expérience, diplômes, compétences clés…"></textarea>
+              <div id="job-reqs-editor" style="background:#fff;border-bottom-left-radius:6px;border-bottom-right-radius:6px;min-height:110px;"></div>
+              <input type="hidden" name="requirements" id="job-requirements-hidden">
             </div>
             <div class="job-form-actions full" style="display: flex; align-items: center; gap: 12px;">
               <button type="submit" class="btn-publish-gold" id="jobSubmitBtn">Publier l'offre</button>
               <button type="button" id="jobCancelBtn" class="btn-filter btn-reset" style="display: none; background: transparent; color: var(--muted); border: 1px solid var(--border); padding: 12px 24px; border-radius: 6px; font-weight: 600; cursor: pointer;">Annuler</button>
               <span class="job-form-msg" id="jobMsg"></span>
             </div>
+          </form>
         </div>
 
         <!-- Liste des offres existantes -->
@@ -566,7 +587,265 @@
         </div>
       </div>
 
-      <!-- ══════════ PANEL : ACCÈS & RÔLES ══════════ -->
+
+      <!-- ══════════ PANEL : CRM PROSPECTION B2B ══════════ -->
+      <div class="admin-panel" id="panelCRM" style="display:none;">
+
+        <!-- Onglets navigation interne -->
+        <div class="crm-tabs">
+          <button class="crm-tab active" data-ats="ats-page-dashboard" onclick="ATS.showAtsPage('ats-page-dashboard', this)">
+            <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            Dashboard
+          </button>
+          <button class="crm-tab" data-ats="ats-page-clients" onclick="ATS.showAtsPage('ats-page-clients', this)">
+            <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Clients & Prospects
+            <span class="tab-badge" id="ats-tab-total">—</span>
+          </button>
+          <button class="crm-tab" data-ats="ats-page-pipeline" onclick="ATS.showAtsPage('ats-page-pipeline', this)">
+            <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            Pipeline
+          </button>
+          <button class="crm-tab" data-ats="ats-page-partenariats" onclick="ATS.showAtsPage('ats-page-partenariats', this)">
+            <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 11l-4 4-2-2"/></svg>
+            Partenariats
+            <span class="tab-badge" id="ats-tab-parts">—</span>
+          </button>
+          <button class="crm-tab" data-ats="ats-page-relances" onclick="ATS.showAtsPage('ats-page-relances', this)">
+            <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Relances
+          </button>
+          <button class="crm-tab" data-ats="ats-page-ajouter" onclick="ATS.showAtsPage('ats-page-ajouter', this)">
+            <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Ajouter
+          </button>
+        </div>
+
+        <!-- ── PAGE : DASHBOARD ── -->
+        <div class="ats-page active" id="ats-page-dashboard">
+          <div class="ats-kpi-grid">
+            <div class="ats-kpi-card active" onclick="ATS.filterByStade(null, this)">
+              <div class="ats-kpi-label">Total prospects</div>
+              <div class="ats-kpi-value" id="ats-kpi-total">—</div>
+              <div class="ats-kpi-badge" style="background:#e8f5e9;color:#1B5E20">Base complète</div>
+            </div>
+            <div class="ats-kpi-card" onclick="ATS.filterByStade('Client actif', this)">
+              <div class="ats-kpi-label">Clients actifs</div>
+              <div class="ats-kpi-value" id="ats-kpi-actifs">—</div>
+              <div class="ats-kpi-badge ats-badge-client">Actif</div>
+            </div>
+            <div class="ats-kpi-card" onclick="ATS.filterByStade('Négociation', this)">
+              <div class="ats-kpi-label">En négociation</div>
+              <div class="ats-kpi-value" id="ats-kpi-nego">—</div>
+              <div class="ats-kpi-badge ats-badge-nego">Négociation</div>
+            </div>
+            <div class="ats-kpi-card" onclick="ATS.filterByStade('Relance', this)">
+              <div class="ats-kpi-label">À relancer</div>
+              <div class="ats-kpi-value" id="ats-kpi-relance">—</div>
+              <div class="ats-kpi-badge ats-badge-relance">Relance</div>
+            </div>
+            <div class="ats-kpi-card" onclick="ATS.filterByStade('A contacter', this)">
+              <div class="ats-kpi-label">À contacter</div>
+              <div class="ats-kpi-value" id="ats-kpi-contacter">—</div>
+              <div class="ats-kpi-badge ats-badge-contacter">À contacter</div>
+            </div>
+            <div class="ats-kpi-card" onclick="ATS.filterByStade('Mission terminée', this)">
+              <div class="ats-kpi-label">Mission terminée</div>
+              <div class="ats-kpi-value" id="ats-kpi-terminee">—</div>
+              <div class="ats-kpi-badge ats-badge-terminee">Terminée</div>
+            </div>
+            <div class="ats-kpi-card" onclick="ATS.filterByStade('Repositionner l\'offre', this)">
+              <div class="ats-kpi-label">Repositionner</div>
+              <div class="ats-kpi-value" id="ats-kpi-reposi">—</div>
+              <div class="ats-kpi-badge ats-badge-reposi">Repositionner</div>
+            </div>
+            <div class="ats-kpi-card" onclick="ATS.filterByStade('Fermée', this)">
+              <div class="ats-kpi-label">Fermée</div>
+              <div class="ats-kpi-value" id="ats-kpi-fermee">—</div>
+              <div class="ats-kpi-badge ats-badge-fermee">Fermée</div>
+            </div>
+            <div class="ats-kpi-card" onclick="ATS.filterByStade('Stand by', this)">
+              <div class="ats-kpi-label">Stand by</div>
+              <div class="ats-kpi-value" id="ats-kpi-standby">—</div>
+              <div class="ats-kpi-badge ats-badge-standby">Stand by</div>
+            </div>
+            <div class="ats-kpi-card" onclick="ATS.filterByStade('Partenaire actif', this)">
+              <div class="ats-kpi-label">Partenaire actif</div>
+              <div class="ats-kpi-value" id="ats-kpi-part">—</div>
+              <div class="ats-kpi-badge ats-badge-part">Partenaire</div>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:8px;">
+            <div>
+              <h3 style="font-family:'Cormorant Garamond',serif;font-size:17px;margin-bottom:12px;color:var(--forest-dark)">Dernières entrées</h3>
+              <div class="ats-table-wrap">
+                <table class="ats-table">
+                  <thead><tr><th>Entreprise</th><th>Stade</th><th>Source</th></tr></thead>
+                  <tbody id="ats-recent-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+            <div>
+              <h3 style="font-family:'Cormorant Garamond',serif;font-size:17px;margin-bottom:12px;color:var(--forest-dark)">Répartition par secteur</h3>
+              <div class="ats-table-wrap">
+                <table class="ats-table">
+                  <thead><tr><th>Secteur</th><th>Nb</th></tr></thead>
+                  <tbody id="ats-sector-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── PAGE : CLIENTS & PROSPECTS ── -->
+        <div class="ats-page" id="ats-page-clients">
+          <div class="ats-toolbar">
+            <div class="ats-search-wrap">
+              <span class="ats-search-icon">🔍</span>
+              <input class="ats-search-input" type="text" id="ats-search"
+                     placeholder="Rechercher entreprise, contact, secteur…"
+                     oninput="ATS.renderClients()">
+            </div>
+            <select class="ats-filter-select" id="ats-filter-stade" onchange="ATS.renderClients()">
+              <option value="">Tous les stades</option>
+              <option>Client actif</option><option>Négociation</option><option>Relance</option>
+              <option>Premier contact</option><option>A contacter</option><option>Mission terminée</option>
+              <option>Repositionner l'offre</option><option>Fermée</option><option>Stand by</option>
+              <option>B2C actif</option><option>Partenaire actif</option>
+            </select>
+            <select class="ats-filter-select" id="ats-filter-secteur" onchange="ATS.renderClients()">
+              <option value="">Tous les secteurs</option>
+            </select>
+            <button type="button" class="btn-filter" onclick="ATS.exportClientsCSV()" style="white-space:nowrap;">⬇ Exporter CSV</button>
+            <span class="ats-result-count" id="ats-result-count"></span>
+          </div>
+          <div class="ats-table-wrap">
+            <table class="ats-table">
+              <thead><tr>
+                <th>Entreprise</th><th>Secteur</th><th>Contact</th><th>Fonction</th>
+                <th>Email</th><th>Source</th><th>Stade</th><th>Action</th>
+              </tr></thead>
+              <tbody id="ats-clients-tbody"><tr><td colspan="8" style="text-align:center;color:var(--muted);padding:24px">Chargement…</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ── PAGE : PIPELINE ── -->
+        <div class="ats-page" id="ats-page-pipeline">
+          <p style="font-size:13px;color:var(--muted);margin-bottom:18px">Vue kanban par stade de prospection — cliquez sur une carte pour modifier.</p>
+          <div class="ats-pipeline" id="ats-pipeline-board"></div>
+        </div>
+
+        <!-- ── PAGE : PARTENARIATS ── -->
+        <div class="ats-page" id="ats-page-partenariats">
+          <div class="ats-toolbar">
+            <div class="ats-search-wrap">
+              <span class="ats-search-icon">🔍</span>
+              <input class="ats-search-input" type="text" id="ats-search-part"
+                     placeholder="Rechercher organisme, contact…"
+                     oninput="ATS.renderPartenariats()">
+            </div>
+            <select class="ats-filter-select" id="ats-filter-stade-part" onchange="ATS.renderPartenariats()">
+              <option value="">Tous les stades</option>
+              <option>Client actif</option><option>Négociation</option><option>Relance</option>
+              <option>A contacter</option><option>Partenaire actif</option>
+            </select>
+            <span class="ats-result-count" id="ats-result-count-part"></span>
+          </div>
+          <div class="ats-part-grid" id="ats-part-grid"></div>
+        </div>
+
+        <!-- ── PAGE : RELANCES ── -->
+        <div class="ats-page" id="ats-page-relances">
+          <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Entreprises nécessitant une action de suivi prioritaire.</p>
+          <div class="ats-activity-list" id="ats-relances-list"></div>
+        </div>
+
+        <!-- ── PAGE : AJOUTER ── -->
+        <div class="ats-page" id="ats-page-ajouter">
+          <h2 style="font-family:'Cormorant Garamond',serif;font-size:22px;margin-bottom:6px;color:var(--forest-dark)">Nouvelle entrée</h2>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:22px">Ajoutez un client, prospect ou partenaire à votre base B2B.</p>
+          <div class="ats-add-form-wrap">
+            <div class="ats-form-grid">
+              <div class="ats-form-field"><label>Entreprise *</label><input id="ats-add-entreprise" placeholder="Nom de l'entreprise"></div>
+              <div class="ats-form-field"><label>Secteur</label><input id="ats-add-secteur" placeholder="Ex: Banque, Conseil…"></div>
+              <div class="ats-form-field"><label>Contact principal</label><input id="ats-add-contact" placeholder="Prénom NOM"></div>
+              <div class="ats-form-field"><label>Fonction</label><input id="ats-add-fonction" placeholder="DRH, CEO…"></div>
+              <div class="ats-form-field"><label>Email</label><input id="ats-add-email" type="email" placeholder="email@company.com"></div>
+              <div class="ats-form-field"><label>Téléphone</label><input id="ats-add-tel" placeholder="+33…"></div>
+              <div class="ats-form-field"><label>Source</label><input id="ats-add-source" placeholder="LinkedIn, recommandation…"></div>
+              <div class="ats-form-field"><label>Stade *</label>
+                <select id="ats-add-stade">
+                  <option>A contacter</option><option>Premier contact</option><option>Relance</option>
+                  <option>Négociation</option><option>Client actif</option><option>Mission terminée</option>
+                  <option>Repositionner l'offre</option><option>Fermée</option><option>Stand by</option>
+                  <option>B2C actif</option><option>Partenaire actif</option>
+                </select>
+              </div>
+              <div class="ats-form-field full"><label>Besoin identifié</label><textarea id="ats-add-besoin" placeholder="Description du besoin…"></textarea></div>
+              <div class="ats-form-field full"><label>Commentaires</label><textarea id="ats-add-commentaires" placeholder="Notes libres…"></textarea></div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:center;">
+              <button class="btn-publish-gold" onclick="ATS.addEntry()">➕ Ajouter à la base</button>
+              <button class="btn-filter btn-reset" onclick="['ats-add-entreprise','ats-add-secteur','ats-add-contact','ats-add-fonction','ats-add-email','ats-add-tel','ats-add-source','ats-add-besoin','ats-add-commentaires'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''})">Effacer</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ══════════ MODAL ATS ══════════ -->
+      <div class="ats-modal-overlay" id="ats-modal-overlay" onclick="ATS.closeModal(event)">
+        <div class="ats-modal" onclick="event.stopPropagation()">
+          <div class="ats-modal-header">
+            <div>
+              <div class="ats-modal-company" id="ats-modal-company">—</div>
+              <div class="ats-modal-sector" id="ats-modal-sector">—</div>
+            </div>
+            <button class="ats-modal-close" onclick="ATS.closeModal()">✕</button>
+          </div>
+          <div class="ats-modal-body">
+            <div class="ats-modal-stade-row">
+              <div style="flex:1">
+                <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px">Stade de prospection</div>
+                <div id="ats-modal-stade-badge"></div>
+              </div>
+              <select class="ats-stade-select" id="ats-modal-stade-select" onchange="ATS.updateStadeBadge()">
+                <option>Client actif</option><option>Négociation</option><option>Relance</option>
+                <option>Premier contact</option><option>A contacter</option><option>Mission terminée</option>
+                <option>Repositionner l'offre</option><option>Fermée</option><option>Stand by</option>,
+                <option>B2C actif</option><option>Partenaire actif</option>
+              </select>
+            </div>
+            <div class="ats-modal-grid">
+              <div class="ats-modal-field"><label>Contact</label><input id="mf2-contact"></div>
+              <div class="ats-modal-field"><label>Fonction</label><input id="mf2-fonction"></div>
+              <div class="ats-modal-field"><label>Email</label><input id="mf2-email" type="email"></div>
+              <div class="ats-modal-field"><label>Téléphone</label><input id="mf2-tel"></div>
+              <div class="ats-modal-field"><label>Source</label><input id="mf2-source"></div>
+              <div class="ats-modal-field"><label>LinkedIn</label><input id="mf2-linkedin"></div>
+              <div class="ats-modal-field full"><label>Besoin identifié</label><textarea id="mf2-besoin"></textarea></div>
+              <div class="ats-modal-field full"><label>Prochaine action</label><textarea id="mf2-action" style="min-height:50px"></textarea></div>
+              <div class="ats-modal-field full"><label>Commentaires</label><textarea id="mf2-commentaires"></textarea></div>
+            </div>
+            <div class="ats-modal-field full" style="margin-top:4px;">
+              <label>Historique des échanges</label>
+              <div id="ats-modal-history" style="max-height:160px;overflow-y:auto;border:1px solid var(--border);border-radius:8px;padding:10px;background:#f9fbf9;margin-bottom:8px;font-size:13px;"></div>
+              <div style="display:flex;gap:8px;">
+                <input id="ats-modal-history-input" placeholder="Ajouter une note (appel, email, relance…)" style="flex:1;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;" onkeydown="if(event.key==='Enter'){event.preventDefault();ATS.addHistoryNote();}">
+                <button type="button" class="ats-btn-cancel" style="white-space:nowrap;" onclick="ATS.addHistoryNote()">+ Ajouter</button>
+              </div>
+            </div>
+            <div class="ats-modal-footer">
+              <button class="ats-btn-cancel" onclick="ATS.closeModal()">Fermer</button>
+              <button class="ats-btn-save" onclick="ATS.saveModal()">💾 Sauvegarder</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+            <!-- ══════════ PANEL : ACCÈS & RÔLES ══════════ -->
       <div class="admin-panel" id="panelAccess" style="display:none;">
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start;">

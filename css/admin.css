@@ -628,3 +628,493 @@ body { font-family: 'DM Sans', sans-serif; background: #f0f4f1; color: var(--dar
   .admin-table { min-width: 500px; font-size: 12px; }
   .admin-table th, .admin-table td { padding: 8px 10px; }
 }
+/* =====================================================
+   ATS PROSPECTION B2B — Styles intégrés dans l'admin
+   Panel panelCRM — Deuxième partie
+===================================================== */
+
+/* ── Variables ATS (mapped sur les variables admin) ── */
+.ats-wrap {
+  --ats-green-deep:   var(--forest-dark);
+  --ats-green-mid:    var(--emerald-mid);
+  --ats-green-bright: #43A047;
+  --ats-green-pale:   #e8f5e9;
+  --ats-green-ultra:  #f1f8f2;
+  --ats-gold:         var(--gold);
+  --ats-slate:        var(--muted);
+  --ats-border:       var(--border);
+  --ats-paper:        var(--bg-off);
+  --ats-white:        var(--white);
+  --ats-ink:          var(--dark);
+  --ats-shadow:       0 2px 16px rgba(27,94,32,0.08);
+  --ats-shadow-lg:    0 8px 40px rgba(27,94,32,0.13);
+  --ats-radius:       10px;
+  --ats-radius-lg:    14px;
+}
+
+/* ── Navigation interne CRM (onglets) ── */
+.crm-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 0 0 20px;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.crm-tab {
+  padding: 9px 18px;
+  border-radius: 8px 8px 0 0;
+  border: none;
+  background: transparent;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all .18s;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+}
+.crm-tab:hover { background: var(--bg-off); color: var(--dark); }
+.crm-tab.active {
+  background: var(--forest-dark);
+  color: var(--gold-light);
+  font-weight: 600;
+}
+.crm-tab .tab-badge {
+  background: var(--gold);
+  color: var(--forest-dark);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 8px;
+  min-width: 18px;
+  text-align: center;
+}
+.crm-tab:not(.active) .tab-badge {
+  background: rgba(255,255,255,0.15);
+  color: var(--muted);
+}
+
+/* ── Pages ATS ── */
+.ats-page { display: none; }
+.ats-page.active { display: block; }
+
+/* ── KPI Grid ── */
+.ats-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.ats-kpi-card {
+  background: var(--white);
+  border-radius: var(--ats-radius-lg, 14px);
+  padding: 18px 20px;
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 10px rgba(27,94,32,0.06);
+  cursor: pointer;
+  transition: all .2s;
+  position: relative;
+  overflow: hidden;
+}
+.ats-kpi-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--emerald-mid);
+  opacity: 0;
+  transition: opacity .2s;
+}
+.ats-kpi-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(27,94,32,0.12); }
+.ats-kpi-card:hover::before, .ats-kpi-card.active::before { opacity: 1; }
+.ats-kpi-card.active { border-color: var(--emerald-mid); background: #f9fcfa; }
+.ats-kpi-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; margin-bottom: 6px; }
+.ats-kpi-value { font-family: 'Cormorant Garamond', serif; font-size: 30px; color: var(--dark); line-height: 1; }
+.ats-kpi-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 600;
+  margin-top: 5px;
+}
+
+/* ── ATS Badges (stades) ── */
+.ats-badge { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.ats-badge-client    { background: #e8f5e9; color: #1B5E20; }
+.ats-badge-nego      { background: #e3f2fd; color: #1565C0; }
+.ats-badge-relance   { background: #fff3e0; color: #E65100; }
+.ats-badge-premier   { background: #f3e5f5; color: #6A1B9A; }
+.ats-badge-contacter { background: #eceff1; color: #37474F; }
+.ats-badge-terminee  { background: #e8f5e9; color: #2E7D32; border: 1.5px solid #a5d6a7; }
+.ats-badge-reposi    { background: #fff8e1; color: #F57F17; border: 1.5px solid #ffe082; }
+.ats-badge-fermee    { background: #fce4ec; color: #880E4F; border: 1.5px solid #f48fb1; }
+.ats-badge-standby   { background: #e8eaf6; color: #283593; border: 1.5px solid #9fa8da; }
+.ats-badge-b2c       { background: #fce4ec; color: #880E4F; border: 1.5px solid #f48fb1; }
+.ats-badge-part      { background: #e8f5e9; color: #1B5E20; border: 1.5px solid #a5d6a7; }
+
+/* ── Toolbar ATS ── */
+.ats-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+.ats-search-wrap { position: relative; flex: 1; min-width: 220px; }
+.ats-search-icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 14px; }
+.ats-search-input {
+  width: 100%;
+  padding: 9px 12px 9px 34px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  background: var(--white);
+  color: var(--dark);
+  outline: none;
+  transition: border .18s;
+}
+.ats-search-input:focus { border-color: var(--emerald-mid); }
+.ats-filter-select {
+  padding: 9px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  background: var(--white);
+  color: var(--dark);
+  cursor: pointer;
+  outline: none;
+  transition: border .18s;
+}
+.ats-filter-select:focus { border-color: var(--emerald-mid); }
+.ats-result-count { font-size: 12px; color: var(--muted); white-space: nowrap; }
+
+/* ── Table ATS ── */
+.ats-table-wrap {
+  background: var(--white);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+}
+.ats-table { width: 100%; border-collapse: collapse; }
+.ats-table thead tr { background: #f1f8f2; border-bottom: 2px solid var(--border); }
+.ats-table thead th {
+  padding: 11px 14px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--emerald);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+  white-space: nowrap;
+}
+.ats-table thead th:hover { color: var(--emerald-mid); }
+.ats-table tbody tr { border-bottom: 1px solid var(--border); transition: background .15s; cursor: pointer; }
+.ats-table tbody tr:last-child { border-bottom: none; }
+.ats-table tbody tr:hover { background: #f1f8f2; }
+.ats-table tbody td { padding: 11px 14px; font-size: 13px; color: var(--dark); vertical-align: middle; }
+.ats-company-name { font-weight: 600; font-size: 13.5px; }
+.ats-contact-name { color: var(--muted); font-size: 12px; margin-top: 2px; }
+.ats-sector-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  background: #e8f5e9;
+  color: var(--emerald);
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+}
+.ats-email-link { color: var(--emerald-mid); text-decoration: none; font-size: 12px; }
+.ats-email-link:hover { text-decoration: underline; }
+.ats-action-btn {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1.5px solid var(--border);
+  background: var(--white);
+  color: var(--emerald);
+  transition: all .15s;
+  font-family: 'DM Sans', sans-serif;
+}
+.ats-action-btn:hover { background: #e8f5e9; border-color: var(--emerald-mid); }
+
+/* ── Pipeline ── */
+.ats-pipeline {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 14px;
+  align-items: start;
+}
+.ats-pipeline-col { background: var(--white); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; }
+.ats-pipeline-header {
+  padding: 12px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  background: #f9fbf9;
+}
+.ats-pipeline-title { font-size: 12px; font-weight: 700; }
+.ats-pipeline-count {
+  background: #e8f5e9;
+  color: var(--emerald);
+  padding: 2px 7px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.ats-pipeline-cards { padding: 8px; display: flex; flex-direction: column; gap: 6px; }
+.ats-pipeline-card {
+  background: var(--bg-off);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: all .18s;
+}
+.ats-pipeline-card:hover { background: #f1f8f2; border-color: var(--emerald-mid); transform: translateY(-1px); box-shadow: 0 3px 10px rgba(27,94,32,0.1); }
+.ats-pc-company { font-weight: 600; font-size: 13px; margin-bottom: 2px; }
+.ats-pc-contact { font-size: 11.5px; color: var(--muted); }
+.ats-pc-sector  { font-size: 11px; color: var(--emerald-mid); margin-top: 4px; }
+
+/* ── Partenariats grid ── */
+.ats-part-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+}
+.ats-part-card {
+  background: var(--white);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  padding: 18px;
+  cursor: pointer;
+  transition: all .2s;
+}
+.ats-part-card:hover { box-shadow: 0 8px 24px rgba(27,94,32,0.1); transform: translateY(-2px); border-color: var(--emerald-mid); }
+.ats-part-name { font-family: 'Cormorant Garamond', serif; font-size: 16px; margin-bottom: 3px; color: var(--dark); }
+.ats-part-contact { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+
+/* ── Relances / Activity ── */
+.ats-activity-list { display: flex; flex-direction: column; gap: 8px; }
+.ats-activity-item {
+  background: var(--white);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  transition: border-color .15s;
+}
+.ats-activity-item:hover { border-color: var(--emerald-mid); }
+.ats-activity-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.ats-activity-content { flex: 1; }
+.ats-activity-company { font-weight: 600; font-size: 13px; }
+.ats-activity-action { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+/* ── Formulaire ajout ATS ── */
+.ats-add-form-wrap {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px 32px;
+  max-width: 700px;
+}
+.ats-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.ats-form-field { display: flex; flex-direction: column; gap: 5px; }
+.ats-form-field.full { grid-column: 1 / -1; }
+.ats-form-field label { font-size: 10px; font-weight: 700; color: var(--emerald); text-transform: uppercase; letter-spacing: 1px; }
+.ats-form-field input,
+.ats-form-field textarea,
+.ats-form-field select {
+  padding: 9px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: var(--dark);
+  background: var(--white);
+  outline: none;
+  transition: border .15s;
+  resize: vertical;
+}
+.ats-form-field input:focus,
+.ats-form-field textarea:focus,
+.ats-form-field select:focus { border-color: var(--emerald-mid); }
+.ats-form-field textarea { min-height: 72px; }
+
+/* ── Modal ATS ── */
+.ats-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(13,40,24,0.55);
+  z-index: 300;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  padding: 24px;
+}
+.ats-modal-overlay.open { display: flex; }
+.ats-modal {
+  background: var(--white);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 640px;
+  max-height: 88vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 64px rgba(13,40,24,0.28);
+  animation: atsModalIn .22s ease;
+}
+@keyframes atsModalIn {
+  from { opacity:0; transform: scale(.95) translateY(10px); }
+  to   { opacity:1; transform: scale(1) translateY(0); }
+}
+.ats-modal-header {
+  padding: 22px 26px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.ats-modal-company { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--dark); }
+.ats-modal-sector  { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.ats-modal-close {
+  background: none; border: none; font-size: 18px; cursor: pointer;
+  color: var(--muted); padding: 4px; border-radius: 6px; transition: all .15s; line-height:1;
+}
+.ats-modal-close:hover { background: var(--bg-off); color: var(--dark); }
+.ats-modal-body { padding: 18px 26px 26px; }
+.ats-modal-stade-row {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 18px; padding: 12px 14px;
+  background: #f1f8f2; border-radius: 10px; border: 1px solid var(--border);
+}
+.ats-stade-select {
+  padding: 6px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 7px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  background: var(--white);
+  cursor: pointer;
+  outline: none;
+  font-weight: 600;
+  color: var(--dark);
+}
+.ats-modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+.ats-modal-field { display: flex; flex-direction: column; gap: 4px; }
+.ats-modal-field.full { grid-column: 1 / -1; }
+.ats-modal-field label { font-size: 10px; font-weight: 700; color: var(--emerald-mid); text-transform: uppercase; letter-spacing: 1px; }
+.ats-modal-field input,
+.ats-modal-field textarea {
+  padding: 8px 11px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: var(--dark);
+  background: var(--white);
+  outline: none;
+  transition: border .15s;
+  resize: vertical;
+}
+.ats-modal-field input:focus,
+.ats-modal-field textarea:focus { border-color: var(--emerald-mid); }
+.ats-modal-field textarea { min-height: 68px; }
+.ats-modal-footer {
+  display: flex; gap: 10px; justify-content: flex-end;
+  padding-top: 14px; border-top: 1px solid var(--border); margin-top: 4px;
+}
+.ats-btn-save {
+  padding: 10px 22px;
+  background: var(--forest-dark);
+  color: #fff;
+  border: none; border-radius: 8px;
+  font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: background .18s;
+}
+.ats-btn-save:hover { background: var(--emerald); }
+.ats-btn-cancel {
+  padding: 10px 18px;
+  background: transparent;
+  color: var(--muted);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: all .15s;
+}
+.ats-btn-cancel:hover { border-color: var(--dark); color: var(--dark); }
+
+/* ── Toast ATS ── */
+.ats-toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 400;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+.ats-toast {
+  background: var(--forest-dark);
+  color: #fff;
+  padding: 11px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.25);
+  animation: atsToastIn .2s ease;
+  border-left: 3px solid var(--gold);
+}
+@keyframes atsToastIn {
+  from { opacity:0; transform: translateY(8px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+
+/* ── Empty state ATS ── */
+.ats-empty {
+  padding: 50px 20px;
+  text-align: center;
+  color: var(--muted);
+}
+.ats-empty .ats-empty-icon { font-size: 36px; margin-bottom: 10px; }
+.ats-empty p { font-size: 14px; }
+
+/* ── Responsive ATS ── */
+@media (max-width: 900px) {
+  .ats-kpi-grid { grid-template-columns: repeat(3, 1fr); }
+  .ats-pipeline { grid-template-columns: 1fr 1fr; }
+  .ats-form-grid { grid-template-columns: 1fr; }
+  .ats-form-field.full { grid-column: unset; }
+  .ats-modal-grid { grid-template-columns: 1fr; }
+  .ats-modal-field.full { grid-column: unset; }
+  .crm-tabs { gap: 2px; }
+  .crm-tab { font-size: 12px; padding: 8px 12px; }
+}
+@media (max-width: 600px) {
+  .ats-kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .ats-pipeline { grid-template-columns: 1fr; }
+  .ats-part-grid { grid-template-columns: 1fr; }
+}

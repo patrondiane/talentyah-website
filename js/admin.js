@@ -20,6 +20,7 @@ const PRIVILEGES = {
     panelPartners:     true,
     panelPublications: true,
     panelAccess:       true,
+    panelCRM:          true,
   },
   admin: {
     panelCandidates:   true,
@@ -55,24 +56,53 @@ const DEMO_ACCOUNTS = {
 /* ══════════════════════════════
    INIT
 ══════════════════════════════ */
-let quillEditor; // Variable globale pour l'éditeur
+let quillEditor; // Variable globale pour l'éditeur (Publications)
+let jobDescQuill, jobReqsQuill; // Éditeurs riches pour l'offre d'emploi
 document.addEventListener('DOMContentLoaded', () => {
 
-  // Initialisation de Quill.js
-  if (document.getElementById('pub-content-editor')) {
-    quillEditor = new Quill('#pub-content-editor', {
-      theme: 'snow',
-      placeholder: 'Rédigez votre article ici...',
-      modules: {
-        toolbar: [
-          [{ 'header': [1, 2, 3, false] }],
-          ['bold', 'italic', 'underline', 'strike'],
-          [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-          ['link', 'blockquote'],
-          ['clean'] // Bouton pour enlever le formatage
-        ]
-      }
-    });
+  // Initialisation de Quill.js (protégée : une erreur ici ne doit pas
+  // empêcher le reste de l'initialisation, ex. le formulaire "Offres")
+  try {
+    if (document.getElementById('pub-content-editor') && typeof Quill !== 'undefined') {
+      quillEditor = new Quill('#pub-content-editor', {
+        theme: 'snow',
+        placeholder: 'Rédigez votre article ici...',
+        modules: {
+          toolbar: [
+            [{ 'header': [1, 2, 3, false] }],
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+            ['link', 'blockquote'],
+            ['clean'] // Bouton pour enlever le formatage
+          ]
+        }
+      });
+    } else if (document.getElementById('pub-content-editor')) {
+      console.warn('Quill.js ne s\'est pas chargé (CDN indisponible) — l\'éditeur de blog sera désactivé, le reste de l\'admin fonctionne normalement.');
+    }
+
+    // Éditeurs riches pour "Description du poste" et "Profil recherché / Exigences"
+    const jobRichToolbar = [
+      ['bold', 'italic', 'underline'],
+      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+      ['clean']
+    ];
+    if (document.getElementById('job-desc-editor') && typeof Quill !== 'undefined') {
+      jobDescQuill = new Quill('#job-desc-editor', {
+        theme: 'snow',
+        placeholder: 'Décrivez le rôle, les missions, le contexte…',
+        modules: { toolbar: jobRichToolbar }
+      });
+    }
+    if (document.getElementById('job-reqs-editor') && typeof Quill !== 'undefined') {
+      jobReqsQuill = new Quill('#job-reqs-editor', {
+        theme: 'snow',
+        placeholder: 'Expérience, diplômes, compétences clés…',
+        modules: { toolbar: jobRichToolbar }
+      });
+    }
+  } catch (err) {
+    console.error('Erreur d\'initialisation de Quill.js :', err);
   }
 
   /* Date topbar */
@@ -170,6 +200,7 @@ document.addEventListener('DOMContentLoaded', () => {
         panelPartners:     loadPartners,
         panelPublications: loadPublications,
         panelAccess:       loadAccessList,
+        panelCRM:          loadCRM,
       };
       if (reloadMap[btn.dataset.panel]) reloadMap[btn.dataset.panel]();
     });
@@ -200,6 +231,12 @@ const jobForm = document.getElementById('jobForm');
       btn.textContent = idVal ? 'Mise à jour…' : 'Publication…'; 
       btn.disabled = true;
 
+      // Récupère le contenu formaté (gras, italique, listes…) des éditeurs riches
+      const descHtml = jobDescQuill ? jobDescQuill.root.innerHTML.trim() : jobForm.description.value.trim();
+      const reqsHtml = jobReqsQuill ? jobReqsQuill.root.innerHTML.trim() : jobForm.requirements.value.trim();
+      const descEmpty = jobDescQuill ? jobDescQuill.getText().trim() === '' : descHtml === '';
+      const reqsEmpty = jobReqsQuill ? jobReqsQuill.getText().trim() === '' : reqsHtml === '';
+
       const payload = {
         title:         jobForm.title.value.trim(),
         city:          jobForm.city?.value.trim() || '',
@@ -208,8 +245,8 @@ const jobForm = document.getElementById('jobForm');
         contract_type: jobForm.contract_type.value,
         salary:        jobForm.salary?.value.trim() || '',
         tags:          (jobForm.tags?.value || '').split(',').map(t => t.trim()).filter(Boolean),
-        description:   jobForm.description.value.trim(),
-        requirements:  jobForm.requirements.value.trim(),
+        description:   descEmpty ? '' : descHtml,
+        requirements:  reqsEmpty ? '' : reqsHtml,
         is_new:        idVal ? false : true,
       };
 
@@ -493,7 +530,8 @@ async function initNotifications() {
   // Demander permission notifications navigateur
   if ('Notification' in window && Notification.permission === 'default') {
     const perm = await Notification.requestPermission();
-    if (perm === 'granted') showToast('✅ Notifications activées', 'success');
+    if (perm === 'granted') showToast
+    ('✅ Notifications activées', 'success');
   }
 
   // Snapshot initial des compteurs
@@ -933,8 +971,14 @@ function editJob(index) {
   form.contract_type.value = j.contract_type || '';
   form.salary.value = j.salary || '';
   form.tags.value = Array.isArray(j.tags) ? j.tags.join(', ') : (j.tags || '');
-  form.description.value = j.description || '';
-  form.requirements.value = j.requirements || '';
+  if (jobDescQuill) {
+    jobDescQuill.setContents([]);
+    jobDescQuill.clipboard.dangerouslyPasteHTML(j.description || '');
+  }
+  if (jobReqsQuill) {
+    jobReqsQuill.setContents([]);
+    jobReqsQuill.clipboard.dangerouslyPasteHTML(j.requirements || '');
+  }
 
   // Adapter les textes des boutons
   const submitBtn = form.querySelector('.btn-publish-gold');
@@ -962,6 +1006,8 @@ function resetJobForm() {
   if (!form) return;
   form.reset();
   document.getElementById('job-id').value = '';
+  if (jobDescQuill) jobDescQuill.setContents([]);
+  if (jobReqsQuill) jobReqsQuill.setContents([]);
   
   const submitBtn = form.querySelector('.btn-publish-gold');
   if (submitBtn) submitBtn.textContent = "Publier l'offre";
@@ -1405,6 +1451,34 @@ async function deleteAccess(id) {
   loadAccessList();
 }
 
+
+/* ══════════════════════════════
+   CRM
+══════════════════════════════ */
+
+async function loadCRM() {
+  const tbody = document.getElementById('crmTbody');
+  tbody.innerHTML = '<tr><td colspan="4">Chargement…</td></tr>';
+  
+  try {
+    const token = sessionStorage.getItem('talentyah_token');
+    const res   = await fetch(API + '/api/crm', { headers: { 'Authorization': 'Bearer ' + token } });
+    const data  = await res.json();
+    
+    tbody.innerHTML = data.map(c => `
+      <tr>
+        <td><strong>${c.entreprise}</strong></td>
+        <td>${c.contact}</td>
+        <td><span class="badge-active">${c.stade}</span></td>
+        <td><button class="btn-edit-pub">Modifier</button></td>
+      </tr>
+    `).join('');
+  } catch (err) {
+    tbody.innerHTML = '<tr><td colspan="4">Erreur de chargement.</td></tr>';
+  }
+}
+
+
 /* ══════════════════════════════
    HELPERS
 ══════════════════════════════ */
@@ -1415,4 +1489,403 @@ function _fmtDate(d) {
 }
 function _esc(s) {
   return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ATS PROSPECTION B2B — Module CRM intégré (Partie 2)
+   Remplace la fonction loadCRM() basique
+   Toute la logique ATS est namespaced sous l'objet `ATS`
+══════════════════════════════════════════════════════════════ */
+
+/* ── Données ATS (embarquées) ── */
+const ATS_RAW = {"clients":[{"id":1,"entreprise":"Deloitte","secteur":"Conseil","contact":"Sidy DIOP","fonction":"Associé Sénégal, Maroc","email":"sidiop@deloitte.fr","tel":"06 88 52 45 81","source":"Prospection AMID","stade":"Client actif","besoin":"Analystes économiques surtout au Maroc","prochaine_action":"Dejeuner pour discuter des besoins de recrutement","date_relance":"","linkedin":"","commentaires":"Brillantes écoles"},{"id":2,"entreprise":"Orabank","secteur":"Banque","contact":"Serge Tohouenou","fonction":"","email":"serge.tohouenou@orabank.net","tel":"","source":"","stade":"Client actif","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":3,"entreprise":"Mstudio","secteur":"Service aux entreprises","contact":"Longa Andrea MBUYAMBA","fonction":"Directrice des Programmes","email":"andrea@mstudio.vc","tel":"2250768593572","source":"AMID","stade":"Négociation","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":4,"entreprise":"Lodge me at","secteur":"Service / stages Afrique du Sud","contact":"Myriam NEBIE","fonction":"Fondatrice","email":"myriam.nebie@lodge-me-at.com","tel":"","source":"AMID","stade":"Négociation","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":5,"entreprise":"Attijariwafa","secteur":"Banque","contact":"Babacar GUEYE","fonction":"Directeur exécutif capital humain","email":"Bgueye@cbao.sn","tel":"221775294581","source":"AfricTalents","stade":"Relance","besoin":"Jeunes diplômés grandes écoles","prochaine_action":"","date_relance":"Relance Whatsapp : 17/11/25 // Relance Mail 16/12/2025","linkedin":"","commentaires":"Programme Nortel"},{"id":6,"entreprise":"Cofina","secteur":"Banque","contact":"Johanna MOBIO","fonction":"DRH Groupe","email":"johanna.mobio@cofinacorp.com","tel":"225 27 22 51 51 80","source":"Prospection AMID","stade":"Premier contact","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":7,"entreprise":"Omeavie","secteur":"Assurances","contact":"Judicael Guendehou","fonction":"Fondateur","email":"","tel":"07 64 63 19 78","source":"","stade":"Premier contact","besoin":"Marketing","prochaine_action":"","date_relance":"","linkedin":"","commentaires":"Pas de recrutement pour le moment"},{"id":8,"entreprise":"Fonsis","secteur":"Fond d'investissement","contact":"Ousmane NDIAYE","fonction":"Chef division capital humain","email":"Ondiaye@fonsis.org","tel":"221783719931","source":"AfricaTalents","stade":"Premier contact","besoin":"2 directeurs d'investissement, 3 juristes d'affaires, DAF","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":9,"entreprise":"Julaya","secteur":"Tech","contact":"Mathias LEOPOLDIE","fonction":"CEO","email":"mleopoldie@julaya.co","tel":"","source":"Prospection AMID","stade":"Premier contact","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":10,"entreprise":"Afrijjet","secteur":"Transports / Logistique","contact":"Fadimatou NOUTCHEMO","fonction":"Country Manager Cameroun et Nigeria","email":"","tel":"237670897408","source":"Prospection AMID","stade":"Premier contact","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":"Pas de recrutement pour le moment"},{"id":11,"entreprise":"Castel","secteur":"Agroalimentaire","contact":"Marion Navarre","fonction":"DRH Groupe","email":"","tel":"","source":"","stade":"Premier contact","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":12,"entreprise":"Danone Ghana","secteur":"Agroalimentaire","contact":"Lionel Parent","fonction":"DG, Directeur commercial","email":"","tel":"06 67 27 77 80","source":"","stade":"Premier contact","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":13,"entreprise":"Enexus","secteur":"","contact":"","fonction":"","email":"jean-laurent.pyndiah@enexus-finance.com","tel":"","source":"","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":14,"entreprise":"ASCOMA","secteur":"","contact":"Christine BAUDRAN-LAURE","fonction":"DRH","email":"Christine.Baudran-Laure@ascoma.com","tel":"01 47 42 62 05","source":"","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":15,"entreprise":"Deloitte","secteur":"","contact":"Marc Vincens WABI","fonction":"","email":"mawabi@deloitte.com","tel":"","source":"","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":16,"entreprise":"Gozem","secteur":"Transports / Logistique","contact":"Marjorie CHEYNEL","fonction":"Talents Acquisition Manager","email":"marjorie@gozem.co","tel":"+22892274882","source":"","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":17,"entreprise":"Deloitte CIV","secteur":"","contact":"N'Zi Kone, Ericka","fonction":"RH CIV","email":"enzikone@deloitte.fr","tel":"","source":"","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":18,"entreprise":"Banque Africaine de Développement","secteur":"","contact":"David Lubega","fonction":"Outreach and Selection Officer","email":"D.LUBEGA@afdb.org","tel":"","source":"","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":19,"entreprise":"Group Vivendi Africa","secteur":"","contact":"Jessica Hentzen","fonction":"","email":"jessica.hentzen@gva.africa","tel":"","source":"","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":20,"entreprise":"Fed Africa","secteur":"","contact":"Jean Dantani","fonction":"RH Consultant","email":"jeandantani@fedafrica.com","tel":"","source":"","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":21,"entreprise":"ACCENTURE France","secteur":"Conseil","contact":"Sophie GUINAUD","fonction":"Client Account HR Lead","email":"sophie.guinaud@accenture.com","tel":"","source":"","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":22,"entreprise":"Bank of Africa Sénégal","secteur":"Banque","contact":"Aymard Matongo","fonction":"Senior HR Manager","email":"amatongo@boasenegal.com","tel":"","source":"","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":23,"entreprise":"Orange","secteur":"Telecoms","contact":"Datté Kouassi","fonction":"DRH","email":"datte.kouassi@orange.com","tel":"","source":"","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":24,"entreprise":"Total Energies","secteur":"Energies","contact":"André Manahen KOFFI","fonction":"DRH","email":"andre.koffi@totalenergies.com","tel":"","source":"Michael","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":25,"entreprise":"NSIA banque","secteur":"Banque","contact":"Marie-Thérèse BOUA N'GUESSAN","fonction":"DRH","email":"nsiabanque.ci@nsiabanque.com","tel":"","source":"Michael","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":26,"entreprise":"CIE","secteur":"Energies","contact":"Jessica Carole Gnizako","fonction":"Juriste et Cadre de projet RH","email":"directiongeneralecie@cie.ci","tel":"27 21 23 33 00","source":"Michael","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":"Treichville"},{"id":27,"entreprise":"SODECI","secteur":"Eau","contact":"Kadidia KONATE","fonction":"DRH","email":"sodeci@sodeci.ci","tel":"+225 21233000","source":"Michael","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":28,"entreprise":"COOPEC","secteur":"MicroFinance","contact":"Armelle BAH","fonction":"DRH","email":"info@unacoopec.ci","tel":"27 22 40 49 99","source":"Michael","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":29,"entreprise":"Witti Finance","secteur":"MicroFinance","contact":"Brice NIANGORAN","fonction":"DRH","email":"info@wittifinances.com","tel":"+225 27 27 27 27 27","source":"Michael","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":30,"entreprise":"COFINA","secteur":"MicroFinance","contact":"Jean brice Affian","fonction":"Directeur du capital humain","email":"recrutement@cofinacofinacorp.com","tel":"+225 27 27 22 51 51 80","source":"Michael","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":31,"entreprise":"ALIOS Finance","secteur":"Finance","contact":"Olive Simo","fonction":"HR Manager central africa","email":"olive.simo@alios-finance.com","tel":"","source":"","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":32,"entreprise":"Crédit Agricole","secteur":"Banque","contact":"Berenika Balamou","fonction":"HR Project Manager","email":"berenika.balamou@credit-agricole-sa.fr","tel":"","source":"","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":33,"entreprise":"Colas","secteur":"BTP","contact":"Franck SINGERLÉ","fonction":"DRH","email":"franck.singerle@colas.com","tel":"","source":"","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":34,"entreprise":"Allianz","secteur":"Assurances","contact":"Marelsa Ligeon","fonction":"TA associée","email":"marelsa.ligeon@allianz.fr","tel":"","source":"","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""}],"partenariats":[{"id":1,"organisme":"Afroscep (ESCP)","activite":"Grande école","contact":"Nizar KABLANI","fonction":"Président","email":"nizar.kablani@edu.escp.eu","tel":"","source":"ABC","stade":"Client actif","besoin":"","prochaine_action":"","date_relance":"","commentaires":""},{"id":2,"organisme":"X-Afrique Polytech","activite":"Association étudiante","contact":"Fritz Morel EPOH NZOKI","fonction":"Président","email":"","tel":"","source":"","stade":"Négociation","besoin":"","prochaine_action":"","date_relance":"","commentaires":""},{"id":3,"organisme":"ASPA","activite":"Association étudiante","contact":"Hapsatou BAL","fonction":"","email":"","tel":"","source":"","stade":"Relance","besoin":"","prochaine_action":"","date_relance":"","commentaires":""},{"id":4,"organisme":"Skema AFRICA","activite":"Grande école","contact":"Jessica FREITAS","fonction":"Présidente","email":"","tel":"","source":"","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","commentaires":""},{"id":5,"organisme":"HEC Africa","activite":"Grande école","contact":"Alexis JOHN AHYEE","fonction":"Directeur Général HEC Paris Bureau régional Afrique","email":"","tel":"","source":"ABC","stade":"Client actif","besoin":"","prochaine_action":"","date_relance":"","commentaires":""},{"id":6,"organisme":"Club Afrique emlyon alumni","activite":"Alumni","contact":"Mélissa OUIDIR","fonction":"","email":"","tel":"","source":"","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","commentaires":""},{"id":7,"organisme":"EDHEC for African Business","activite":"Grande école","contact":"Yann-Adrien YACE","fonction":"Président","email":"","tel":"","source":"ABC","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","commentaires":""},{"id":8,"organisme":"ESSEC Africa Society","activite":"Grande école","contact":"Reda LAKEHAL","fonction":"Président","email":"","tel":"","source":"ABC","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","commentaires":""},{"id":9,"organisme":"Repat Africa","activite":"Réseau diaspora","contact":"Kara DIABY","fonction":"Founder - CEO","email":"","tel":"","source":"ABC","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","commentaires":""},{"id":10,"organisme":"Club Efficience","activite":"Réseau pro","contact":"Elie NKAMGUEU","fonction":"President","email":"","tel":"","source":"ABC","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","commentaires":""},{"id":11,"organisme":"Meet Africa","activite":"Réseau diaspora","contact":"Habiba ADDI","fonction":"Coordinatrice","email":"","tel":"","source":"ABC","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","commentaires":""},{"id":12,"organisme":"Nyota (CVthèque)","activite":"Tech RH","contact":"Sérine IDRISSI","fonction":"Co-founder","email":"","tel":"","source":"ABC","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","commentaires":""},{"id":13,"organisme":"Africa Finance Bootcamp","activite":"Formation","contact":"Julio Dibwe MUPEMBA","fonction":"Co-founder","email":"","tel":"","source":"ABC","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","commentaires":""},{"id":14,"organisme":"AMDIE","activite":"Institution","contact":"Ali Seddiki","fonction":"Directeur Général","email":"","tel":"","source":"ABC","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","commentaires":""}]};
+
+const ATS = (() => {
+  /* ── State ── */
+  const STADE_ORDER = {'Partenaire actif':1,'B2C actif':2,'Client actif':3,'Négociation':4,'Relance':5,'Premier contact':6,'A contacter':7,'Mission terminée':8,"Repositionner l'offre":9,'Fermée':10,'Stand by':11,'':12};
+  const STORAGE_KEY = 'talentyah_crm_data_v1';
+
+  /* Charge les données sauvegardées localement si elles existent, sinon les données par défaut */
+  function loadInitialData() {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && Array.isArray(parsed.clients) && Array.isArray(parsed.partenariats)) {
+          return parsed;
+        }
+      }
+    } catch (e) { console.warn('CRM: lecture localStorage impossible, utilisation des données par défaut.', e); }
+    return ATS_RAW;
+  }
+
+  const initialData = loadInitialData();
+  let db = initialData.clients.map((r,i) => ({...r, _idx:i}));
+  let parts = initialData.partenariats.map((r,i) => ({...r, _idx:i}));
+  let sortCol = 'stade', sortDir = 1;
+  let currentModalIdx = null;
+
+  /* Sauvegarde l'état courant dans localStorage (persiste entre les sessions/rechargements) */
+  function persist() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ clients: db, partenariats: parts }));
+    } catch (e) { console.warn('CRM: échec de la sauvegarde locale.', e); }
+  }
+
+  /* ── Badge stade ── */
+  function badge(s) {
+    const map = {'Client actif':'ats-badge-client','Négociation':'ats-badge-nego','Relance':'ats-badge-relance','Premier contact':'ats-badge-premier','A contacter':'ats-badge-contacter','Mission terminée':'ats-badge-terminee',"Repositionner l'offre":'ats-badge-reposi','Fermée':'ats-badge-fermee','Stand by':'ats-badge-standby','B2C actif':'ats-badge-b2c','Partenaire actif':'ats-badge-part'};
+    return `<span class="ats-badge ${map[s]||'ats-badge-contacter'}">${s||'—'}</span>`;
+  }
+
+  function stadeColor(s) {
+    const map = {'Client actif':'#1B5E20','Négociation':'#1565C0','Relance':'#E65100','Premier contact':'#6A1B9A','A contacter':'#37474F','Mission terminée':'#388E3C',"Repositionner l'offre":'#F57F17','Fermée':'#880E4F','Stand by':'#283593','B2C actif':'#880E4F','Partenaire actif':'#1B5E20'};
+    return map[s] || '#37474F';
+  }
+
+  function toast(msg) {
+    let cont = document.getElementById('ats-toasts');
+    if (!cont) { cont = document.createElement('div'); cont.id='ats-toasts'; cont.className='ats-toast-container'; document.body.appendChild(cont); }
+    const t = document.createElement('div'); t.className='ats-toast'; t.textContent=msg;
+    cont.appendChild(t); setTimeout(() => t.remove(), 2800);
+  }
+
+  function sorted(arr) {
+    return [...arr].sort((a,b) => {
+      if (sortCol === 'stade') return ((STADE_ORDER[a.stade]||10) - (STADE_ORDER[b.stade]||10)) * sortDir;
+      const va=(a[sortCol]||'').toLowerCase(), vb=(b[sortCol]||'').toLowerCase();
+      return (va<vb?-1:va>vb?1:0)*sortDir;
+    });
+  }
+
+  function getFiltered() {
+    const q = (document.getElementById('ats-search')?.value||'').toLowerCase();
+    const fs = document.getElementById('ats-filter-stade')?.value||'';
+    const fse = document.getElementById('ats-filter-secteur')?.value||'';
+    return db.filter(r => {
+      if (fs && r.stade!==fs) return false;
+      if (fse && r.secteur!==fse) return false;
+      if (q && !`${r.entreprise} ${r.contact} ${r.secteur} ${r.email} ${r.source}`.toLowerCase().includes(q)) return false;
+      return true;
+    });
+  }
+
+  /* ── Export CSV (liste clients filtrée/triée à l'écran) ── */
+  function exportClientsCSV() {
+    const rows = sorted(getFiltered());
+    if (!rows.length) { toast('⚠️ Rien à exporter'); return; }
+    const headers = ['Entreprise','Secteur','Contact','Fonction','Email','Téléphone','Source','Stade','Besoin','Prochaine action','Date de relance','Commentaires'];
+    const keys = ['entreprise','secteur','contact','fonction','email','tel','source','stade','besoin','prochaine_action','date_relance','commentaires'];
+    const csvEscape = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
+    const lines = [headers.map(csvEscape).join(',')];
+    rows.forEach(r => lines.push(keys.map(k => csvEscape(r[k])).join(',')));
+    const csvContent = '\uFEFF' + lines.join('\r\n'); // BOM pour accents corrects dans Excel
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `talentyah-crm-clients-${new Date().toISOString().slice(0,10)}.csv`;
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+    toast(`✅ ${rows.length} contact${rows.length>1?'s':''} exporté${rows.length>1?'s':''}`);
+  }
+
+  /* ── Init dashboard KPIs ── */
+  function initDashboard() {
+    const qs = (id) => document.getElementById(id);
+    const set = (id, val) => { const el=qs(id); if(el) el.textContent=val; };
+    set('ats-kpi-total', db.length);
+    set('ats-kpi-actifs', db.filter(r=>r.stade==='Client actif').length);
+    set('ats-kpi-nego', db.filter(r=>r.stade==='Négociation').length);
+    set('ats-kpi-relance', db.filter(r=>r.stade==='Relance').length);
+    set('ats-kpi-contacter', db.filter(r=>r.stade==='A contacter').length);
+    set('ats-kpi-terminee', db.filter(r=>r.stade==='Mission terminée').length);
+    set('ats-kpi-reposi', db.filter(r=>r.stade==="Repositionner l'offre").length);
+    set('ats-kpi-fermee', db.filter(r=>r.stade==='Fermée').length);
+    set('ats-kpi-standby', db.filter(r=>r.stade==='Stand by').length);
+    set('ats-kpi-b2c', db.filter(r=>r.stade==='B2C actif').length);
+    set('ats-kpi-part', db.filter(r=>r.stade==='Partenaire actif').length);
+
+    // Récent
+    const rt = qs('ats-recent-tbody');
+    if(rt) rt.innerHTML = db.slice(0,8).map(r=>`
+      <tr onclick="ATS.openModal(${r._idx})" style="cursor:pointer">
+        <td><div class="ats-company-name">${r.entreprise}</div></td>
+        <td>${badge(r.stade)}</td>
+        <td><small style="color:var(--muted)">${r.source||'—'}</small></td>
+      </tr>`).join('');
+
+    // Secteurs
+    const sectors = {};
+    db.forEach(r => { if(r.secteur) sectors[r.secteur]=(sectors[r.secteur]||0)+1; });
+    const top = Object.entries(sectors).sort((a,b)=>b[1]-a[1]).slice(0,8);
+    const st = qs('ats-sector-tbody');
+    if(st) st.innerHTML = top.map(([s,n])=>`<tr><td>${s}</td><td><strong>${n}</strong></td></tr>`).join('');
+
+    // Populate secteur filter
+    const sel = qs('ats-filter-secteur');
+    if(sel && sel.options.length<=1) {
+      top.forEach(([s])=>{ const o=document.createElement('option'); o.value=s; o.textContent=s; sel.appendChild(o); });
+    }
+  }
+
+  /* ── Clients table ── */
+  function renderClients() {
+    const filtered = getFiltered();
+    const s = sorted(filtered);
+    const rc = document.getElementById('ats-result-count');
+    if(rc) rc.textContent=`${s.length} résultat${s.length>1?'s':''}`;
+    const tbody = document.getElementById('ats-clients-tbody');
+    if(!tbody) return;
+    if(!s.length) { tbody.innerHTML=`<tr><td colspan="8"><div class="ats-empty"><div class="ats-empty-icon">🔍</div><p>Aucun résultat trouvé</p></div></td></tr>`; return; }
+    tbody.innerHTML = s.map(r=>`
+      <tr onclick="ATS.openModal(${r._idx})">
+        <td><div class="ats-company-name">${r.entreprise}</div><div class="ats-contact-name">${r.contact||''}</div></td>
+        <td>${r.secteur?`<span class="ats-sector-tag">${r.secteur}</span>`:'—'}</td>
+        <td>${r.contact||'—'}</td>
+        <td style="max-width:150px;font-size:12px;color:var(--muted)">${r.fonction||'—'}</td>
+        <td>${r.email?`<a class="ats-email-link" href="mailto:${r.email}" onclick="event.stopPropagation()">${r.email}</a>`:'—'}</td>
+        <td><small style="color:var(--muted)">${r.source||'—'}</small></td>
+        <td>${badge(r.stade)}</td>
+        <td><button class="ats-action-btn" onclick="event.stopPropagation();ATS.openModal(${r._idx})">Ouvrir →</button></td>
+      </tr>`).join('');
+  }
+
+  /* ── Pipeline kanban (glisser-déposer) ── */
+  function renderPipeline() {
+    const board = document.getElementById('ats-pipeline-board');
+    if(!board) return;
+    const stades = ['Client actif','Négociation','Relance','A contacter','Mission terminée',"Repositionner l'offre",'Fermée','Stand by','B2C actif','Partenaire actif'];
+    board.innerHTML = stades.map(stade=>{
+      const items = db.filter(r=>r.stade===stade);
+      return `
+        <div class="ats-pipeline-col" data-stade="${_esc(stade)}" ondragover="ATS.onColDragOver(event)" ondragleave="ATS.onColDragLeave(event)" ondrop="ATS.onColDrop(event)">
+          <div class="ats-pipeline-header">
+            <span class="ats-pipeline-title" style="color:${stadeColor(stade)}">${stade}</span>
+            <span class="ats-pipeline-count">${items.length}</span>
+          </div>
+          <div class="ats-pipeline-cards">
+            ${items.slice(0,15).map(r=>`
+              <div class="ats-pipeline-card" draggable="true" ondragstart="ATS.onCardDragStart(event,${r._idx})" ondragend="ATS.onCardDragEnd(event)" onclick="ATS.openModal(${r._idx})">
+                <div class="ats-pc-company">${r.entreprise}</div>
+                <div class="ats-pc-contact">${r.contact||'—'}</div>
+                ${r.secteur?`<div class="ats-pc-sector">${r.secteur}</div>`:''}
+              </div>`).join('')}
+            ${items.length>15?`<div style="text-align:center;font-size:11px;color:var(--muted);padding:6px">+${items.length-15} autres</div>`:''}
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  let dragIdx = null;
+  function onCardDragStart(ev, idx) {
+    dragIdx = idx;
+    ev.dataTransfer.effectAllowed = 'move';
+    ev.target.classList.add('ats-dragging');
+  }
+  function onCardDragEnd(ev) {
+    ev.target.classList.remove('ats-dragging');
+    document.querySelectorAll('.ats-pipeline-col').forEach(c => c.classList.remove('ats-drop-hover'));
+  }
+  function onColDragOver(ev) {
+    ev.preventDefault();
+    ev.dataTransfer.dropEffect = 'move';
+    ev.currentTarget.classList.add('ats-drop-hover');
+  }
+  function onColDragLeave(ev) {
+    ev.currentTarget.classList.remove('ats-drop-hover');
+  }
+  function onColDrop(ev) {
+    ev.preventDefault();
+    ev.currentTarget.classList.remove('ats-drop-hover');
+    const newStade = ev.currentTarget.dataset.stade;
+    if (dragIdx === null) return;
+    const r = db[dragIdx];
+    if (!r || r.stade === newStade) { dragIdx = null; return; }
+    const oldStade = r.stade;
+    r.stade = newStade;
+    if (!Array.isArray(r.historique)) r.historique = [];
+    r.historique.push({ date: new Date().toISOString(), text: `Stade changé : "${oldStade || '—'}" → "${newStade}"` });
+    db.sort((a,b)=>(STADE_ORDER[a.stade]||10)-(STADE_ORDER[b.stade]||10));
+    db.forEach((row,i)=>row._idx=i);
+    persist();
+    renderPipeline(); renderClients(); renderRelances(); initDashboard();
+    toast(`✅ ${r.entreprise} déplacé vers "${newStade}"`);
+    dragIdx = null;
+  }
+
+  /* ── Partenariats ── */
+  function renderPartenariats() {
+    const q = (document.getElementById('ats-search-part')?.value||'').toLowerCase();
+    const fs = document.getElementById('ats-filter-stade-part')?.value||'';
+    let list = parts.filter(r => {
+      if(fs && r.stade!==fs) return false;
+      if(q && !`${r.organisme} ${r.contact} ${r.activite}`.toLowerCase().includes(q)) return false;
+      return true;
+    });
+    const rc = document.getElementById('ats-result-count-part');
+    if(rc) rc.textContent=`${list.length} organisme${list.length>1?'s':''}`;
+    const grid = document.getElementById('ats-part-grid');
+    if(!grid) return;
+    grid.innerHTML = list.map(r=>`
+      <div class="ats-part-card" onclick="ATS.openPartModal(${r._idx})">
+        <div class="ats-part-name">${r.organisme}</div>
+        <div class="ats-part-contact">${r.activite||''} ${r.contact?'· '+r.contact:''}</div>
+        ${badge(r.stade)}
+        ${r.email?`<div style="margin-top:8px"><a class="ats-email-link" href="mailto:${r.email}" onclick="event.stopPropagation()">${r.email}</a></div>`:''}
+      </div>`).join('');
+  }
+
+  /* ── Relances ── */
+  function renderRelances() {
+    const list = document.getElementById('ats-relances-list');
+    if(!list) return;
+    const relances = db.filter(r=>['Relance','Négociation','Premier contact'].includes(r.stade));
+    if(!relances.length) { list.innerHTML=`<div class="ats-empty"><div class="ats-empty-icon">✅</div><p>Aucune relance en attente</p></div>`; return; }
+    list.innerHTML = relances.map(r=>`
+      <div class="ats-activity-item" onclick="ATS.openModal(${r._idx})">
+        <div class="ats-activity-dot" style="background:${stadeColor(r.stade)}"></div>
+        <div class="ats-activity-content">
+          <div class="ats-activity-company">${r.entreprise}${r.contact?` — <span style="font-weight:400;color:var(--muted)">${r.contact}</span>`:''}</div>
+          <div class="ats-activity-action">${r.prochaine_action||r.commentaires||r.date_relance||'Aucune action définie'}</div>
+        </div>
+        ${badge(r.stade)}
+      </div>`).join('');
+  }
+
+  function renderHistory(r) {
+    const box = document.getElementById('ats-modal-history');
+    if (!box) return;
+    const hist = Array.isArray(r.historique) ? r.historique : [];
+    if (!hist.length) { box.innerHTML = `<span style="color:var(--muted);">Aucun échange enregistré pour l'instant.</span>`; return; }
+    box.innerHTML = hist.slice().reverse().map(h => `
+      <div style="padding:6px 0;border-bottom:1px solid var(--border);">
+        <div style="font-size:11px;color:var(--muted);font-weight:600;">${_fmtDate(h.date)}</div>
+        <div>${_esc(h.text)}</div>
+      </div>`).join('');
+  }
+
+  function addHistoryNote() {
+    if (currentModalIdx === null) return;
+    const input = document.getElementById('ats-modal-history-input');
+    const text = (input?.value || '').trim();
+    if (!text) return;
+    const isClient = currentModalIdx >= 0;
+    const idx = isClient ? currentModalIdx : -currentModalIdx - 1000;
+    const obj = isClient ? db[idx] : parts[idx];
+    if (!Array.isArray(obj.historique)) obj.historique = [];
+    obj.historique.push({ date: new Date().toISOString(), text });
+    persist();
+    renderHistory(obj);
+    input.value = '';
+    toast('✅ Note ajoutée à l\'historique');
+  }
+
+  /* ── Modal client ── */
+  function openModal(idx) {
+    currentModalIdx = idx;
+    const r = db[idx];
+    document.getElementById('ats-modal-company').textContent = r.entreprise;
+    document.getElementById('ats-modal-sector').textContent  = r.secteur||'Secteur non renseigné';
+    document.getElementById('ats-modal-stade-badge').innerHTML = badge(r.stade);
+    document.getElementById('ats-modal-stade-select').value = r.stade||'A contacter';
+    const fields = {contact:'mf2-contact',fonction:'mf2-fonction',email:'mf2-email',tel:'mf2-tel',source:'mf2-source',linkedin:'mf2-linkedin',besoin:'mf2-besoin',prochaine_action:'mf2-action',commentaires:'mf2-commentaires'};
+    Object.entries(fields).forEach(([k,id])=>{ const el=document.getElementById(id); if(el) el.value=r[k]||''; });
+    renderHistory(r);
+    document.getElementById('ats-modal-overlay').classList.add('open');
+  }
+
+  function openPartModal(idx) {
+    currentModalIdx = -idx - 1000;
+    const r = parts[idx];
+    document.getElementById('ats-modal-company').textContent = r.organisme;
+    document.getElementById('ats-modal-sector').textContent  = r.activite||'Partenariat';
+    document.getElementById('ats-modal-stade-badge').innerHTML = badge(r.stade);
+    document.getElementById('ats-modal-stade-select').value = r.stade||'A contacter';
+    const el = {contact:'mf2-contact',fonction:'mf2-fonction',email:'mf2-email',tel:'mf2-tel',source:'mf2-source'};
+    Object.entries(el).forEach(([k,id])=>{ const e=document.getElementById(id); if(e) e.value=r[k]||''; });
+    ['mf2-linkedin','mf2-besoin','mf2-action','mf2-commentaires'].forEach(id=>{ const e=document.getElementById(id); if(e) e.value=r.commentaires||''; });
+    renderHistory(r);
+    document.getElementById('ats-modal-overlay').classList.add('open');
+  }
+
+  function closeModal(ev) {
+    if(ev && ev.target!==document.getElementById('ats-modal-overlay')) return;
+    document.getElementById('ats-modal-overlay').classList.remove('open');
+    currentModalIdx=null;
+  }
+
+  function updateStadeBadge() {
+    const s=document.getElementById('ats-modal-stade-select').value;
+    document.getElementById('ats-modal-stade-badge').innerHTML=badge(s);
+  }
+
+  function saveModal() {
+    const isClient = currentModalIdx>=0;
+    const idx = isClient ? currentModalIdx : -currentModalIdx-1000;
+    const obj = isClient ? db[idx] : parts[idx];
+    obj.stade = document.getElementById('ats-modal-stade-select').value;
+    const fields = {contact:'mf2-contact',fonction:'mf2-fonction',email:'mf2-email',tel:'mf2-tel',source:'mf2-source',linkedin:'mf2-linkedin',besoin:'mf2-besoin',prochaine_action:'mf2-action',commentaires:'mf2-commentaires'};
+    Object.entries(fields).forEach(([k,id])=>{ const el=document.getElementById(id); if(el) obj[k]=el.value; });
+    db.sort((a,b)=>(STADE_ORDER[a.stade]||10)-(STADE_ORDER[b.stade]||10));
+    db.forEach((r,i)=>r._idx=i);
+    persist();
+    renderClients(); renderPipeline(); renderRelances(); initDashboard();
+    document.getElementById('ats-modal-overlay').classList.remove('open');
+    currentModalIdx=null;
+    toast('✅ Fiche mise à jour');
+  }
+
+  /* ── Ajouter ── */
+  function addEntry() {
+    const ent=document.getElementById('ats-add-entreprise').value.trim();
+    if(!ent){toast('⚠️ Entreprise obligatoire');return;}
+    const rec={id:db.length+1,entreprise:ent,secteur:document.getElementById('ats-add-secteur').value.trim(),contact:document.getElementById('ats-add-contact').value.trim(),fonction:document.getElementById('ats-add-fonction').value.trim(),email:document.getElementById('ats-add-email').value.trim(),tel:document.getElementById('ats-add-tel').value.trim(),source:document.getElementById('ats-add-source').value.trim(),stade:document.getElementById('ats-add-stade').value,besoin:document.getElementById('ats-add-besoin').value.trim(),prochaine_action:'',commentaires:document.getElementById('ats-add-commentaires').value.trim(),linkedin:''};
+    db.push(rec);
+    db.sort((a,b)=>(STADE_ORDER[a.stade]||10)-(STADE_ORDER[b.stade]||10));
+    db.forEach((r,i)=>r._idx=i);
+    persist();
+    initDashboard(); renderClients(); renderPipeline(); renderRelances();
+    ['ats-add-entreprise','ats-add-secteur','ats-add-contact','ats-add-fonction','ats-add-email','ats-add-tel','ats-add-source','ats-add-besoin','ats-add-commentaires'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    document.getElementById('ats-add-stade').value='A contacter';
+    toast(`✅ "${ent}" ajouté à la base`);
+    showAtsPage('ats-page-clients', document.querySelector('.crm-tab[data-ats="ats-page-clients"]'));
+  }
+
+  /* ── Dashboard filter ── */
+  function filterByStade(stade, el) {
+    document.querySelectorAll('.ats-kpi-card').forEach(c=>c.classList.remove('active'));
+    el.classList.add('active');
+    showAtsPage('ats-page-clients');
+    document.querySelectorAll('.crm-tab').forEach(t=>{if(t.dataset.ats==='ats-page-clients')t.classList.add('active');else t.classList.remove('active');});
+    const sel=document.getElementById('ats-filter-stade');
+    if(sel) sel.value=stade||'';
+    renderClients();
+  }
+
+  /* ── Navigation interne ── */
+  function showAtsPage(pageId, btn) {
+    document.querySelectorAll('.ats-page').forEach(p=>p.classList.remove('active'));
+    const page=document.getElementById(pageId);
+    if(page) page.classList.add('active');
+    if(btn) { document.querySelectorAll('.crm-tab').forEach(t=>t.classList.remove('active')); btn.classList.add('active'); }
+  }
+
+  /* ── Entry point (appelé par loadCRM) ── */
+  function init() {
+    initDashboard();
+    renderClients();
+    renderPipeline();
+    renderPartenariats();
+    renderRelances();
+  }
+
+  /* ── Expose public API ── */
+  return { init, openModal, openPartModal, closeModal, updateStadeBadge, saveModal, addEntry, filterByStade, showAtsPage, renderClients, renderPartenariats, renderRelances, badge, exportClientsCSV, addHistoryNote, onCardDragStart, onCardDragEnd, onColDragOver, onColDragLeave, onColDrop };
+})();
+
+/* Override loadCRM pour pointer vers ATS.init */
+function loadCRM() {
+  // Petit délai pour s'assurer que le DOM est rendu
+  setTimeout(() => ATS.init(), 50);
 }
