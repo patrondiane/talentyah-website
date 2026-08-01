@@ -926,19 +926,20 @@ function renderAdminJobs(jobs) {
     <div class="admin-job-row" style="display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 16px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; margin-bottom: 12px;">
       <div>
         <div class="admin-job-title" style="font-size: 15px; font-weight: 600; color: var(--dark); margin-bottom: 3px;">${_esc(j.title)}</div>
-        <div class="admin-job-meta" style="font-size: 12px; color: var(--muted); display: flex; gap: 12px; flex-wrap: wrap;">
-          <span>📍 ${_esc([j.city, j.country].filter(Boolean).join(', ') || '—')}</span>
-          <span>🗂 ${_esc(j.contract_type || '—')}</span>
-          <span>💼 ${_esc(j.sector || '—')}</span>
-          ${j.salary ? '<span>💶 ' + _esc(j.salary) + '</span>' : ''}
+        <div class="admin-job-meta" style="font-size: 12px; color: var(--muted); display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+          <span style="display:inline-flex;align-items:center;gap:4px;"><i data-lucide="map-pin" style="width:13px;height:13px;"></i> ${_esc([j.city, j.country].filter(Boolean).join(', ') || '—')}</span>
+          <span style="display:inline-flex;align-items:center;gap:4px;"><i data-lucide="tag" style="width:13px;height:13px;"></i> ${_esc(j.contract_type || '—')}</span>
+          <span style="display:inline-flex;align-items:center;gap:4px;"><i data-lucide="briefcase" style="width:13px;height:13px;"></i> ${_esc(j.sector || '—')}</span>
+          ${j.salary ? `<span style="display:inline-flex;align-items:center;gap:4px;"><i data-lucide="banknote" style="width:13px;height:13px;"></i> ${_esc(j.salary)}</span>` : ''}
         </div>
       </div>
       <div style="display: flex; gap: 8px;">
-        <button class="btn-edit-pub" type="button" onclick="editJob(${i})" style="padding: 7px 14px; background: transparent; border: 1px solid var(--border); border-radius: 6px; color: var(--mid); font-size: 12px; font-weight: 600; cursor: pointer;">✎ Modifier</button>
+        <button class="btn-edit-pub" type="button" onclick="editJob(${i})" style="padding: 7px 14px; background: transparent; border: 1px solid var(--border); border-radius: 6px; color: var(--mid); font-size: 12px; font-weight: 600; cursor: pointer; display:inline-flex;align-items:center;gap:5px;"><i data-lucide="pencil" style="width:13px;height:13px;"></i> Modifier</button>
         <button class="btn-delete" type="button" onclick="deleteJob(${i}, ${j.id || 'null'})">Supprimer</button>
       </div>
     </div>
   `).join('');
+  if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
 // Charger une offre existante dans le formulaire pour la modifier
