@@ -482,92 +482,111 @@
       <!-- ══════════ PANEL : PUBLICATIONS ══════════ -->
       <div class="admin-panel" id="panelPublications" style="display:none;">
 
-        <!-- Formulaire création / édition -->
-        <div style="margin-bottom:36px;">
-          <h2 class="admin-section-title" id="pubFormTitle" style="font-size:17px;font-weight:600;color:var(--dark);margin-bottom:16px;">Nouvelle publication</h2>
-
-          <form id="pubForm" class="pub-form">
-            <input type="hidden" id="pub-id" name="id">
-
-            <div class="full">
-              <label class="job-form-field" style="gap:6px;">
-                <span style="font-size:13px;font-weight:500;color:var(--dark);">Titre de l'article *</span>
-                <input type="text" id="pub-title" name="title" placeholder="Ex : Les profils les plus recherchés en 2026" required
-                       style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;box-sizing:border-box;">
-              </label>
-            </div>
-
-            <div>
-              <label class="job-form-field" style="gap:6px;">
-                <span style="font-size:13px;font-weight:500;color:var(--dark);">Catégorie</span>
-                <select id="pub-category" name="category"
-                        style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;cursor:pointer;">
-                  <option>Conseil carrière</option>
-                  <option>Marché de l'emploi</option>
-                  <option>Actualités Talentyah</option>
-                  <option>International</option>
-                </select>
-              </label>
-            </div>
-
-            <div>
-              <label class="job-form-field" style="gap:6px;">
-                <span style="font-size:13px;font-weight:500;color:var(--dark);">Statut</span>
-                <select id="pub-status" name="status"
-                        style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;cursor:pointer;">
-                  <option value="draft">Brouillon</option>
-                  <option value="published">Publié</option>
-                </select>
-              </label>
-            </div>
-
-            <div class="full">
-              <label class="job-form-field" style="gap:6px;">
-                <span style="font-size:13px;font-weight:500;color:var(--dark);">Extrait / Résumé</span>
-                <textarea id="pub-excerpt" name="excerpt" rows="2" placeholder="Court résumé affiché sur la page blog…"
-                          style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;resize:vertical;width:100%;box-sizing:border-box;"></textarea>
-              </label>
-            </div>
-
-            <div class="full" style="margin-bottom: 20px;">
-              <span style="font-size:13px;font-weight:500;color:var(--dark);display:block;margin-bottom:6px;">Contenu complet</span>
-              <!-- Remplacement du textarea par Quill.js -->
-              <div id="pub-content-editor" style="background: #fff; height: 350px; border-bottom-left-radius: 6px; border-bottom-right-radius: 6px;"></div>
-            </div>
-
-            <div class="full">
-              <span style="font-size:13px;font-weight:500;color:var(--dark);display:block;margin-bottom:8px;">Image de couverture</span>
-              <div class="img-upload-area" style="position:relative;cursor:pointer;">
-                <input type="file" id="pub-img" name="img" accept="image/*" style="position:absolute;inset:0;opacity:0;cursor:pointer;z-index:2;">
-                <div id="pubImgPreviewWrap">
-                  <div class="img-upload-icon">
-                    <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                      <rect x="3" y="3" width="18" height="18" rx="2"/>
-                      <circle cx="8.5" cy="8.5" r="1.5"/>
-                      <polyline points="21 15 16 10 5 21"/>
-                    </svg>
-                  </div>
-                  <div class="img-upload-label"><strong>Cliquez pour ajouter</strong> une image de couverture</div>
-                  <div style="font-size:12px;color:var(--muted);margin-top:4px;">JPG, PNG — recommandé 1200×630 px</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="full" style="display:flex;align-items:center;gap:16px;margin-top:4px;">
-              <button type="submit" class="btn-publish-gold" id="pubSubmitBtn">Publier l'article →</button>
-              <button type="button" id="pubCancelBtn" class="btn-delete" style="display:none;">Annuler</button>
-              <span id="pubMsg" style="font-size:13px;font-weight:500;"></span>
-            </div>
-          </form>
+        <!-- Header / Actions -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+          <div>
+            <h2 style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;color:var(--dark);margin:0;">Publications & Blog</h2>
+            <p style="font-size:13px;color:var(--muted);margin:4px 0 0;">Rédigez et gérez les articles du blog Talentyah</p>
+          </div>
+          <button type="button" class="btn-publish-gold" onclick="openPubDrawer()" style="padding: 10px 20px; font-size: 13px; font-weight: 700; border-radius: 6px; background: var(--emerald); color: #fff; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif;">+ Rédiger un article</button>
         </div>
 
         <!-- Liste des publications -->
         <div>
-          <h2 style="font-size:17px;font-weight:600;color:var(--dark);margin-bottom:16px;">Articles publiés</h2>
           <div class="pub-list" id="pubList">
             <p style="color:var(--muted);font-size:14px;">Chargement…</p>
           </div>
         </div>
+
+        <!-- Drawer de création / modification de publication -->
+        <div class="job-drawer-overlay" id="pubDrawerOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); backdrop-filter:blur(4px); z-index:9999; opacity:0; transition:opacity 0.25s ease;" onclick="if(event.target===this)closePubDrawer()">
+          <div class="job-drawer" id="pubDrawer" style="position:fixed; top:0; right:-600px; width:100%; max-width:600px; height:100%; background:#fff; box-shadow:-10px 0 30px rgba(0,0,0,0.15); z-index:10000; transition:right 0.3s cubic-bezier(0.16, 1, 0.3, 1); display:flex; flex-direction:column;">
+            <div style="background:var(--dark); padding:24px 28px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0;">
+              <div>
+                <p style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:4px;margin-top:0;" id="pubDrawerSubtitle">RÉDACTION</p>
+                <h2 style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:#fff;margin:0;" id="pubFormTitle">Nouvelle publication</h2>
+              </div>
+              <button type="button" onclick="closePubDrawer()" style="background:rgba(255,255,255,0.1); border:none; color:#fff; width:32px; height:32px; border-radius:50%; cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center;">×</button>
+            </div>
+            <div style="flex:1; overflow-y:auto; padding:28px;">
+              <form id="pubForm" class="pub-form" style="display:flex; flex-direction:column; gap:16px;">
+                <input type="hidden" id="pub-id" name="id">
+
+                <div class="full">
+                  <label class="job-form-field" style="gap:6px; display:flex; flex-direction:column;">
+                    <span style="font-size:13px;font-weight:500;color:var(--dark);">Titre de l'article *</span>
+                    <input type="text" id="pub-title" name="title" placeholder="Ex : Les profils les plus recherchés en 2026" required
+                           style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;box-sizing:border-box;">
+                  </label>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                  <div>
+                    <label class="job-form-field" style="gap:6px; display:flex; flex-direction:column;">
+                      <span style="font-size:13px;font-weight:500;color:var(--dark);">Catégorie</span>
+                      <select id="pub-category" name="category"
+                              style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;cursor:pointer;">
+                        <option>Conseil carrière</option>
+                        <option>Marché de l'emploi</option>
+                        <option>Actualités Talentyah</option>
+                        <option>International</option>
+                      </select>
+                    </label>
+                  </div>
+
+                  <div>
+                    <label class="job-form-field" style="gap:6px; display:flex; flex-direction:column;">
+                      <span style="font-size:13px;font-weight:500;color:var(--dark);">Statut</span>
+                      <select id="pub-status" name="status"
+                              style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;cursor:pointer;">
+                        <option value="draft">Brouillon</option>
+                        <option value="published">Publié</option>
+                      </select>
+                    </label>
+                  </div>
+                </div>
+
+                <div class="full">
+                  <label class="job-form-field" style="gap:6px; display:flex; flex-direction:column;">
+                    <span style="font-size:13px;font-weight:500;color:var(--dark);">Extrait / Résumé</span>
+                    <textarea id="pub-excerpt" name="excerpt" rows="2" placeholder="Court résumé affiché sur la page blog…"
+                              style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;resize:vertical;width:100%;box-sizing:border-box;"></textarea>
+                  </label>
+                </div>
+
+                <div class="full" style="margin-bottom: 20px;">
+                  <span style="font-size:13px;font-weight:500;color:var(--dark);display:block;margin-bottom:6px;">Contenu complet</span>
+                  <div id="pub-content-editor" style="background: #fff; height: 300px; border-bottom-left-radius: 6px; border-bottom-right-radius: 6px;"></div>
+                </div>
+
+                <div class="full">
+                  <span style="font-size:13px;font-weight:500;color:var(--dark);display:block;margin-bottom:8px;">Image de couverture</span>
+                  <div class="img-upload-area" style="position:relative;cursor:pointer;">
+                    <input type="file" id="pub-img" name="img" accept="image/*" style="position:absolute;inset:0;opacity:0;cursor:pointer;z-index:2;">
+                    <div id="pubImgPreviewWrap">
+                      <div class="img-upload-icon">
+                        <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                          <rect x="3" y="3" width="18" height="18" rx="2"/>
+                          <circle cx="8.5" cy="8.5" r="1.5"/>
+                          <polyline points="21 15 16 10 5 21"/>
+                        </svg>
+                      </div>
+                      <div class="img-upload-label"><strong>Cliquez pour ajouter</strong> une image de couverture</div>
+                      <div style="font-size:12px;color:var(--muted);margin-top:4px;">JPG, PNG — recommandé 1200×630 px</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="full" style="display:flex;align-items:center;gap:12px;margin-top:12px;">
+                  <button type="submit" class="btn-publish-gold" id="pubSubmitBtn">Publier l'article →</button>
+                  <button type="button" onclick="closePubDrawer()" class="btn-filter btn-reset" style="background: transparent; color: var(--muted); border: 1px solid var(--border); padding: 12px 24px; border-radius: 6px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif;">Annuler</button>
+                  <span id="pubMsg" style="font-size:13px;font-weight:500;"></span>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
       </div>
 
 

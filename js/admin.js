@@ -381,7 +381,7 @@ const jobForm = document.getElementById('jobForm');
       const res    = await fetch(url, { method, headers: { 'Authorization': 'Bearer ' + token }, body: fd });
       if (res.ok) {
         if (msg) { msg.innerHTML = '<i data-lucide="check" style="width:14px; setTimeout(() => { if (typeof lucide !== "undefined") lucide.createIcons(); }, 10);height:14px;vertical-align:middle;margin-right:4px;"></i> Publication enregistrée.'; msg.style.color = 'var(--emerald)'; setTimeout(() => { msg.innerHTML = ''; }, 3000); }
-        resetPubForm(); loadPublications();
+        resetPubForm(); loadPublications(); closePubDrawer();
       } else {
         const d = await res.json();
         if (msg) { msg.textContent = d.error || 'Erreur.'; msg.style.color = '#c0392b'; }
@@ -1307,6 +1307,35 @@ function renderPubList() {
   `).join('');
 }
 
+
+function openPubDrawer() {
+  resetPubForm();
+  const overlay = document.getElementById('pubDrawerOverlay');
+  const drawer = document.getElementById('pubDrawer');
+  if (overlay && drawer) {
+    overlay.style.display = 'block';
+    setTimeout(() => {
+      overlay.style.opacity = '1';
+      drawer.style.right = '0';
+    }, 50);
+  }
+}
+
+function closePubDrawer() {
+  const overlay = document.getElementById('pubDrawerOverlay');
+  const drawer = document.getElementById('pubDrawer');
+  if (overlay && drawer) {
+    overlay.style.opacity = '0';
+    drawer.style.right = '-600px';
+    setTimeout(() => {
+      overlay.style.display = 'none';
+    }, 250);
+  }
+}
+
+window.openPubDrawer = openPubDrawer;
+window.closePubDrawer = closePubDrawer;
+
 function editPub(i) {
   const p = publications[i];
   document.getElementById('pub-id').value       = p.id;
@@ -1907,3 +1936,7 @@ function loadCRM() {
 }
 window.editJob = editJob;
 window.deleteJob = deleteJob;
+
+window.editPub = editPub;
+window.deletePub = deletePub;
+window.togglePubStatus = togglePubStatus;
