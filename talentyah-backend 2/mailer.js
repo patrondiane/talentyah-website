@@ -42,6 +42,7 @@ async function notifyNewCandidate(candidate) {
           <tr><td style="padding:8px 0;color:#666;">Pays</td><td style="padding:8px 0;">${candidate.country || '—'}</td></tr>
           <tr><td style="padding:8px 0;color:#666;">Expérience</td><td style="padding:8px 0;">${candidate.experience_level || '—'}</td></tr>
           <tr><td style="padding:8px 0;color:#666;">CV joint</td><td style="padding:8px 0;">${candidate.cv_url ? `✅ <a href="${candidate.cv_url}">Télécharger</a>` : '❌ Non'}</td></tr>
+          ${candidate.source ? `<tr><td style="padding:8px 0;color:#666;">Source</td><td style="padding:8px 0;">${candidate.source}</td></tr>` : ''}
           ${candidate.message ? `<tr><td style="padding:8px 0;color:#666;vertical-align:top;">Message</td><td style="padding:8px 0;">${candidate.message}</td></tr>` : ''}
         </table>
         <div style="margin-top:20px;">

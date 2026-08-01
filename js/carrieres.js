@@ -3,13 +3,16 @@
    Filtrage, recherche et affichage des offres
 ===================================================== */
 
-const API = 'https://talentyah-website.onrender.com';
+const API = window.API_BASE;
 let allJobs = [];
 
 document.addEventListener('DOMContentLoaded', () => {
   loadJobs();
   document.getElementById('searchBtn')?.addEventListener('click', filterJobs);
   document.getElementById('searchKeyword')?.addEventListener('keydown', e => { if (e.key === 'Enter') filterJobs(); });
+  document.getElementById('searchKeyword')?.addEventListener('input', filterJobs);
+  document.getElementById('searchCountry')?.addEventListener('input', filterJobs);
+  document.getElementById('searchSector')?.addEventListener('change', filterJobs);
   document.querySelectorAll('.filter-option input').forEach(cb => cb.addEventListener('change', filterJobs));
   document.getElementById('resetFilters')?.addEventListener('click', resetAll);
   document.getElementById('sortSelect')?.addEventListener('change', filterJobs);
@@ -21,7 +24,7 @@ async function loadJobs() {
     const data = await res.json();
     allJobs = data.jobs || data;
   } catch {
-    allJobs = typeof JOBS_DATA !== 'undefined' ? JOBS_DATA : [];
+    allJobs = [];
   }
   buildDynamicFilters(allJobs);
   renderJobs(allJobs);
@@ -56,7 +59,7 @@ function buildDynamicFilters(jobs) {
             <span class="filter-option-count">${count}</span>
           </label>`).join('');
       // Réattacher les listeners
-      sectorBlock.querySelectorAll('input').forEach(cb => cb.addEventListener('change', filterJobs));
+      sectorBlock.querySelectorAll('input').forEach(cb => cb.addEventListener('change', () => { _updateCheckedStyle(cb); filterJobs(); }));
     }
   }
 
@@ -78,7 +81,7 @@ function buildDynamicFilters(jobs) {
           <span class="filter-option-label">${type}</span>
           <span class="filter-option-count">${count}</span>
         </label>`).join('');
-    typeBlock.querySelectorAll('input').forEach(cb => cb.addEventListener('change', filterJobs));
+    typeBlock.querySelectorAll('input').forEach(cb => cb.addEventListener('change', () => { _updateCheckedStyle(cb); filterJobs(); }));
   }
 
   // Mettre à jour les pays
@@ -92,13 +95,12 @@ function buildDynamicFilters(jobs) {
           <span class="filter-option-label">${country}</span>
           <span class="filter-option-count">${count}</span>
         </label>`).join('');
-    countryBlock.querySelectorAll('input').forEach(cb => cb.addEventListener('change', filterJobs));
+    countryBlock.querySelectorAll('input').forEach(cb => cb.addEventListener('change', () => { _updateCheckedStyle(cb); filterJobs(); }));
   }
 }
 
 // Met à jour les compteurs visibles à côté des filtres sidebar
 function updateFilterCounts(jobs) {
-  // Compter par secteur
   const bySector  = {};
   const byType    = {};
   const byCountry = {};
@@ -109,31 +111,25 @@ function updateFilterCounts(jobs) {
     if (j.country)       byCountry[j.country.trim()]    = (byCountry[j.country.trim()]  || 0) + 1;
   });
 
-  // Mettre à jour les labels des checkboxes
+  // Mettre à jour uniquement le .filter-option-count déjà dans le DOM (généré par buildDynamicFilters)
   document.querySelectorAll('.filter-option input[data-group]').forEach(cb => {
     const group = cb.dataset.group;
     const val   = cb.value;
-    const label = cb.closest('.filter-option')?.querySelector('span, label') || cb.parentElement;
     let count = 0;
     if (group === 'sector')  count = bySector[val]  || 0;
     if (group === 'type')    count = byType[val]    || 0;
     if (group === 'country') count = byCountry[val] || 0;
 
-    // Ajouter ou mettre à jour le badge compteur
-    let badge = label.querySelector('.filter-count-badge');
-    if (!badge) {
-      badge = document.createElement('span');
-      badge.className = 'filter-count-badge';
-      badge.style.cssText = 'margin-left:auto;font-size:11px;font-weight:600;color:var(--muted);background:var(--bg-off);padding:1px 7px;border-radius:999px;border:1px solid var(--border);';
-      label.style.display = 'flex';
-      label.style.alignItems = 'center';
-      label.appendChild(badge);
-    }
-    badge.textContent = count;
-    // Griser si 0 offres
-    cb.closest('.filter-option').style.opacity = count === 0 ? '0.4' : '1';
+    const countEl = cb.closest('.filter-option')?.querySelector('.filter-option-count');
+    if (countEl) countEl.textContent = count;
+
+    // Style visuel : griser si 0 offres
+    const option = cb.closest('.filter-option');
+    if (option) option.style.opacity = count === 0 ? '0.4' : '1';
   });
 }
+
+function _updateCheckedStyle(_cb) { /* géré par CSS :has(:checked) */ }
 
 function filterJobs() {
   const keyword = (document.getElementById('searchKeyword')?.value || '').toLowerCase().trim();
@@ -182,7 +178,7 @@ function renderJobs(jobs) {
   if (!jobs || jobs.length === 0) {
     list.innerHTML = `
       <div class="jobs-empty">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg>
+        <i data-lucide="briefcase" style="width:48px;height:48px;stroke-width:1.25;color:var(--muted);"></i>
         <h3>Aucune offre disponible en ce moment</h3>
         <p>Nous publions régulièrement de nouvelles opportunités. Déposez votre candidature spontanée et nous vous contacterons dès qu'un poste correspond à votre profil.</p>
         <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:24px;">
@@ -194,8 +190,11 @@ function renderJobs(jobs) {
           </a>
         </div>
       </div>`;
+    if (typeof lucide !== 'undefined') lucide.createIcons();
     return;
   }
+
+  function stripHtml(html) { return (html || '').replace(/<[^>]*>?/gm, '').trim(); }
 
   list.innerHTML = jobs.map(job => `
     <article class="job-card" onclick="window.location='offre.html?id=${job.id}'">
@@ -204,11 +203,11 @@ function renderJobs(jobs) {
           ${_sectorBadge(job.sector)}
           <span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px;background:rgba(83,74,183,0.10);color:#3C3489;">${job.contract_type || ''}</span>
           ${job.is_new ? '<span class="job-badge-new">Nouveau</span>' : ''}
-          <span class="job-location">📍 ${[job.city, job.country].filter(Boolean).join(', ')}</span>
+          <span class="job-location" style="display:inline-flex;align-items:center;gap:4px;"><i data-lucide="map-pin" style="width:13px;height:13px;"></i> ${[job.city, job.country].filter(Boolean).join(', ')}</span>
         </div>
         <h3 class="job-title">${job.title}</h3>
-        ${job.description ? `<p class="job-desc">${job.description.substring(0, 130)}…</p>` : ''}
-        ${job.tags && job.tags.length ? `<div class="job-tags">${job.tags.map(t => `<span class="job-tag">${t}</span>`).join('')}</div>` : ''}
+        ${job.description ? `<p class="job-desc">${stripHtml(job.description).substring(0, 130)}…</p>` : ''}
+        ${(() => { const tags = Array.isArray(job.tags) ? job.tags : (job.tags || '').split(',').map(t => t.trim()).filter(Boolean); return tags.length ? `<div class="job-tags">${tags.map(t => `<span class="job-tag">${t}</span>`).join('')}</div>` : ''; })()}
       </div>
       <div class="job-footer">
         ${job.salary ? `<span class="job-salary">${job.salary}</span>` : ''}
@@ -216,6 +215,7 @@ function renderJobs(jobs) {
       </div>
     </article>
   `).join('');
+  if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
 function updateCount(n) {
@@ -228,12 +228,19 @@ function getChecked(group) {
 }
 
 function resetAll() {
-  document.getElementById('searchKeyword').value = '';
-  document.getElementById('searchCountry').value = '';
-  document.getElementById('searchSector').value  = '';
-  document.querySelectorAll('.filter-option input').forEach(cb => cb.checked = false);
+  const kw = document.getElementById('searchKeyword');
+  const ct = document.getElementById('searchCountry');
+  const sc = document.getElementById('searchSector');
+  if (kw) kw.value = '';
+  if (ct) ct.value = '';
+  if (sc) sc.value = '';
+  document.querySelectorAll('.filter-option input').forEach(cb => {
+    cb.checked = false;
+    _updateCheckedStyle(cb);
+  });
   renderJobs(allJobs);
   updateCount(allJobs.length);
+  updateFilterCounts(allJobs);
 }
 
 /* Échappe les caractères HTML pour éviter les injections */

@@ -23,14 +23,14 @@ async function initDynamicCarousel() {
 
   try {
     const page = _getCurrentPage();
-    const res  = await fetch('https://talentyah-website.onrender.com/api/carousel?page=' + page + '&_=' + Date.now());
+    const res  = await fetch(window.API_BASE + '/api/carousel?page=' + page + '&_=' + Date.now());
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const data   = await res.json();
     const slides = data.slides || [];
     if (!slides.length) return; // fallback slides statiques HTML
 
     // Utiliser <img> au lieu de background-image pour iOS Safari
-    const resolveUrl = (url) => (url && url.startsWith('http')) ? url : 'https://talentyah-website.onrender.com' + url;
+    const resolveUrl = (url) => (url && url.startsWith('http')) ? url : window.API_BASE + url;
 
     slidesContainer.innerHTML = slides.map(s => `
       <div class="carousel-slide">

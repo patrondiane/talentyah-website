@@ -11,7 +11,10 @@
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="css/talents.css">
   <link rel="stylesheet" href="css/carousel.css">
+  <link rel="stylesheet" href="css/searchable-select.css">
   <script src="jobs-data.js"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script src="js/searchable-select.js"></script>
 </head>
 <body>
 
@@ -29,10 +32,7 @@
         <a href="apropos.html">À propos</a>
         <a href="ressources.html">Ressources</a>
         <a href="admin.html" class="admin-link">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="8" r="4"/>
-            <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
-          </svg>
+          <i data-lucide="user" style="width: 18px; height: 18px;"></i>
         </a>
       </nav>
     </div>
@@ -61,8 +61,8 @@
               Talentyah accompagne les talents africains et de la diaspora dans la structuration de leur parcours et l'accès à des opportunités alignées avec leur potentiel.
             </p>
             <div class="carousel-slide-ctas">
-              <a href="#accompagnement" class="btn-gold">Je veux être accompagné(e) &#8594;</a>
-              <a href="#offres" class="btn-ghost">Offres d'emploi &#8594;</a>
+              <a href="#accompagnement" class="btn-gold">Je veux être accompagné(e) <i data-lucide="arrow-right" style="width:18px;height:18px;vertical-align:middle;margin-left:6px;"></i></a>
+              <a href="#offres" class="btn-ghost">Offres d'emploi <i data-lucide="arrow-right" style="width:18px;height:18px;vertical-align:middle;margin-left:6px;"></i></a>
             </div>
           </div>
         </div>
@@ -86,8 +86,8 @@
               Du coaching à la relocation, nous vous accompagnons à chaque étape de votre projet de mobilité en Afrique ou à l'international.
             </p>
             <div class="carousel-slide-ctas">
-              <a href="#candidature" class="btn-gold">Candidature spontanée &#8594;</a>
-              <a href="#accompagnement" class="btn-ghost">Nos programmes &#8594;</a>
+              <a href="#candidature" class="btn-gold">Candidature spontanée <i data-lucide="arrow-right" style="width:18px;height:18px;vertical-align:middle;margin-left:6px;"></i></a>
+              <a href="#accompagnement" class="btn-ghost">Nos programmes <i data-lucide="arrow-right" style="width:18px;height:18px;vertical-align:middle;margin-left:6px;"></i></a>
             </div>
           </div>
         </div>
@@ -96,10 +96,10 @@
     </div>
  
     <button class="carousel-arrow carousel-arrow-prev" aria-label="Précédent">
-      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      <i data-lucide="chevron-left"></i>
     </button>
     <button class="carousel-arrow carousel-arrow-next" aria-label="Suivant">
-      <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      <i data-lucide="chevron-right"></i>
     </button>
  
     <div class="carousel-dots">
@@ -145,7 +145,7 @@
 
         <div class="programme-card reveal">
           <div class="programme-num">01</div>
-          <div class="programme-icon"><svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+          <div class="programme-icon"><i data-lucide="file-text"></i></div>
           <div class="programme-tag">Recherche d'emploi</div>
           <h3 class="programme-title">Positionnez-vous comme le candidat idéal</h3>
           <p class="programme-desc">Nous vous aidons à construire une candidature professionnelle, moderne et efficace, alignée sur les standards internationaux.</p>
@@ -154,12 +154,12 @@
             <li>Optimisation de votre profil LinkedIn et des plateformes professionnelles</li>
             <li>Augmentation de votre visibilité auprès des recruteurs</li>
           </ul>
-          <a href="#candidature" class="programme-link">En savoir plus &#8594;</a>
+          <a href="#candidature" class="programme-link">En savoir plus <i data-lucide="arrow-right" style="width:18px;height:18px;vertical-align:middle;margin-left:6px;"></i></a>
         </div>
 
         <div class="programme-card reveal">
           <div class="programme-num">02</div>
-          <div class="programme-icon"><svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          <div class="programme-icon"><i data-lucide="users"></i></div>
           <div class="programme-tag">Coaching et développement</div>
           <h3 class="programme-title">Passez au niveau supérieur</h3>
           <p class="programme-desc">Nous vous accompagnons pour renforcer vos compétences, gagner en confiance et réussir vos entretiens.</p>
@@ -168,12 +168,12 @@
             <li>Formation soft skills et compétences interculturelles</li>
             <li>Ateliers carrière : stratégie, objectifs, plan de progression</li>
           </ul>
-          <a href="#candidature" class="programme-link">En savoir plus &#8594;</a>
+          <a href="#candidature" class="programme-link">En savoir plus <i data-lucide="arrow-right" style="width:18px;height:18px;vertical-align:middle;margin-left:6px;"></i></a>
         </div>
 
         <div class="programme-card reveal">
           <div class="programme-num">03</div>
-          <div class="programme-icon"><svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+          <div class="programme-icon"><i data-lucide="globe"></i></div>
           <div class="programme-tag">Mobilité internationale</div>
           <h3 class="programme-title">Facilitez votre transition</h3>
           <p class="programme-desc">Nous vous accompagnons dans toutes les étapes de votre projet international, de la préparation à l'intégration.</p>
@@ -182,14 +182,14 @@
             <li>Mise en relation avec des entreprises prêtes à recruter</li>
             <li>Soutien à l'intégration dans un nouveau pays</li>
           </ul>
-          <a href="#candidature" class="programme-link">En savoir plus &#8594;</a>
+          <a href="#candidature" class="programme-link">En savoir plus <i data-lucide="arrow-right" style="width:18px;height:18px;vertical-align:middle;margin-left:6px;"></i></a>
         </div>
 
       </div>
 
       <div class="rdv-card">
         <div class="rdv-text"><p>Clarifiez votre positionnement avec un consultant.</p></div>
-        <a href="https://outlook.office.com/bookings/nomdetonservice" target="_blank" rel="noopener" class="btn-rdv">Prendre rendez-vous &#8594;</a>
+        <a href="https://outlook.office.com/bookings/nomdetonservice" target="_blank" rel="noopener" class="btn-rdv">Prendre rendez-vous <i data-lucide="arrow-right" style="width:18px;height:18px;vertical-align:middle;margin-left:6px;"></i></a>
       </div>
 
     </div>
@@ -203,7 +203,7 @@
           <div class="section-label"><span class="section-label-line"></span><span class="section-label-text">Opportunités</span></div>
           <h2 class="section-title">Offres d'emploi<br>sélectionnées</h2>
         </div>
-        <a href="carrieres.html" class="btn-outline">Voir toutes les offres &#8594;</a>
+        <a href="carrieres.html" class="btn-outline">Voir toutes les offres <i data-lucide="arrow-right" style="width:18px;height:18px;vertical-align:middle;margin-left:6px;"></i></a>
       </div>
       <div class="jobs-preview" id="jobsPreview">
         <!-- Injecté dynamiquement depuis jobs-data.js -->
@@ -221,11 +221,11 @@
           <p class="form-left-desc">Vous êtes autonome et souhaitez être considéré(e) pour des opportunités actuelles ou futures. Déposez votre profil : un consultant vous contactera dès qu'une opportunité correspond.</p>
           <div class="contact-info">
             <div class="contact-item">
-              <div class="contact-icon"><svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+              <div class="contact-icon"><i data-lucide="user"></i></div>
               <div><div class="contact-label">Profils recherchés</div><div class="contact-value">Cadres, experts, profils diaspora et mobilité</div></div>
             </div>
             <div class="contact-item">
-              <div class="contact-icon"><svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+              <div class="contact-icon"><i data-lucide="globe"></i></div>
               <div><div class="contact-label">Couverture</div><div class="contact-value">Afrique, diaspora et international</div></div>
             </div>
           </div>
@@ -241,7 +241,10 @@
             </div>
             <div class="form-field"><label for="cand-email">Email professionnel *</label><input type="email" id="cand-email" name="email" placeholder="vous@email.com" required></div>
             <div class="form-row">
-              <div class="form-field"><label for="country">Pays de résidence</label><input type="text" id="country" name="country" placeholder="Ex : France, Sénégal..."></div>
+              <div class="form-field">
+                <label for="country">Pays de résidence *</label>
+                <div class="searchable-select-placeholder" data-name="country" data-id="country" data-required="true" data-placeholder="Sélectionnez votre pays"></div>
+              </div>
               <div class="form-field"><label for="role_target">Fonction / Métier</label><input type="text" id="role_target" name="role_target" placeholder="Ex : DAF, Ingénieur..."></div>
             </div>
             <div class="form-field">
@@ -260,13 +263,14 @@
               <div class="file-upload-wrap">
                 <input type="file" id="cv_upload" name="cv" accept=".pdf,.doc,.docx" required class="file-input">
                 <label for="cv_upload" class="file-label">
-                  <svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="20" height="20"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  <i data-lucide="upload" style="width:20px; height:20px;"></i>
                   <span id="fileLabel">Cliquez pour ajouter votre CV</span>
                 </label>
               </div>
             </div>
             <div class="form-field"><label for="cand-message">Message (facultatif)</label><textarea id="cand-message" name="message" placeholder="Précisez vos attentes, disponibilités, ou toute information utile..."></textarea></div>
-            <button type="submit" class="btn-submit">Soumettre mon profil &#8594;</button>
+            <div class="form-field"><label for="source">Comment nous avez-vous connu ? (facultatif)</label><input type="text" id="source" name="source" placeholder="Ex: LinkedIn, ami, etc."></div>
+            <button type="submit" class="btn-submit">Soumettre mon profil <i data-lucide="arrow-right" style="width:18px;height:18px;vertical-align:middle;margin-left:6px;"></i></button>
             <p class="form-note">Vos données sont traitées de manière strictement confidentielle.</p>
             <div class="form-success" id="candidateSuccess"><p>Votre profil a bien été transmis. Nous vous contacterons dès qu'une opportunité correspond.</p></div>
           </form>
@@ -316,5 +320,11 @@
   <script src="js/api.js"></script>
   <script src="js/script.js"></script>
   <script src="js/talents.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    });
+  </script>
+  <script src="js/custom-select.js"></script>
 </body>
 </html>

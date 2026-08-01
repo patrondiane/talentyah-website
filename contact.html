@@ -11,7 +11,9 @@
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="css/contact.css">
   <script src="js/api.js"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
   <script src="js/script.js"></script>
+  <link rel="stylesheet" href="css/searchable-select.css">
 </head>
 <body>
 
@@ -29,10 +31,7 @@
         <a href="apropos.html">À propos</a>
         <a href="ressources.html">Ressources</a>
         <a href="admin.html" class="admin-link">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="8" r="4"/>
-            <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
-          </svg>
+          <i data-lucide="user" style="width: 18px; height: 18px;"></i>
         </a>
       </nav>
     </div>
@@ -124,6 +123,12 @@
     </div>
   </footer>
 
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    });
+  </script>
+  <script src="js/custom-select.js"></script>
 </body>
 
 </html>

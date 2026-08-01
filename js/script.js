@@ -3,7 +3,7 @@
    Shared scripts + formulaires connectés au backend
 ===================================================== */
 
-const BACKEND = 'https://talentyah-website.onrender.com';
+const BACKEND = window.API_BASE;
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -200,7 +200,7 @@ function _btnReset(btn, text) {
 
 function _showSuccess(form, btn, successEl, message) {
   if (form)      { form.reset(); form.style.opacity = '0.4'; form.style.pointerEvents = 'none'; }
-  if (btn)       { btn.textContent = '✓ Envoyé !'; btn.style.background = 'var(--emerald, #1a5233)'; }
+  if (btn)       { btn.innerHTML = '<i data-lucide="check" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"></i> Envoyé !'; setTimeout(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); }, 10); btn.style.background = 'var(--emerald, #1a5233)'; }
   if (successEl) {
     successEl.textContent = message;
     successEl.style.display = 'block';
@@ -222,7 +222,7 @@ function _showError(btn, errorEl, message) {
 // Résout une URL d'image (Cloudinary = déjà absolue, sinon préfixer avec le backend)
 function _imgUrl(url) {
   if (!url) return '';
-  return url.startsWith('http') ? url : 'https://talentyah-website.onrender.com' + url;
+  return url.startsWith('http') ? url : window.API_BASE + url;
 }
 
 (async function loadClientLogos() {
@@ -230,7 +230,7 @@ function _imgUrl(url) {
   if (!track) return;
 
   try {
-    const res  = await fetch('https://talentyah-website.onrender.com/api/partners');
+    const res  = await fetch(window.API_BASE + '/api/partners');
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const data     = await res.json();
     const partners = data.partners || [];
@@ -259,7 +259,7 @@ function _imgUrl(url) {
   if (!slidesWrap) return;
 
   try {
-    const res  = await fetch('https://talentyah-website.onrender.com/api/carousel');
+    const res  = await fetch(window.API_BASE + '/api/carousel');
     if (!res.ok) throw new Error();
     const data = await res.json();
     const slides = data.slides || [];

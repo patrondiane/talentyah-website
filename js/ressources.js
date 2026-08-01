@@ -47,7 +47,7 @@ function renderArticles(pubs) {
       <article class="article-card reveal visible" data-category="${cat}">
         <div class="article-card-thumb thumb-${cat}">
           ${p.image_url 
-            ? `<img src="${p.image_url.startsWith('http') ? p.image_url : 'https://talentyah-website.onrender.com' + p.image_url}" 
+            ? `<img src="${p.image_url.startsWith('http') ? p.image_url : window.API_BASE + p.image_url}" 
                     alt="${_esc(p.title)}" 
                     style="width:100%;height:100%;object-fit:cover;"
                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">`
@@ -69,8 +69,29 @@ function renderArticles(pubs) {
   const numEl = document.getElementById('articlesCountNum');
   if (numEl) numEl.textContent = pubs.length;
 
+  // Mise à jour dynamique des compteurs de filtres
+  updateFilterCounts(pubs);
+
   const activeBtn = document.querySelector('.filter-btn.active');
   if (activeBtn) applyFilter(activeBtn.dataset.filter || 'all');
+}
+
+function updateFilterCounts(pubs) {
+  const counts = { all: pubs.length };
+  pubs.forEach(p => {
+    const cat = catMap[p.category] || 'recrutement';
+    counts[cat] = (counts[cat] || 0) + 1;
+  });
+
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    const filterVal = btn.dataset.filter || 'all';
+    const countSpan = btn.querySelector('.filter-count');
+    if (countSpan) {
+      countSpan.textContent = counts[filterVal] || 0;
+    }
+    // Masquer ou estomper le bouton de filtre si aucun article correspondant
+    btn.style.opacity = (filterVal !== 'all' && !counts[filterVal]) ? '0.4' : '1';
+  });
 }
 
 async function loadArticles() {
@@ -81,7 +102,7 @@ async function loadArticles() {
   grid.innerHTML = '<p style="color:var(--muted);font-size:14px;padding:20px 0;">Chargement des articles…</p>';
 
   try {
-    const res  = await fetch('https://talentyah-website.onrender.com/api/publications');
+    const res  = await fetch(window.API_BASE + '/api/publications');
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
     const pubs = data.publications || [];
@@ -125,7 +146,7 @@ function init() {
       const btn   = nlForm.querySelector('.newsletter-submit') || nlForm.querySelector('button');
       if (!input?.value.trim()) return;
       try {
-        await fetch('https://talentyah-website.onrender.com/api/contact', {
+        await fetch(window.API_BASE + '/api/contact', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: input.value.trim(), subject: 'newsletter', message: 'Inscription newsletter' })
@@ -156,7 +177,7 @@ function _staticArticles() {
     <article class="article-card reveal visible" data-category="${a.cat}">
       <div class="article-card-thumb thumb-${a.cat}">
         <div class="article-card-thumb-placeholder">
-          <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <i data-lucide="file-text" style="width:24px;height:24px;"></i>
         </div>
       </div>
       <div class="article-card-body">

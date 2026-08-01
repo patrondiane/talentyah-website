@@ -4,6 +4,7 @@ const multer = require('multer');
 const db     = require('../db');
 const { auth } = require('../middleware/auth');
 const { uploadBuffer, deleteByUrl } = require('../cloudinary');
+const { uploadToR2 } = require('../cloudflare-r2');
 
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
 
@@ -38,7 +39,21 @@ router.post('/', auth, upload.single('image'), async (req, res) => {
   const { title, category, status, excerpt, content } = req.body;
   if (!title) return res.status(400).json({ error: 'Titre requis' });
 
-  const image_url    = req.file ? await uploadBuffer(req.file.buffer, 'talentyah/publications', { resource_type: 'image' }) : null;
+  let image_url = null;
+  if (req.file) {
+    try {
+      if (process.env.R2_ACCESS_KEY_ID) {
+        const uniqueKey = `blog/img_${Date.now()}_${req.file.originalname.replace(/\s+/g, '_')}`;
+        image_url = await uploadToR2(req.file.buffer, uniqueKey, req.file.mimetype);
+        console.log('[R2 Blog Image] Upload réussi:', image_url);
+      } else {
+        image_url = await uploadBuffer(req.file.buffer, 'talentyah/publications', { resource_type: 'image' });
+        console.log('[Cloudinary Blog Image] Upload réussi:', image_url);
+      }
+    } catch (uploadErr) {
+      console.error('[PUBLICATIONS] Erreur upload image:', uploadErr.message);
+    }
+  }
   const published_at = status === 'published' ? new Date().toISOString().slice(0,10) : null;
 
   const result = await db.run(

@@ -5,6 +5,7 @@ const db     = require('../db');
 const { auth } = require('../middleware/auth');
 const { notifyNewCandidate } = require('../mailer');
 const { uploadCV, deleteCV } = require('../supabase-storage');
+const { uploadToR2 } = require('../cloudflare-r2');
 
 // Multer en mémoire (pas de disque — on envoie direct à Cloudinary)
 const upload = multer({
@@ -17,11 +18,20 @@ const upload = multer({
   },
 });
 
+const rateLimiter = require('../middleware/rateLimiter');
+
+const candidateLimiter = rateLimiter({
+  windowMs: 60 * 60 * 1000, // 1 heure
+  maxRequests: 10,
+  message: 'Trop de candidatures envoyées depuis cette IP. Veuillez réessayer dans une heure.'
+});
+
 // POST /api/candidates — public
-router.post('/', upload.single('cv'), async (req, res) => {
+router.post('/', candidateLimiter, upload.single('cv'), async (req, res) => {
   try {
-    const { first_name, last_name, email, phone, role_target, sector, country, experience_level, message, job_id } = req.body;
+    const { first_name, last_name, email, phone, role_target, sector, country, experience_level, message, job_id, source } = req.body;
     if (!first_name || !last_name || !email) return res.status(400).json({ error: 'Prénom, nom et email requis' });
+    if (!req.file) return res.status(400).json({ error: 'Le CV (format PDF ou Word) est obligatoire.' });
 
     let cv_url      = null;
     let cv_filename = null;
@@ -29,22 +39,27 @@ router.post('/', upload.single('cv'), async (req, res) => {
     if (req.file) {
       cv_filename = req.file.originalname;
       try {
-        cv_url = await uploadCV(req.file.buffer, cv_filename, req.file.mimetype);
-        console.log('[CV] Upload réussi:', cv_url);
+        if (process.env.R2_ACCESS_KEY_ID) {
+          const uniqueKey = `cvs/cv_${Date.now()}_${cv_filename.replace(/\s+/g, '_')}`;
+          cv_url = await uploadToR2(req.file.buffer, uniqueKey, req.file.mimetype);
+          console.log('[R2 CV] Upload réussi:', cv_url);
+        } else {
+          cv_url = await uploadCV(req.file.buffer, cv_filename, req.file.mimetype);
+          console.log('[Supabase CV] Upload réussi:', cv_url);
+        }
       } catch (uploadErr) {
         console.error('[CV] Upload échoué:', uploadErr.message);
-        // On continue sans CV
       }
     }
 
     const result = await db.run(
-      `INSERT INTO candidates (first_name, last_name, email, phone, role_target, sector, country, experience_level, message, cv_url, cv_filename, job_id)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [first_name, last_name, email, phone||null, role_target||null, sector||null, country||null, experience_level||null, message||null, cv_url, cv_filename, job_id||null]
+      `INSERT INTO candidates (first_name, last_name, email, phone, role_target, sector, country, experience_level, message, cv_url, cv_filename, job_id, source)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [first_name, last_name, email, phone||null, role_target||null, sector||null, country||null, experience_level||null, message||null, cv_url, cv_filename, job_id||null, source||null]
     );
     const id = db.lastInsertRowId(result);
 
-    notifyNewCandidate({ first_name, last_name, email, phone, role_target, sector, country, experience_level, message, cv_url }).catch(() => {});
+    notifyNewCandidate({ first_name, last_name, email, phone, role_target, sector, country, experience_level, message, cv_url, source }).catch(() => {});
 
     res.status(201).json({ id, message: 'Candidature enregistrée avec succès' });
   } catch (err) {

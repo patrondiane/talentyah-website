@@ -4,13 +4,28 @@ const express = require('express');
 const cors    = require('cors');
 const path    = require('path');
 const db      = require('./db');
+const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 const app  = express();
 const PORT = process.env.PORT || 4000;
 
+const allowedOrigins = [
+  'https://talentyah.com',
+  'https://www.talentyah.com'
+];
+
 app.use(cors({
-  origin: true,
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    
+    // Pour la production, on peut restreindre strictement :
+    const isLocal = origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:');
+    if (allowedOrigins.includes(origin) || isLocal) {
+      return callback(null, true);
+    }
+    callback(new Error('Origine non autorisée par CORS'));
+  },
   methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
   allowedHeaders: ['Content-Type','Authorization'],
   credentials: true,
@@ -27,10 +42,25 @@ app.options('*', cors());
 // Health check
 app.get('/api/health', (req, res) => res.json({ status: 'ok', version: '1.0.0' }));
 
+// Rate limiting
+const apiLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 heure
+  max: 100, // Limite globale
+  message: { error: 'Trop de requêtes, veuillez réessayer plus tard.' }
+});
+
+const candidatesLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 heure
+  max: 10, // 10 candidatures max par IP par heure
+  message: { error: 'Limite de candidatures atteinte. Veuillez réessayer plus tard.' }
+});
+
+app.use('/api/', apiLimiter);
+
 // Routes
 app.use('/api/carousel',     require('./routes/carousel'));
 app.use('/api/admin',        require('./routes/admin'));
-app.use('/api/candidates',   require('./routes/candidates'));
+app.use('/api/candidates',   candidatesLimiter, require('./routes/candidates'));
 app.use('/api/companies',    require('./routes/companies'));
 app.use('/api/jobs',         require('./routes/jobs'));
 app.use('/api/publications', require('./routes/publications'));
@@ -72,7 +102,7 @@ db.init().then(() => {
     console.log(`   PUT    /api/jobs/:id             [auth]`);
     console.log(`   DELETE /api/jobs/:id             [auth]`);
     console.log(`\nCV uploades dans ./uploads/`);
-    console.log(`Base de donnees : ./data/talentyah.db\n`);
+    console.log(`Base de donnees : Supabase PostgreSQL\n`);
   });
 }).catch(err => {
   console.error('Erreur init DB:', err);

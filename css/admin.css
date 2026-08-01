@@ -408,6 +408,15 @@ body { font-family: 'DM Sans', sans-serif; background: #f0f4f1; color: var(--dar
 }
 .btn-delete:hover { background: #fff0f0; border-color: #b34040; }
 
+.btn-view {
+  padding: 7px 14px; background: transparent;
+  border: 1px solid var(--border); border-radius: var(--radius);
+  color: var(--emerald); font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: all var(--tr); white-space: nowrap;
+  font-family: 'DM Sans', sans-serif;
+}
+.btn-view:hover { background: rgba(26,92,69,0.06); border-color: var(--emerald); }
+
 /* ── Partenaires ── */
 .partners-grid {
   display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -1117,4 +1126,121 @@ body { font-family: 'DM Sans', sans-serif; background: #f0f4f1; color: var(--dar
   .ats-kpi-grid { grid-template-columns: repeat(2, 1fr); }
   .ats-pipeline { grid-template-columns: 1fr; }
   .ats-part-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Modal de Prévisualisation CV ── */
+.cv-modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  z-index: 999999 !important;
+  background: rgba(13, 40, 24, 0.75);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+.cv-modal-backdrop {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  cursor: pointer;
+}
+.cv-modal-box {
+  position: relative;
+  z-index: 1000000;
+  width: 90%;
+  max-width: 900px;
+  height: 85vh;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.4);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: modalFadeIn 0.25s cubic-bezier(0.1, 0.8, 0.25, 1);
+}
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.cv-modal-header {
+  padding: 16px 20px;
+  background: var(--forest-dark);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  flex-shrink: 0;
+}
+.cv-modal-header h3 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0;
+}
+.cv-modal-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.btn-cv-download {
+  background: var(--gold);
+  color: var(--forest-dark);
+  font-weight: 700;
+  font-size: 13px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+.btn-cv-download:hover {
+  background: var(--gold-light);
+  transform: translateY(-1px);
+}
+.btn-cv-close {
+  background: rgba(255,255,255,0.15);
+  color: #ffffff;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+.btn-cv-close:hover {
+  background: rgba(255,255,255,0.3);
+}
+.cv-modal-body {
+  flex-grow: 1;
+  background: #f8faf9;
+  position: relative;
+  overflow: hidden;
+}
+.cv-modal-body iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+/* Anti-FOUI logic */
+html.is-logged-in .admin-login-page {
+  display: none !important;
+}
+html.is-logged-in .admin-dashboard-page {
+  display: flex !important;
 }

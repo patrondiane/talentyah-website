@@ -3,8 +3,16 @@ const router = require('express').Router();
 const db     = require('../db');
 const { auth } = require('../middleware/auth');
 
+const rateLimiter = require('../middleware/rateLimiter');
+
+const contactLimiter = rateLimiter({
+  windowMs: 60 * 60 * 1000, // 1 heure
+  maxRequests: 10,
+  message: 'Trop de messages envoyés depuis cette IP. Veuillez réessayer dans une heure.'
+});
+
 // POST /api/contact — public
-router.post('/', async (req, res) => {
+router.post('/', contactLimiter, async (req, res) => {
   const { fullname, name, email, subject, type, message } = req.body;
   if (!email) return res.status(400).json({ error: 'Email requis' });
   const now = new Date().toISOString();

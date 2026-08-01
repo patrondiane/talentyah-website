@@ -6,11 +6,21 @@
   <title>Notre approche - Talentyah</title>
   <link rel="icon" type="image/png" href="images/logos/Talentyah Logo onglet.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Notre approche - Talentyah</title>
+  <link rel="icon" type="image/png" href="images/logos/Talentyah Logo onglet.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="css/notre-approche.css">
   <link rel="stylesheet" href="css/carousel.css">
+  <script src="js/api.js"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
   <script src="js/notre-approche.js"></script>
 </head>
 <body>
@@ -29,10 +39,7 @@
         <a href="apropos.html">À propos</a>
         <a href="ressources.html">Ressources</a>
         <a href="admin.html" class="admin-link">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="8" r="4"/>
-            <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
-          </svg>
+          <i data-lucide="user" style="width: 18px; height: 18px;"></i>
         </a>
       </nav>
     </div>
@@ -60,8 +67,8 @@
               Chez Talentyah, nous concevons le recrutement comme un acte stratégique. Bien plus qu'un recrutement, nous orchestrons des rencontres entre organisations visionnaires et talents d'exception.
             </p>
             <div class="carousel-slide-ctas">
-              <a href="entreprises.html" class="btn-gold">Confier une mission &#8594;</a>
-              <a href="talents.html" class="btn-ghost">Être accompagné(e) &#8594;</a>
+              <a href="entreprises.html" class="btn-gold">Confier une mission <i data-lucide="arrow-right" style="width:18px;height:18px;vertical-align:middle;margin-left:6px;"></i></a>
+              <a href="talents.html" class="btn-ghost">Être accompagné(e) <i data-lucide="arrow-right" style="width:18px;height:18px;vertical-align:middle;margin-left:6px;"></i></a>
             </div>
           </div>
         </div>
@@ -85,8 +92,8 @@
               Positionné au croisement des dynamiques africaines et internationales, Talentyah valorise les talents locaux, diasporiques et en mobilité pour des équipes performantes et engagées.
             </p>
             <div class="carousel-slide-ctas">
-              <a href="#piliers" class="btn-gold">Notre méthode &#8594;</a>
-              <a href="#valeurs" class="btn-ghost">Nos valeurs &#8594;</a>
+              <a href="#piliers" class="btn-gold">Notre méthode <i data-lucide="arrow-right" style="width:18px;height:18px;vertical-align:middle;margin-left:6px;"></i></a>
+              <a href="#valeurs" class="btn-ghost">Nos valeurs <i data-lucide="arrow-right" style="width:18px;height:18px;vertical-align:middle;margin-left:6px;"></i></a>
             </div>
           </div>
         </div>
@@ -95,10 +102,10 @@
     </div>
  
     <button class="carousel-arrow carousel-arrow-prev" aria-label="Précédent">
-      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      <i data-lucide="chevron-left"></i>
     </button>
     <button class="carousel-arrow carousel-arrow-next" aria-label="Suivant">
-      <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      <i data-lucide="chevron-right"></i>
     </button>
  
     <div class="carousel-dots">
@@ -243,25 +250,25 @@
 
       <div class="valeurs-grid">
         <div class="valeur-card reveal">
-          <div class="valeur-icon"><svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+          <div class="valeur-icon"><i data-lucide="shield"></i></div>
           <div class="valeur-title">L'alignement stratégique</div>
           <p class="valeur-desc">Nous recherchons la justesse entre vision, culture et potentiel, pour créer des collaborations qui ont du sens et qui durent.</p>
         </div>
 
         <div class="valeur-card reveal">
-          <div class="valeur-icon"><svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+          <div class="valeur-icon"><i data-lucide="star"></i></div>
           <div class="valeur-title">L'exigence d'excellence</div>
           <p class="valeur-desc">Nous évaluons avec rigueur et sans compromis pour garantir des décisions de recrutement à la hauteur de vos enjeux.</p>
         </div>
 
         <div class="valeur-card reveal">
-          <div class="valeur-icon"><svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+          <div class="valeur-icon"><i data-lucide="users"></i></div>
           <div class="valeur-title">L'engagement partenarial</div>
           <p class="valeur-desc">Nous nous impliquons comme un véritable partenaire, avec exigence, discrétion et un engagement total à chaque mission.</p>
         </div>
 
         <div class="valeur-card reveal">
-          <div class="valeur-icon"><svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+          <div class="valeur-icon"><i data-lucide="trending-up"></i></div>
           <div class="valeur-title">L'impact durable</div>
           <p class="valeur-desc">Nous concevons des solutions de recrutement créatrices de valeur, pour transformer vos défis actuels en succès futurs.</p>
         </div>
@@ -277,13 +284,13 @@
           <span class="approche-cta-card-label">Vous êtes une entreprise</span>
           <h3 class="approche-cta-card-title">Confiez-nous votre prochaine mission de recrutement</h3>
           <p class="approche-cta-card-desc">Des solutions de recrutement sur mesure pour identifier et intégrer les talents qui feront la différence.</p>
-          <a href="entreprises.html" class="btn-emerald">Découvrir nos offres &#8594;</a>
+          <a href="entreprises.html" class="btn-emerald">Découvrir nos offres <i data-lucide="arrow-right" style="width:18px;height:18px;vertical-align:middle;margin-left:6px;"></i></a>
         </div>
         <div class="approche-cta-card">
           <span class="approche-cta-card-label">Vous êtes un talent</span>
           <h3 class="approche-cta-card-title">Accélérez votre carrière avec Talentyah</h3>
           <p class="approche-cta-card-desc">Un accompagnement personnalisé pour structurer votre parcours et accéder aux meilleures opportunités.</p>
-          <a href="talents.html" class="btn-outline">Voir l'accompagnement &#8594;</a>
+          <a href="talents.html" class="btn-outline">Voir l'accompagnement <i data-lucide="arrow-right" style="width:18px;height:18px;vertical-align:middle;margin-left:6px;"></i></a>
         </div>
       </div>
     </div>
@@ -328,5 +335,10 @@
   <script src="js/carousel.js"></script>
   <script src="js/carousel-dynamic.js"></script>
   <script src="js/script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    });
+  </script>
 </body>
 </html>

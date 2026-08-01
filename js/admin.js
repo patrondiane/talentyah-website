@@ -3,7 +3,7 @@
    Rôles : superadmin | admin | editor
 ===================================================== */
 
-const API = 'https://talentyah-website.onrender.com';
+const API = 'http://localhost:4001';
 
 /* ══════════════════════════════
    MATRICE DES PRIVILÈGES
@@ -47,11 +47,7 @@ const PRIVILEGES = {
    Démo admin      : manager@talentyah.com / manager
    Démo éditeur    : editor@talentyah.com  / editor
 */
-const DEMO_ACCOUNTS = {
-  'admin@talentyah.com':    { password: 'admin',   role: 'superadmin' },
-  'manager@talentyah.com':  { password: 'manager', role: 'admin'      },
-  'editor@talentyah.com':   { password: 'editor',  role: 'editor'     },
-};
+const DEMO_ACCOUNTS = {};
 
 /* ══════════════════════════════
    INIT
@@ -143,24 +139,11 @@ document.addEventListener('DOMContentLoaded', () => {
           btn.textContent = 'Se connecter'; btn.disabled = false;
         }
       } catch {
-        /* Mode démo : vérification locale */
-        const account = DEMO_ACCOUNTS[email];
-        if (account && account.password === password) {
-          /* Faux token encodé avec le rôle */
-          const fakePayload = btoa(JSON.stringify({ email, role: account.role }));
-          sessionStorage.setItem('talentyah_token', 'demo.' + fakePayload + '.sig');
-          showDashboard();
-        } else {
-          if (msgEl) {
-            msgEl.innerHTML =
-              'Identifiants incorrects.<br>' +
-              '<span style="font-size:11px;opacity:.75;">' +
-              'Démo : admin@talentyah.com/admin &nbsp;·&nbsp; manager@talentyah.com/manager &nbsp;·&nbsp; editor@talentyah.com/editor' +
-              '</span>';
-            msgEl.style.color = '#c0392b';
-          }
-          btn.textContent = 'Se connecter'; btn.disabled = false;
+        if (msgEl) {
+          msgEl.innerHTML = 'Impossible de se connecter. Le serveur d\'authentification est injoignable.';
+          msgEl.style.color = '#c0392b';
         }
+        btn.textContent = 'Se connecter'; btn.disabled = false;
       }
     });
   }
@@ -263,7 +246,7 @@ const jobForm = document.getElementById('jobForm');
         });
         if (res.ok) {
           if (msg) { 
-            msg.textContent = idVal ? '✓ Offre mise à jour avec succès !' : '✓ Offre publiée avec succès !'; 
+            msg.innerHTML = idVal ? '<i data-lucide="check" style="width:14px; setTimeout(() => { if (typeof lucide !== "undefined") lucide.createIcons(); }, 10);height:14px;vertical-align:middle;margin-right:4px;"></i> Offre mise à jour avec succès !' : '<i data-lucide="check" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Offre publiée avec succès !'; 
             msg.style.color = 'var(--emerald)'; 
           }
           resetJobForm(); loadJobs();
@@ -279,11 +262,11 @@ const jobForm = document.getElementById('jobForm');
           if (idx !== -1) {
             adminJobsDemo[idx] = { ...adminJobsDemo[idx], ...payload };
           }
-          if (msg) { msg.textContent = '✓ Offre modifiée (mode démo).'; msg.style.color = 'var(--emerald)'; }
+          if (msg) { msg.innerHTML = '<i data-lucide="check" style="width:14px; setTimeout(() => { if (typeof lucide !== "undefined") lucide.createIcons(); }, 10);height:14px;vertical-align:middle;margin-right:4px;"></i> Offre modifiée (mode démo).'; msg.style.color = 'var(--emerald)'; }
         } else {
           // Mode ajout en démo
           adminJobsDemo.unshift({ ...payload, id: Date.now(), created_at: new Date().toISOString() });
-          if (msg) { msg.textContent = '✓ Offre ajoutée (mode démo).'; msg.style.color = 'var(--emerald)'; }
+          if (msg) { msg.innerHTML = '<i data-lucide="check" style="width:14px; setTimeout(() => { if (typeof lucide !== "undefined") lucide.createIcons(); }, 10);height:14px;vertical-align:middle;margin-right:4px;"></i> Offre ajoutée (mode démo).'; msg.style.color = 'var(--emerald)'; }
         }
         renderAdminJobs(adminJobsDemo);
         resetJobForm();
@@ -336,7 +319,7 @@ const jobForm = document.getElementById('jobForm');
         }
       }
 
-      if (msg) { msg.textContent = '✓ Partenaires enregistrés.'; msg.style.color = 'var(--emerald)'; setTimeout(() => { msg.textContent = ''; }, 3000); }
+      if (msg) { msg.innerHTML = '<i data-lucide="check" style="width:14px; setTimeout(() => { if (typeof lucide !== "undefined") lucide.createIcons(); }, 10);height:14px;vertical-align:middle;margin-right:4px;"></i> Partenaires enregistrés.'; msg.style.color = 'var(--emerald)'; setTimeout(() => { msg.innerHTML = ''; }, 3000); }
       loadPartners();
     } catch {
       if (msg) { msg.textContent = 'Erreur lors de l\'enregistrement.'; msg.style.color = '#c0392b'; }
@@ -358,7 +341,7 @@ const jobForm = document.getElementById('jobForm');
         body: fd
       });
       if (res.ok) {
-        if (msg) { msg.textContent = '✓ Slide ajouté !'; msg.style.color = 'var(--emerald)'; setTimeout(() => { msg.textContent = ''; }, 3000); }
+        if (msg) { msg.innerHTML = '<i data-lucide="check" style="width:14px; setTimeout(() => { if (typeof lucide !== "undefined") lucide.createIcons(); }, 10);height:14px;vertical-align:middle;margin-right:4px;"></i> Slide ajouté !'; msg.style.color = 'var(--emerald)'; setTimeout(() => { msg.innerHTML = ''; }, 3000); }
         e.target.reset();
         loadCarousel();
       } else {
@@ -397,7 +380,7 @@ const jobForm = document.getElementById('jobForm');
       const method = id ? 'PUT' : 'POST';
       const res    = await fetch(url, { method, headers: { 'Authorization': 'Bearer ' + token }, body: fd });
       if (res.ok) {
-        if (msg) { msg.textContent = '✓ Publication enregistrée.'; msg.style.color = 'var(--emerald)'; setTimeout(() => { msg.textContent = ''; }, 3000); }
+        if (msg) { msg.innerHTML = '<i data-lucide="check" style="width:14px; setTimeout(() => { if (typeof lucide !== "undefined") lucide.createIcons(); }, 10);height:14px;vertical-align:middle;margin-right:4px;"></i> Publication enregistrée.'; msg.style.color = 'var(--emerald)'; setTimeout(() => { msg.innerHTML = ''; }, 3000); }
         resetPubForm(); loadPublications();
       } else {
         const d = await res.json();
@@ -408,7 +391,7 @@ const jobForm = document.getElementById('jobForm');
       const pub = { id: id ? parseInt(id) : Date.now(), title: f['title'].value.trim(), category: f['category'].value, status: f['status'].value, excerpt: f['excerpt'].value.trim(), content: contentHtml, image: currentPubImg || null, date: new Date().toISOString().slice(0,10) };
       if (id) { const idx = publications.findIndex(p => p.id === parseInt(id)); if (idx !== -1) publications[idx] = pub; } else { publications.unshift(pub); }
       renderPubList(); resetPubForm();
-      if (msg) { msg.textContent = '✓ Enregistré (mode démo).'; msg.style.color = 'var(--emerald)'; setTimeout(() => { msg.textContent = ''; }, 3000); }
+      if (msg) { msg.innerHTML = '<i data-lucide="check" style="width:14px; setTimeout(() => { if (typeof lucide !== "undefined") lucide.createIcons(); }, 10);height:14px;vertical-align:middle;margin-right:4px;"></i> Enregistré (mode démo).'; msg.style.color = 'var(--emerald)'; setTimeout(() => { msg.innerHTML = ''; }, 3000); }
     }
     btn.disabled = false; btn.textContent = id ? 'Enregistrer les modifications →' : "Publier l'article →";
   });
@@ -446,9 +429,9 @@ const jobForm = document.getElementById('jobForm');
       if (res.ok) {
         // Afficher le mot de passe temporaire généré
         if (data.tempPassword) {
-          alert(`✅ Accès créé pour ${data.email}\n\nMot de passe :\n${data.tempPassword}\n\n⚠️ Notez-le — il ne sera plus affiché.`);
+          alert(`<i data-lucide="check-circle" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Accès créé pour ${data.email}\n\nMot de passe :\n${data.tempPassword}\n\n<i data-lucide="alert-triangle" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Notez-le — il ne sera plus affiché.`);
         } else {
-          if (msg) { msg.textContent = `✓ Accès créé pour ${data.email}`; msg.style.color = 'var(--emerald)'; setTimeout(() => { msg.textContent = ''; }, 4000); }
+          if (msg) { msg.innerHTML = `<i data-lucide="check" style="width:14px; setTimeout(() => { if (typeof lucide !== "undefined") lucide.createIcons(); }, 10);height:14px;vertical-align:middle;margin-right:4px;"></i> Accès créé pour ${data.email}`; msg.style.color = 'var(--emerald)'; setTimeout(() => { msg.innerHTML = ''; }, 4000); }
         }
         f.reset(); loadAccessList();
       } else {
@@ -482,7 +465,7 @@ const jobForm = document.getElementById('jobForm');
         method: 'POST', headers: { 'Authorization': 'Bearer ' + token }, body: fd
       });
       if (res.ok) {
-        if (msg) { msg.textContent = '✓ Slide ajouté !'; msg.style.color='var(--emerald)'; setTimeout(() => { msg.textContent=''; }, 3000); }
+        if (msg) { msg.innerHTML = '<i data-lucide="check" style="width:14px; setTimeout(() => { if (typeof lucide !== "undefined") lucide.createIcons(); }, 10);height:14px;vertical-align:middle;margin-right:4px;"></i> Slide ajouté !'; msg.style.color='var(--emerald)'; setTimeout(() => { msg.innerHTML =''; }, 3000); }
         e.target.reset();
         // Remettre "Toutes les pages" coché par défaut
         const allCb = e.target.querySelector('input[name="pages"][value="all"]');
@@ -532,7 +515,7 @@ async function initNotifications() {
   if ('Notification' in window && Notification.permission === 'default') {
     const perm = await Notification.requestPermission();
     if (perm === 'granted') showToast
-    ('✅ Notifications activées', 'success');
+    ('<i data-lucide="check-circle" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Notifications activées', 'success');
   }
 
   // Snapshot initial des compteurs
@@ -561,10 +544,10 @@ async function checkNewEntries() {
     if (_lastCandidates !== null && data.candidates > _lastCandidates) {
       const n = data.candidates - _lastCandidates;
       pushNotif(
-        `🧑‍💼 Nouvelle candidature${n > 1 ? 's' : ''} (${n})`,
+        `<i data-lucide="user" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Nouvelle candidature${n > 1 ? 's' : ''} (${n})`,
         `${n} nouveau${n > 1 ? 'x' : ''} CV reçu${n > 1 ? 's' : ''} — cliquez pour voir`
       );
-      showToast(`🧑‍💼 ${n} nouvelle${n > 1 ? 's' : ''} candidature${n > 1 ? 's' : ''} reçue${n > 1 ? 's' : ''}`, 'info');
+      showToast(`<i data-lucide="user" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> ${n} nouvelle${n > 1 ? 's' : ''} candidature${n > 1 ? 's' : ''} reçue${n > 1 ? 's' : ''}`, 'info');
       loadStats(); loadCandidates();
     }
 
@@ -572,10 +555,10 @@ async function checkNewEntries() {
     if (_lastCompanies !== null && data.companies > _lastCompanies) {
       const n = data.companies - _lastCompanies;
       pushNotif(
-        `🏢 Nouvelle demande entreprise${n > 1 ? 's' : ''} (${n})`,
+        `<i data-lucide="building" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Nouvelle demande entreprise${n > 1 ? 's' : ''} (${n})`,
         `${n} nouvelle${n > 1 ? 's' : ''} demande${n > 1 ? 's' : ''} reçue${n > 1 ? 's' : ''} — cliquez pour voir`
       );
-      showToast(`🏢 ${n} nouvelle${n > 1 ? 's' : ''} demande${n > 1 ? 's' : ''} entreprise`, 'info');
+      showToast(`<i data-lucide="building" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> ${n} nouvelle${n > 1 ? 's' : ''} demande${n > 1 ? 's' : ''} entreprise`, 'info');
       loadStats(); loadCompanies();
     }
 
@@ -619,7 +602,8 @@ function showToast(message, type = 'info') {
   const c = colors[type] || colors.info;
   toast.style.background = c.bg;
   toast.style.color      = c.color;
-  toast.textContent      = message;
+  toast.innerHTML        = message;
+  setTimeout(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); }, 10);
   toast.style.display    = 'block';
   toast.style.opacity    = '1';
   clearTimeout(toast._timeout);
@@ -880,7 +864,7 @@ function showCompanyMsg(idx) {
   modal.innerHTML = `
     <div style="background:#fff;border-radius:12px;max-width:520px;width:100%;padding:28px;position:relative;max-height:80vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
       <button onclick="this.closest('[style*=fixed]').remove()"
-              style="position:absolute;top:14px;right:16px;background:none;border:none;font-size:22px;cursor:pointer;color:#aaa;line-height:1;">✕</button>
+              style="position:absolute;top:14px;right:16px;background:none;border:none;font-size:22px;cursor:pointer;color:#aaa;line-height:1;"><i data-lucide="x" style="width:14px;height:14px;"></i></button>
       <div style="font-size:11px;color:#999;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Message de</div>
       <h3 style="margin:0 0 4px;font-size:18px;color:#1a2a1a;">${_esc(r.company_name || '—')}</h3>
       <a href="mailto:${_esc(r.email)}" style="color:#1a5233;font-size:13px;text-decoration:none;">${_esc(r.email)}</a>
@@ -958,6 +942,36 @@ function renderAdminJobs(jobs) {
 }
 
 // Charger une offre existante dans le formulaire pour la modifier
+
+// Fonctions pour ouvrir et fermer le tiroir (drawer) des offres d'emploi
+function openJobDrawer() {
+  resetJobForm();
+  const overlay = document.getElementById('jobDrawerOverlay');
+  const drawer = document.getElementById('jobDrawer');
+  if (overlay && drawer) {
+    overlay.style.display = 'block';
+    setTimeout(() => {
+      overlay.style.opacity = '1';
+      drawer.style.right = '0';
+    }, 50);
+  }
+}
+
+function closeJobDrawer() {
+  const overlay = document.getElementById('jobDrawerOverlay');
+  const drawer = document.getElementById('jobDrawer');
+  if (overlay && drawer) {
+    overlay.style.opacity = '0';
+    drawer.style.right = '-600px';
+    setTimeout(() => {
+      overlay.style.display = 'none';
+    }, 250);
+  }
+}
+
+window.openJobDrawer = openJobDrawer;
+window.closeJobDrawer = closeJobDrawer;
+
 function editJob(index) {
   const j = adminJobsDemo[index];
   const form = document.getElementById('jobForm');
@@ -1140,8 +1154,8 @@ function renderPartnersGrid() {
     <div class="partner-slot ${imgSrc ? 'filled' : ''}" id="pslot-${i}">
       <input type="file" accept="image/*" onchange="handlePartnerImg(this, ${i})">
       ${imgSrc
-        ? `<img src="${imgSrc}" alt="${_esc(p.name)}" onerror="this.style.display='none'"><button class="partner-remove" onclick="removePartnerImg(event,${i})">✕</button>`
-        : `<div class="partner-slot-placeholder"><svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>${_esc(p.name)}</span></div>`
+        ? `<img src="${imgSrc}" alt="${_esc(p.name)}" onerror="this.style.display='none'"><button class="partner-remove" onclick="removePartnerImg(event,${i})"><i data-lucide="x" style="width:14px;height:14px;"></i></button>`
+        : `<div class="partner-slot-placeholder"><i data-lucide="image" style="width:24px;height:24px;color:#a8a2d1;margin-bottom:8px;"></i><span>${_esc(p.name)}</span></div>`
       }
     </div>`;
   }).join('');
@@ -1354,9 +1368,9 @@ function updatePubImgPreview(src) {
   const wrap = document.getElementById('pubImgPreviewWrap');
   if (!wrap) return;
   if (src) {
-    wrap.innerHTML = '<div style="position:relative;display:inline-block;"><img src="' + src + '" style="max-height:120px;border-radius:4px;border:1px solid var(--border);" alt="Aperçu"><button type="button" onclick="currentPubImg=null;updatePubImgPreview(null)" style="position:absolute;top:-8px;right:-8px;width:22px;height:22px;background:#b34040;border:none;border-radius:50%;cursor:pointer;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;">✕</button></div>';
+    wrap.innerHTML = '<div style="position:relative;display:inline-block;"><img src="' + src + '" style="max-height:120px;border-radius:4px;border:1px solid var(--border);" alt="Aperçu"><button type="button" onclick="currentPubImg=null;updatePubImgPreview(null)" style="position:absolute;top:-8px;right:-8px;width:22px;height:22px;background:#b34040;border:none;border-radius:50%;cursor:pointer;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;"><i data-lucide="x" style="width:14px;height:14px;"></i></button></div>';
   } else {
-    wrap.innerHTML = '<div class="img-upload-icon"><svg viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div><div class="img-upload-label"><strong>Cliquez pour ajouter</strong> une image de couverture</div><div style="font-size:12px;color:var(--muted);margin-top:4px;">JPG, PNG — recommandé 1200×630 px</div>';
+    wrap.innerHTML = '<div class="img-upload-icon"><i data-lucide="image" style="width:24px;height:24px;color:#a8a2d1;margin-bottom:8px;"></i></div><div class="img-upload-label"><strong>Cliquez pour ajouter</strong> une image de couverture</div><div style="font-size:12px;color:var(--muted);margin-top:4px;">JPG, PNG — recommandé 1200×630 px</div>';
   }
 }
 
@@ -1431,7 +1445,7 @@ async function resetPassword(id, email) {
     });
     const data = await res.json();
     if (res.ok) {
-      alert(`✅ Mot de passe réinitialisé pour ${data.email}\n\nNouveau mot de passe :\n${data.tempPassword}\n\nCommuniquez-le à l'utilisateur.`);
+      alert(`<i data-lucide="check-circle" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Mot de passe réinitialisé pour ${data.email}\n\nNouveau mot de passe :\n${data.tempPassword}\n\nCommuniquez-le à l'utilisateur.`);
     } else {
       alert('Erreur : ' + (data.error || 'Impossible de réinitialiser'));
     }
@@ -1499,12 +1513,12 @@ function _esc(s) {
 ══════════════════════════════════════════════════════════════ */
 
 /* ── Données ATS (embarquées) ── */
-const ATS_RAW = {"clients":[{"id":1,"entreprise":"Deloitte","secteur":"Conseil","contact":"Sidy DIOP","fonction":"Associé Sénégal, Maroc","email":"sidiop@deloitte.fr","tel":"06 88 52 45 81","source":"Prospection AMID","stade":"Client actif","besoin":"Analystes économiques surtout au Maroc","prochaine_action":"Dejeuner pour discuter des besoins de recrutement","date_relance":"","linkedin":"","commentaires":"Brillantes écoles"},{"id":2,"entreprise":"Orabank","secteur":"Banque","contact":"Serge Tohouenou","fonction":"","email":"serge.tohouenou@orabank.net","tel":"","source":"","stade":"Client actif","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":3,"entreprise":"Mstudio","secteur":"Service aux entreprises","contact":"Longa Andrea MBUYAMBA","fonction":"Directrice des Programmes","email":"andrea@mstudio.vc","tel":"2250768593572","source":"AMID","stade":"Négociation","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":4,"entreprise":"Lodge me at","secteur":"Service / stages Afrique du Sud","contact":"Myriam NEBIE","fonction":"Fondatrice","email":"myriam.nebie@lodge-me-at.com","tel":"","source":"AMID","stade":"Négociation","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":5,"entreprise":"Attijariwafa","secteur":"Banque","contact":"Babacar GUEYE","fonction":"Directeur exécutif capital humain","email":"Bgueye@cbao.sn","tel":"221775294581","source":"AfricTalents","stade":"Relance","besoin":"Jeunes diplômés grandes écoles","prochaine_action":"","date_relance":"Relance Whatsapp : 17/11/25 // Relance Mail 16/12/2025","linkedin":"","commentaires":"Programme Nortel"},{"id":6,"entreprise":"Cofina","secteur":"Banque","contact":"Johanna MOBIO","fonction":"DRH Groupe","email":"johanna.mobio@cofinacorp.com","tel":"225 27 22 51 51 80","source":"Prospection AMID","stade":"Premier contact","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":7,"entreprise":"Omeavie","secteur":"Assurances","contact":"Judicael Guendehou","fonction":"Fondateur","email":"","tel":"07 64 63 19 78","source":"","stade":"Premier contact","besoin":"Marketing","prochaine_action":"","date_relance":"","linkedin":"","commentaires":"Pas de recrutement pour le moment"},{"id":8,"entreprise":"Fonsis","secteur":"Fond d'investissement","contact":"Ousmane NDIAYE","fonction":"Chef division capital humain","email":"Ondiaye@fonsis.org","tel":"221783719931","source":"AfricaTalents","stade":"Premier contact","besoin":"2 directeurs d'investissement, 3 juristes d'affaires, DAF","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":9,"entreprise":"Julaya","secteur":"Tech","contact":"Mathias LEOPOLDIE","fonction":"CEO","email":"mleopoldie@julaya.co","tel":"","source":"Prospection AMID","stade":"Premier contact","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":10,"entreprise":"Afrijjet","secteur":"Transports / Logistique","contact":"Fadimatou NOUTCHEMO","fonction":"Country Manager Cameroun et Nigeria","email":"","tel":"237670897408","source":"Prospection AMID","stade":"Premier contact","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":"Pas de recrutement pour le moment"},{"id":11,"entreprise":"Castel","secteur":"Agroalimentaire","contact":"Marion Navarre","fonction":"DRH Groupe","email":"","tel":"","source":"","stade":"Premier contact","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":12,"entreprise":"Danone Ghana","secteur":"Agroalimentaire","contact":"Lionel Parent","fonction":"DG, Directeur commercial","email":"","tel":"06 67 27 77 80","source":"","stade":"Premier contact","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":13,"entreprise":"Enexus","secteur":"","contact":"","fonction":"","email":"jean-laurent.pyndiah@enexus-finance.com","tel":"","source":"","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":14,"entreprise":"ASCOMA","secteur":"","contact":"Christine BAUDRAN-LAURE","fonction":"DRH","email":"Christine.Baudran-Laure@ascoma.com","tel":"01 47 42 62 05","source":"","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":15,"entreprise":"Deloitte","secteur":"","contact":"Marc Vincens WABI","fonction":"","email":"mawabi@deloitte.com","tel":"","source":"","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":16,"entreprise":"Gozem","secteur":"Transports / Logistique","contact":"Marjorie CHEYNEL","fonction":"Talents Acquisition Manager","email":"marjorie@gozem.co","tel":"+22892274882","source":"","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":17,"entreprise":"Deloitte CIV","secteur":"","contact":"N'Zi Kone, Ericka","fonction":"RH CIV","email":"enzikone@deloitte.fr","tel":"","source":"","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":18,"entreprise":"Banque Africaine de Développement","secteur":"","contact":"David Lubega","fonction":"Outreach and Selection Officer","email":"D.LUBEGA@afdb.org","tel":"","source":"","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":19,"entreprise":"Group Vivendi Africa","secteur":"","contact":"Jessica Hentzen","fonction":"","email":"jessica.hentzen@gva.africa","tel":"","source":"","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":20,"entreprise":"Fed Africa","secteur":"","contact":"Jean Dantani","fonction":"RH Consultant","email":"jeandantani@fedafrica.com","tel":"","source":"","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":21,"entreprise":"ACCENTURE France","secteur":"Conseil","contact":"Sophie GUINAUD","fonction":"Client Account HR Lead","email":"sophie.guinaud@accenture.com","tel":"","source":"","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":22,"entreprise":"Bank of Africa Sénégal","secteur":"Banque","contact":"Aymard Matongo","fonction":"Senior HR Manager","email":"amatongo@boasenegal.com","tel":"","source":"","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":23,"entreprise":"Orange","secteur":"Telecoms","contact":"Datté Kouassi","fonction":"DRH","email":"datte.kouassi@orange.com","tel":"","source":"","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":24,"entreprise":"Total Energies","secteur":"Energies","contact":"André Manahen KOFFI","fonction":"DRH","email":"andre.koffi@totalenergies.com","tel":"","source":"Michael","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":25,"entreprise":"NSIA banque","secteur":"Banque","contact":"Marie-Thérèse BOUA N'GUESSAN","fonction":"DRH","email":"nsiabanque.ci@nsiabanque.com","tel":"","source":"Michael","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":26,"entreprise":"CIE","secteur":"Energies","contact":"Jessica Carole Gnizako","fonction":"Juriste et Cadre de projet RH","email":"directiongeneralecie@cie.ci","tel":"27 21 23 33 00","source":"Michael","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":"Treichville"},{"id":27,"entreprise":"SODECI","secteur":"Eau","contact":"Kadidia KONATE","fonction":"DRH","email":"sodeci@sodeci.ci","tel":"+225 21233000","source":"Michael","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":28,"entreprise":"COOPEC","secteur":"MicroFinance","contact":"Armelle BAH","fonction":"DRH","email":"info@unacoopec.ci","tel":"27 22 40 49 99","source":"Michael","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":29,"entreprise":"Witti Finance","secteur":"MicroFinance","contact":"Brice NIANGORAN","fonction":"DRH","email":"info@wittifinances.com","tel":"+225 27 27 27 27 27","source":"Michael","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":30,"entreprise":"COFINA","secteur":"MicroFinance","contact":"Jean brice Affian","fonction":"Directeur du capital humain","email":"recrutement@cofinacofinacorp.com","tel":"+225 27 27 22 51 51 80","source":"Michael","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":31,"entreprise":"ALIOS Finance","secteur":"Finance","contact":"Olive Simo","fonction":"HR Manager central africa","email":"olive.simo@alios-finance.com","tel":"","source":"","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":32,"entreprise":"Crédit Agricole","secteur":"Banque","contact":"Berenika Balamou","fonction":"HR Project Manager","email":"berenika.balamou@credit-agricole-sa.fr","tel":"","source":"","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":33,"entreprise":"Colas","secteur":"BTP","contact":"Franck SINGERLÉ","fonction":"DRH","email":"franck.singerle@colas.com","tel":"","source":"","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""},{"id":34,"entreprise":"Allianz","secteur":"Assurances","contact":"Marelsa Ligeon","fonction":"TA associée","email":"marelsa.ligeon@allianz.fr","tel":"","source":"","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","linkedin":"","commentaires":""}],"partenariats":[{"id":1,"organisme":"Afroscep (ESCP)","activite":"Grande école","contact":"Nizar KABLANI","fonction":"Président","email":"nizar.kablani@edu.escp.eu","tel":"","source":"ABC","stade":"Client actif","besoin":"","prochaine_action":"","date_relance":"","commentaires":""},{"id":2,"organisme":"X-Afrique Polytech","activite":"Association étudiante","contact":"Fritz Morel EPOH NZOKI","fonction":"Président","email":"","tel":"","source":"","stade":"Négociation","besoin":"","prochaine_action":"","date_relance":"","commentaires":""},{"id":3,"organisme":"ASPA","activite":"Association étudiante","contact":"Hapsatou BAL","fonction":"","email":"","tel":"","source":"","stade":"Relance","besoin":"","prochaine_action":"","date_relance":"","commentaires":""},{"id":4,"organisme":"Skema AFRICA","activite":"Grande école","contact":"Jessica FREITAS","fonction":"Présidente","email":"","tel":"","source":"","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","commentaires":""},{"id":5,"organisme":"HEC Africa","activite":"Grande école","contact":"Alexis JOHN AHYEE","fonction":"Directeur Général HEC Paris Bureau régional Afrique","email":"","tel":"","source":"ABC","stade":"Client actif","besoin":"","prochaine_action":"","date_relance":"","commentaires":""},{"id":6,"organisme":"Club Afrique emlyon alumni","activite":"Alumni","contact":"Mélissa OUIDIR","fonction":"","email":"","tel":"","source":"","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","commentaires":""},{"id":7,"organisme":"EDHEC for African Business","activite":"Grande école","contact":"Yann-Adrien YACE","fonction":"Président","email":"","tel":"","source":"ABC","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","commentaires":""},{"id":8,"organisme":"ESSEC Africa Society","activite":"Grande école","contact":"Reda LAKEHAL","fonction":"Président","email":"","tel":"","source":"ABC","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","commentaires":""},{"id":9,"organisme":"Repat Africa","activite":"Réseau diaspora","contact":"Kara DIABY","fonction":"Founder - CEO","email":"","tel":"","source":"ABC","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","commentaires":""},{"id":10,"organisme":"Club Efficience","activite":"Réseau pro","contact":"Elie NKAMGUEU","fonction":"President","email":"","tel":"","source":"ABC","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","commentaires":""},{"id":11,"organisme":"Meet Africa","activite":"Réseau diaspora","contact":"Habiba ADDI","fonction":"Coordinatrice","email":"","tel":"","source":"ABC","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","commentaires":""},{"id":12,"organisme":"Nyota (CVthèque)","activite":"Tech RH","contact":"Sérine IDRISSI","fonction":"Co-founder","email":"","tel":"","source":"ABC","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","commentaires":""},{"id":13,"organisme":"Africa Finance Bootcamp","activite":"Formation","contact":"Julio Dibwe MUPEMBA","fonction":"Co-founder","email":"","tel":"","source":"ABC","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","commentaires":""},{"id":14,"organisme":"AMDIE","activite":"Institution","contact":"Ali Seddiki","fonction":"Directeur Général","email":"","tel":"","source":"ABC","stade":"A contacter","besoin":"","prochaine_action":"","date_relance":"","commentaires":""}]};
+const ATS_RAW = { clients: [], partenariats: [] };
 
 const ATS = (() => {
   /* ── State ── */
   const STADE_ORDER = {'Partenaire actif':1,'B2C actif':2,'Client actif':3,'Négociation':4,'Relance':5,'Premier contact':6,'A contacter':7,'Mission terminée':8,"Repositionner l'offre":9,'Fermée':10,'Stand by':11,'':12};
-  const STORAGE_KEY = 'talentyah_crm_data_v1';
+  const STORAGE_KEY = 'talentyah_crm_data_v2';
 
   /* Charge les données sauvegardées localement si elles existent, sinon les données par défaut */
   function loadInitialData() {
@@ -1547,7 +1561,7 @@ const ATS = (() => {
   function toast(msg) {
     let cont = document.getElementById('ats-toasts');
     if (!cont) { cont = document.createElement('div'); cont.id='ats-toasts'; cont.className='ats-toast-container'; document.body.appendChild(cont); }
-    const t = document.createElement('div'); t.className='ats-toast'; t.textContent=msg;
+    const t = document.createElement('div'); t.className='ats-toast'; t.innerHTML=msg; setTimeout(()=>{if(typeof lucide!=="undefined")lucide.createIcons();},10);
     cont.appendChild(t); setTimeout(() => t.remove(), 2800);
   }
 
@@ -1574,7 +1588,7 @@ const ATS = (() => {
   /* ── Export CSV (liste clients filtrée/triée à l'écran) ── */
   function exportClientsCSV() {
     const rows = sorted(getFiltered());
-    if (!rows.length) { toast('⚠️ Rien à exporter'); return; }
+    if (!rows.length) { toast('<i data-lucide="alert-triangle" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Rien à exporter'); return; }
     const headers = ['Entreprise','Secteur','Contact','Fonction','Email','Téléphone','Source','Stade','Besoin','Prochaine action','Date de relance','Commentaires'];
     const keys = ['entreprise','secteur','contact','fonction','email','tel','source','stade','besoin','prochaine_action','date_relance','commentaires'];
     const csvEscape = (v) => `"${String(v ?? '').replace(/"/g, '""')}"`;
@@ -1588,7 +1602,7 @@ const ATS = (() => {
     a.download = `talentyah-crm-clients-${new Date().toISOString().slice(0,10)}.csv`;
     document.body.appendChild(a); a.click(); a.remove();
     URL.revokeObjectURL(url);
-    toast(`✅ ${rows.length} contact${rows.length>1?'s':''} exporté${rows.length>1?'s':''}`);
+    toast(`<i data-lucide="check-circle" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> ${rows.length} contact${rows.length>1?'s':''} exporté${rows.length>1?'s':''}`);
   }
 
   /* ── Init dashboard KPIs ── */
@@ -1638,7 +1652,7 @@ const ATS = (() => {
     if(rc) rc.textContent=`${s.length} résultat${s.length>1?'s':''}`;
     const tbody = document.getElementById('ats-clients-tbody');
     if(!tbody) return;
-    if(!s.length) { tbody.innerHTML=`<tr><td colspan="8"><div class="ats-empty"><div class="ats-empty-icon">🔍</div><p>Aucun résultat trouvé</p></div></td></tr>`; return; }
+    if(!s.length) { tbody.innerHTML=`<tr><td colspan="8"><div class="ats-empty"><div class="ats-empty-icon" style="margin-bottom:10px;"></div><p>Aucun résultat trouvé</p></div></td></tr>`; return; }
     tbody.innerHTML = s.map(r=>`
       <tr onclick="ATS.openModal(${r._idx})">
         <td><div class="ats-company-name">${r.entreprise}</div><div class="ats-contact-name">${r.contact||''}</div></td>
@@ -1711,7 +1725,7 @@ const ATS = (() => {
     db.forEach((row,i)=>row._idx=i);
     persist();
     renderPipeline(); renderClients(); renderRelances(); initDashboard();
-    toast(`✅ ${r.entreprise} déplacé vers "${newStade}"`);
+    toast(`<i data-lucide="check-circle" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> ${r.entreprise} déplacé vers "${newStade}"`);
     dragIdx = null;
   }
 
@@ -1742,7 +1756,7 @@ const ATS = (() => {
     const list = document.getElementById('ats-relances-list');
     if(!list) return;
     const relances = db.filter(r=>['Relance','Négociation','Premier contact'].includes(r.stade));
-    if(!relances.length) { list.innerHTML=`<div class="ats-empty"><div class="ats-empty-icon">✅</div><p>Aucune relance en attente</p></div>`; return; }
+    if(!relances.length) { list.innerHTML=`<div class="ats-empty"><div class="ats-empty-icon" style="margin-bottom:10px;"></div><p>Aucune relance en attente</p></div>`; return; }
     list.innerHTML = relances.map(r=>`
       <div class="ats-activity-item" onclick="ATS.openModal(${r._idx})">
         <div class="ats-activity-dot" style="background:${stadeColor(r.stade)}"></div>
@@ -1779,7 +1793,7 @@ const ATS = (() => {
     persist();
     renderHistory(obj);
     input.value = '';
-    toast('✅ Note ajoutée à l\'historique');
+    toast('<i data-lucide="check-circle" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Note ajoutée à l\'historique');
   }
 
   /* ── Modal client ── */
@@ -1834,13 +1848,13 @@ const ATS = (() => {
     renderClients(); renderPipeline(); renderRelances(); initDashboard();
     document.getElementById('ats-modal-overlay').classList.remove('open');
     currentModalIdx=null;
-    toast('✅ Fiche mise à jour');
+    toast('<i data-lucide="check-circle" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Fiche mise à jour');
   }
 
   /* ── Ajouter ── */
   function addEntry() {
     const ent=document.getElementById('ats-add-entreprise').value.trim();
-    if(!ent){toast('⚠️ Entreprise obligatoire');return;}
+    if(!ent){toast('<i data-lucide="alert-triangle" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Entreprise obligatoire');return;}
     const rec={id:db.length+1,entreprise:ent,secteur:document.getElementById('ats-add-secteur').value.trim(),contact:document.getElementById('ats-add-contact').value.trim(),fonction:document.getElementById('ats-add-fonction').value.trim(),email:document.getElementById('ats-add-email').value.trim(),tel:document.getElementById('ats-add-tel').value.trim(),source:document.getElementById('ats-add-source').value.trim(),stade:document.getElementById('ats-add-stade').value,besoin:document.getElementById('ats-add-besoin').value.trim(),prochaine_action:'',commentaires:document.getElementById('ats-add-commentaires').value.trim(),linkedin:''};
     db.push(rec);
     db.sort((a,b)=>(STADE_ORDER[a.stade]||10)-(STADE_ORDER[b.stade]||10));
@@ -1849,7 +1863,7 @@ const ATS = (() => {
     initDashboard(); renderClients(); renderPipeline(); renderRelances();
     ['ats-add-entreprise','ats-add-secteur','ats-add-contact','ats-add-fonction','ats-add-email','ats-add-tel','ats-add-source','ats-add-besoin','ats-add-commentaires'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
     document.getElementById('ats-add-stade').value='A contacter';
-    toast(`✅ "${ent}" ajouté à la base`);
+    toast(`<i data-lucide="check-circle" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> "${ent}" ajouté à la base`);
     showAtsPage('ats-page-clients', document.querySelector('.crm-tab[data-ats="ats-page-clients"]'));
   }
 
@@ -1890,3 +1904,5 @@ function loadCRM() {
   // Petit délai pour s'assurer que le DOM est rendu
   setTimeout(() => ATS.init(), 50);
 }
+window.editJob = editJob;
+window.deleteJob = deleteJob;

@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="css/apropos.css">
   <link rel="stylesheet" href="css/carousel.css">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 </head>
 
 <body>
@@ -32,11 +33,7 @@
         <a href="apropos.html" class="active">À propos</a>
         <a href="ressources.html">Ressources</a>
         <a href="admin.html" class="admin-link">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="none"
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="8" r="4" />
-            <path d="M4 20c0-4 4-6 8-6s8 2 8 6" />
-          </svg>
+          <i data-lucide="user" style="width: 18px; height: 18px;"></i>
         </a>
       </nav>
     </div>
@@ -65,8 +62,8 @@
               Talentyah est né d'une conviction forte : le développement du continent africain passera par ses talents, qu'ils soient locaux ou issus de la diaspora. Basé en France et intervenant à l'international.
             </p>
             <div class="carousel-slide-ctas">
-              <a href="entreprises.html" class="btn-gold">Confier un recrutement &#8594;</a>
-              <a href="talents.html" class="btn-ghost">Être accompagné(e) &#8594;</a>
+              <a href="entreprises.html" class="btn-gold">Confier un recrutement <i data-lucide="arrow-right" style="width:18px;height:18px;vertical-align:middle;margin-left:6px;"></i></a>
+              <a href="talents.html" class="btn-ghost">Être accompagné(e) <i data-lucide="arrow-right" style="width:18px;height:18px;vertical-align:middle;margin-left:6px;"></i></a>
             </div>
           </div>
         </div>
@@ -90,8 +87,8 @@
               Nous facilitons la mise en relation entre les entreprises africaines et les talents africains, issus de la diaspora ou en mobilité intra-africaine, grâce à des solutions sur mesure, éthiques et performantes.
             </p>
             <div class="carousel-slide-ctas">
-              <a href="#fondatrice" class="btn-gold">La fondatrice &#8594;</a>
-              <a href="#mission" class="btn-ghost">Notre mission &#8594;</a>
+              <a href="#fondatrice" class="btn-gold">La fondatrice <i data-lucide="arrow-right" style="width:18px;height:18px;vertical-align:middle;margin-left:6px;"></i></a>
+              <a href="#mission" class="btn-ghost">Notre mission <i data-lucide="arrow-right" style="width:18px;height:18px;vertical-align:middle;margin-left:6px;"></i></a>
             </div>
           </div>
         </div>
@@ -100,10 +97,10 @@
     </div>
  
     <button class="carousel-arrow carousel-arrow-prev" aria-label="Précédent">
-      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      <i data-lucide="chevron-left"></i>
     </button>
     <button class="carousel-arrow carousel-arrow-next" aria-label="Suivant">
-      <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      <i data-lucide="chevron-right"></i>
     </button>
  
     <div class="carousel-dots">
@@ -272,8 +269,8 @@
         recrutements et accélérer votre carrière.
       </p>
       <div class="apropos-cta-actions">
-        <a href="entreprises.html" class="btn-white">Je recrute &#8594;</a>
-        <a href="talents.html" class="btn-white-outline">Je cherche une opportunité &#8594;</a>
+        <a href="entreprises.html" class="btn-white">Je recrute <i data-lucide="arrow-right" style="width:18px;height:18px;vertical-align:middle;margin-left:6px;"></i></a>
+        <a href="talents.html" class="btn-white-outline">Je cherche une opportunité <i data-lucide="arrow-right" style="width:18px;height:18px;vertical-align:middle;margin-left:6px;"></i></a>
       </div>
     </div>
   </section>
@@ -315,9 +312,15 @@
   </footer>
 
 
+  <script src="https://unpkg.com/lucide@latest"></script>
   <script src="js/carousel.js"></script>
   <script src="js/carousel-dynamic.js"></script>
   <script src="js/script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    });
+  </script>
 </body>
 
 </html>

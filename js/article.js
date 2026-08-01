@@ -2,7 +2,7 @@
    TALENTYAH — article.js
 ===================================================== */
 
-const API_BASE = 'https://talentyah-website.onrender.com';
+const API_BASE = window.API_BASE;
 
 function _esc(str) {
   return String(str || '')
@@ -92,8 +92,8 @@ const imgHtml = imageUrl
           ${shareButtons}
         </div>
         
-        <!-- Injection DIRECTE du code HTML généré par Quill -->
-        <div class="article-body-text">${article.content || "Le contenu de cet article est vide."}</div>
+        <!-- Rendu sécurisé via le parseur DOMPurify / HTML -->
+        <div class="article-body-text">${typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(article.content || "Le contenu de cet article est vide.") : (article.content || "Le contenu de cet article est vide.")}</div>
       </div>
     `;
 

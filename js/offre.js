@@ -3,7 +3,7 @@
    Affichage dynamique d'une offre + postulation
 ===================================================== */
 
-const API_OFFRE = 'https://talentyah-website.onrender.com';
+const API_OFFRE = window.API_BASE;
 
 document.addEventListener('DOMContentLoaded', async () => {
 
@@ -17,10 +17,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (res.ok) job = await res.json();
   } catch { /* silencieux */ }
 
-  // Fallback fichier statique
-  if (!job && typeof JOBS_DATA !== 'undefined') {
-    job = JOBS_DATA.find(j => j.id === jobId) || null;
-  }
+  // Supprimé le fallback fichier statique
 
   if (job) {
     renderJobDetails(job);
@@ -35,7 +32,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (fileInput && fileLabel) {
     fileInput.addEventListener('change', () => {
       const file = fileInput.files[0];
-      fileLabel.textContent = file ? `✓ ${file.name}` : 'Cliquez pour ajouter votre CV';
+      fileLabel.textContent = file ? file.name : 'Cliquez pour ajouter votre CV';
       if (file) fileLabel.parentElement.classList.add('has-file');
       else      fileLabel.parentElement.classList.remove('has-file');
     });
@@ -53,8 +50,14 @@ document.addEventListener('DOMContentLoaded', async () => {
       btn.disabled    = true;
 
       try {
+        if (!fileInput || !fileInput.files || !fileInput.files[0]) {
+          btn.disabled = false; btn.textContent = 'Postuler →';
+          alert('Veuillez ajouter votre CV avant de postuler.');
+          return;
+        }
+
         // Vérifier la taille du CV (max 4 Mo pour Render)
-        if (fileInput && fileInput.files[0] && fileInput.files[0].size > 4 * 1024 * 1024) {
+        if (fileInput.files[0].size > 4 * 1024 * 1024) {
           btn.disabled = false; btn.textContent = 'Postuler →';
           alert('Votre CV est trop lourd (' + (fileInput.files[0].size / 1024 / 1024).toFixed(1) + ' Mo).\nTaille maximum : 4 Mo.\nCompressez votre PDF avant de l\'envoyer.');
           return;
@@ -72,6 +75,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
 
         if (res.ok) {
+          form.reset();
+          if (fileLabel) {
+            fileLabel.textContent = 'Cliquez pour ajouter votre CV';
+            fileLabel.parentElement.classList.remove('has-file');
+          }
           form.style.opacity      = '0.3';
           form.style.pointerEvents = 'none';
           if (successBox) successBox.style.display = 'block';
@@ -107,17 +115,19 @@ function renderJobDetails(job) {
   // IDs optionnels si présents dans le HTML
   const showBadge = (id, val) => {
     const el = document.getElementById(id);
-    if (el && val) { el.textContent = val; el.style.display = 'inline-block'; }
+    if (el && val) { 
+      el.innerHTML = val; 
+      el.style.display = 'inline-block'; 
+      setTimeout(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); }, 10);
+    }
   };
-  showBadge('jobLocation', '📍 ' + location);
+  showBadge('jobLocation', '<i data-lucide="map-pin" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i>' + location);
   showBadge('jobContract', job.contract_type);
   showBadge('jobSalary',   job.salary);
 
-  // Description
   const descEl = document.getElementById('offreDescription');
   if (descEl) {
-    // Préserver les sauts de ligne
-    descEl.innerHTML = (job.description || '').split('\n').join('<br>');
+    descEl.innerHTML = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(job.description || '') : (job.description || '');
   }
 
   const hiddenId = document.getElementById('hiddenJobId');
@@ -133,14 +143,7 @@ function renderJobDetails(job) {
   // Profil recherché
   const profilList = document.getElementById('profilList');
   if (profilList && job.requirements) {
-    const reqs = Array.isArray(job.requirements)
-      ? job.requirements
-      : job.requirements.split('\n').filter(Boolean);
-    profilList.innerHTML = reqs.map(r => `
-      <li style="display:flex;align-items:flex-start;gap:10px;font-size:14px;color:var(--dark);line-height:1.6;">
-        <span style="color:var(--emerald);font-size:16px;flex-shrink:0;margin-top:1px;">✓</span>
-        <span>${r}</span>
-      </li>`).join('');
+    profilList.innerHTML = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(job.requirements || '') : (job.requirements || '');
   }
 
   // Tags

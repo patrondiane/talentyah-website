@@ -4,8 +4,16 @@ const db     = require('../db');
 const { auth } = require('../middleware/auth');
 const { notifyNewCompany } = require('../mailer');
 
+const rateLimiter = require('../middleware/rateLimiter');
+
+const companyLimiter = rateLimiter({
+  windowMs: 60 * 60 * 1000, // 1 heure
+  maxRequests: 10,
+  message: 'Trop de demandes envoyées depuis cette IP. Veuillez réessayer dans une heure.'
+});
+
 // POST /api/companies — public
-router.post('/', async (req, res) => {
+router.post('/', companyLimiter, async (req, res) => {
   const { company_name, email, phone, region, role_needed, urgency, message } = req.body;
   if (!company_name || !email) return res.status(400).json({ error: 'Nom de société et email requis' });
 

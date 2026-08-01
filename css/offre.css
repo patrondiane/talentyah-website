@@ -62,8 +62,8 @@
 /* ── Layout ── */
 .offre-grid {
     display: grid;
-    grid-template-columns: 1.6fr 1fr;
-    gap: 80px;
+    grid-template-columns: 2fr 1fr;
+    gap: 50px;
     align-items: start;
 }
 
@@ -92,7 +92,7 @@
 /* ── Formulaire (Droite) ── */
 .offre-sidebar .form-box {
     background: var(--white);
-    padding: 50px;
+    padding: 40px;
     border-radius: 2px;
     color: var(--forest-dark);
     box-shadow: 0 30px 60px rgba(0,0,0,0.4);
@@ -163,6 +163,38 @@
 /* ── Responsive ── */
 @media (max-width: 1100px) {
     .offre-grid { grid-template-columns: 1fr; gap: 40px; }
-    .job-content { padding: 30px; }
-    .offre-sidebar .form-box { position: static; padding: 30px; }
+    .job-content { padding: 20px; }
+    .offre-sidebar .form-box { position: static; padding: 20px; }
+}
+
+/* ── Rich Text Styling ── */
+.rich-text-content ul {
+    list-style: none;
+    padding: 0;
+    margin: 15px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.rich-text-content ul li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 15px;
+    color: var(--dark);
+    line-height: 1.6;
+}
+
+.rich-text-content ul li::before {
+    content: '✓';
+    color: var(--emerald);
+    font-size: 16px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    font-weight: bold;
+}
+
+.rich-text-content p {
+    margin-bottom: 15px;
 }

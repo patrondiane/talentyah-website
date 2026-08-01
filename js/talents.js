@@ -27,6 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
       return `<span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px;background:${bg};color:${col};">${sector}</span>`;
     }
 
+function stripHtml(html) { return (html || '').replace(/<[^>]*>?/gm, '').trim(); }
+
 function cardHTML(job) {
       return `
         <article class="job-card" onclick="window.location='offre.html?id=${job.id}'">
@@ -34,10 +36,10 @@ function cardHTML(job) {
             <div class="job-top">
               ${_sectorBadge(job.sector)}
               <span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px;background:rgba(83,74,183,0.10);color:#3C3489;">${job.contract_type || ''}</span>
-              <span class="job-location">📍 ${[job.city, job.country].filter(Boolean).join(', ')}</span>
+              <span class="job-location" style="display:inline-flex;align-items:center;gap:4px;"><i data-lucide="map-pin" style="width:13px;height:13px;"></i> ${[job.city, job.country].filter(Boolean).join(', ')}</span>
             </div>
             <h3 class="job-title">${job.title}</h3>
-            ${job.description ? `<p class="job-desc">${job.description.substring(0, 110)}…</p>` : ''}
+            ${job.description ? `<p class="job-desc">${stripHtml(job.description).substring(0, 110)}…</p>` : ''}
           </div>
           <div class="job-footer">
             ${job.salary ? `<span class="job-salary">${job.salary}</span>` : ''}
@@ -47,7 +49,7 @@ function cardHTML(job) {
     }
 
     try {
-      const res  = await fetch('https://talentyah-website.onrender.com/api/jobs');
+      const res  = await fetch(window.API_BASE + '/api/jobs');
       const data = await res.json();
       const jobs = (data.jobs || []).slice(0, 4);
 
@@ -62,19 +64,16 @@ function cardHTML(job) {
         return;
       }
       container.innerHTML = jobs.map(cardHTML).join('');
+      if (typeof lucide !== 'undefined') lucide.createIcons();
 
     } catch {
-      if (typeof JOBS_DATA !== 'undefined' && JOBS_DATA.length) {
-        container.innerHTML = JOBS_DATA.slice(0, 4).map(cardHTML).join('');
-      } else {
-        container.innerHTML = `
-          <div style="text-align:center;padding:48px 20px;background:var(--white);border:1px solid var(--border);border-radius:10px;">
-            <p style="font-size:15px;color:var(--muted);margin-bottom:20px;">Aucune offre disponible en ce moment.</p>
-            <a href="talents.html#candidature" style="display:inline-block;background:var(--emerald);color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-size:14px;font-weight:600;">
-              Déposer une candidature spontanée →
-            </a>
-          </div>`;
-      }
+      container.innerHTML = `
+        <div style="text-align:center;padding:48px 20px;background:var(--white);border:1px solid var(--border);border-radius:10px;">
+          <p style="font-size:15px;color:var(--muted);margin-bottom:20px;">Aucune offre disponible en ce moment.</p>
+          <a href="talents.html#candidature" style="display:inline-block;background:var(--emerald);color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-size:14px;font-weight:600;">
+            Déposer une candidature spontanée →
+          </a>
+        </div>`;
     }
   })();
 
@@ -89,7 +88,7 @@ function cardHTML(job) {
     fileInput.addEventListener('change', () => {
       const file = fileInput.files[0];
       if (file) {
-        fileLabel.textContent = `✓ ${file.name}`;
+        fileLabel.textContent = file ? file.name : 'Cliquez pour ajouter votre CV';
         if (fileLabelEl) fileLabelEl.classList.add('has-file');
       } else {
         fileLabel.textContent = 'Cliquez pour ajouter votre CV';

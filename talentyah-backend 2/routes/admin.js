@@ -7,8 +7,16 @@ const { auth, requireRole } = require('../middleware/auth');
 
 const SECRET = process.env.JWT_SECRET || 'talentyah_secret_2026';
 
+const rateLimiter = require('../middleware/rateLimiter');
+
+const loginLimiter = rateLimiter({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  maxRequests: 10,
+  message: 'Trop de tentatives de connexion échouées. Veuillez réessayer dans 15 minutes.'
+});
+
 /* ── POST /api/admin/login ── */
-router.post('/login', async (req, res) => {
+router.post('/login', loginLimiter, async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) return res.status(400).json({ error: 'Champs manquants' });
 
