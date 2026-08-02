@@ -905,15 +905,16 @@ function changeCandidatesPage(page) {
 window.changeCandidatesPage = changeCandidatesPage;
 
 async function deleteCandidate(id, btn) {
-  if (!confirm('Supprimer définitivement cette candidature ?')) return;
-  btn.textContent = '…'; btn.disabled = true;
-  try {
-    const token = sessionStorage.getItem('talentyah_token');
-    await fetch(API + '/api/candidates/' + id, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token } });
-  } catch { /* silencieux */ }
-  btn.closest('tr').remove();
-  const badge = document.getElementById('countCandidates');
-  if (badge) badge.textContent = Math.max(0, parseInt(badge.textContent) - 1);
+  showConfirm('Supprimer définitivement cette candidature ?', async () => {
+    btn.textContent = '…'; btn.disabled = true;
+    try {
+      const token = sessionStorage.getItem('talentyah_token');
+      await fetch(API + '/api/candidates/' + id, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token } });
+    } catch { /* silencieux */ }
+    btn.closest('tr').remove();
+    const badge = document.getElementById('countCandidates');
+    if (badge) badge.textContent = Math.max(0, parseInt(badge.textContent) - 1);
+  });
 }
 
 /* ══════════════════════════════
@@ -1024,15 +1025,16 @@ function changeCompaniesPage(page) {
 window.changeCompaniesPage = changeCompaniesPage;
 
 async function deleteCompany(id, btn) {
-  if (!confirm('Supprimer définitivement cette demande entreprise ?')) return;
-  btn.textContent = '…'; btn.disabled = true;
-  try {
-    const token = sessionStorage.getItem('talentyah_token');
-    await fetch(API + '/api/companies/' + id, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token } });
-  } catch { /* silencieux */ }
-  btn.closest('tr').remove();
-  const badge = document.getElementById('countCompanies');
-  if (badge) badge.textContent = Math.max(0, parseInt(badge.textContent) - 1);
+  showConfirm('Supprimer définitivement cette demande entreprise ?', async () => {
+    btn.textContent = '…'; btn.disabled = true;
+    try {
+      const token = sessionStorage.getItem('talentyah_token');
+      await fetch(API + '/api/companies/' + id, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token } });
+    } catch { /* silencieux */ }
+    btn.closest('tr').remove();
+    const badge = document.getElementById('countCompanies');
+    if (badge) badge.textContent = Math.max(0, parseInt(badge.textContent) - 1);
+  });
 }
 
 function showCompanyMsg(idx) {
@@ -1256,15 +1258,16 @@ function resetJobForm() {
 }
 
 async function deleteJob(index, id) {
-  if (!confirm('Supprimer cette offre définitivement ?')) return;
-  try {
-    const token = sessionStorage.getItem('talentyah_token');
-    if (id) await fetch(API + '/api/jobs/' + id, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token }});
-  } catch { /* silencieux en démo */ }
-  adminJobsDemo.splice(index, 1);
-  const badge = document.getElementById('countJobs');
-  if (badge) badge.textContent = adminJobsDemo.length;
-  renderAdminJobs(adminJobsDemo);
+  showConfirm('Supprimer cette offre définitivement ?', async () => {
+    try {
+      const token = sessionStorage.getItem('talentyah_token');
+      if (id) await fetch(API + '/api/jobs/' + id, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token }});
+    } catch { /* silencieux en démo */ }
+    adminJobsDemo.splice(index, 1);
+    const badge = document.getElementById('countJobs');
+    if (badge) badge.textContent = adminJobsDemo.length;
+    renderAdminJobsPage();
+  });
 }
 
 /* ══════════════════════════════
@@ -1339,12 +1342,13 @@ function renderCarouselList(slides) {
 }
 
 async function deleteSlide(id) {
-  if (!confirm('Supprimer ce slide ?')) return;
-  const token = sessionStorage.getItem('talentyah_token');
-  try {
-    await fetch(API + '/api/carousel/' + id, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token } });
-    loadCarousel();
-  } catch { alert('Erreur lors de la suppression.'); }
+  showConfirm('Supprimer ce slide ?', async () => {
+    const token = sessionStorage.getItem('talentyah_token');
+    try {
+      await fetch(API + '/api/carousel/' + id, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token } });
+      loadCarousel();
+    } catch { showNotification('Erreur', 'Erreur lors de la suppression.', false); }
+  });
 }
 
 async function loadPartners() {
@@ -1439,22 +1443,22 @@ function removePartnerImg(e, i) {
 }
 
 async function removePartner(i) {
-  if (!confirm('Supprimer ce partenaire ?')) return;
-  const p = partners[i];
-  // Supprimer en DB si le partenaire a un id
-  if (p.id) {
-    try {
-      const token = sessionStorage.getItem('talentyah_token');
-      await fetch(API + '/api/partners/' + p.id, {
-        method: 'DELETE',
-        headers: { 'Authorization': 'Bearer ' + token }
-      });
-    } catch { /* silencieux */ }
-  }
-  partners.splice(i, 1);
-  const badge = document.getElementById('countPartners');
-  if (badge) badge.textContent = partners.length;
-  renderPartners();
+  showConfirm('Supprimer ce partenaire ?', async () => {
+    const p = partners[i];
+    if (p.id) {
+      try {
+        const token = sessionStorage.getItem('talentyah_token');
+        await fetch(API + '/api/partners/' + p.id, {
+          method: 'DELETE',
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+      } catch { /* silencieux */ }
+    }
+    partners.splice(i, 1);
+    const badge = document.getElementById('countPartners');
+    if (badge) badge.textContent = partners.length;
+    renderPartners();
+  });
 }
 
 /* ══════════════════════════════
@@ -1610,15 +1614,16 @@ async function togglePubStatus(i) {
 }
 
 async function deletePub(i) {
-  if (!confirm('Supprimer cette publication ?')) return;
-  const id = publications[i].id;
-  publications.splice(i, 1); renderPubList();
-  try {
-    const token = sessionStorage.getItem('talentyah_token');
-    await fetch(API + '/api/publications/' + id, {
-      method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token }
-    });
-  } catch { /* silencieux */ }
+  showConfirm('Supprimer cette publication ?', async () => {
+    const id = publications[i].id;
+    publications.splice(i, 1); renderPubList();
+    try {
+      const token = sessionStorage.getItem('talentyah_token');
+      await fetch(API + '/api/publications/' + id, {
+        method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token }
+      });
+    } catch { /* silencieux */ }
+  });
 }
 
 function resetPubForm() {
@@ -1717,25 +1722,26 @@ async function resetPassword(id, email) {
     });
     const data = await res.json();
     if (res.ok) {
-      alert(`<i data-lucide="check-circle" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Mot de passe réinitialisé pour ${data.email}\n\nNouveau mot de passe :\n${data.tempPassword}\n\nCommuniquez-le à l'utilisateur.`);
+      showNotification('Mot de passe réinitialisé', `Le mot de passe pour <strong>${_esc(data.email)}</strong> a été réinitialisé.<br><br>Nouveau mot de passe :<br><span style="font-family:monospace; font-size:14px; font-weight:700; background:#f4f4f4; padding:4px 8px; border-radius:4px; margin-top:6px; display:inline-block; letter-spacing:0.5px;">${data.tempPassword}</span><br><br>Communiquez-le à l'utilisateur.`, true);
     } else {
-      alert('Erreur : ' + (data.error || 'Impossible de réinitialiser'));
+      showNotification('Erreur', data.error || 'Impossible de réinitialiser le mot de passe.', false);
     }
   } catch {
-    alert('Impossible de joindre le serveur.');
+    showNotification('Erreur', 'Impossible de joindre le serveur.', false);
   }
 }
 
 async function deleteAccess(id) {
-  if (!confirm('Révoquer cet accès définitivement ?')) return;
-  try {
-    const token = sessionStorage.getItem('talentyah_token');
-    await fetch(API + '/api/admin/users/' + id, {
-      method: 'DELETE',
-      headers: { 'Authorization': 'Bearer ' + token }
-    });
-  } catch { /* silencieux en démo */ }
-  loadAccessList();
+  showConfirm('Révoquer cet accès définitivement ?', async () => {
+    try {
+      const token = sessionStorage.getItem('talentyah_token');
+      await fetch(API + '/api/admin/users/' + id, {
+        method: 'DELETE',
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+    } catch { /* silencieux en démo */ }
+    loadAccessList();
+  });
 }
 
 
@@ -2182,3 +2188,105 @@ window.deleteJob = deleteJob;
 window.editPub = editPub;
 window.deletePub = deletePub;
 window.togglePubStatus = togglePubStatus;
+
+/* ── Custom Popovers & Confirmation Dialogs ── */
+function showConfirm(message, onConfirm) {
+  const overlay = document.createElement('div');
+  overlay.id = 'customConfirmOverlay';
+  overlay.style.cssText = 'position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(13,40,24,0.6); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; z-index:999999; opacity:0; transition:opacity 0.2s ease;';
+  
+  const box = document.createElement('div');
+  box.style.cssText = 'background:#fff; border-radius:12px; width:100%; max-width:400px; padding:24px; box-shadow:0 20px 60px rgba(0,0,0,0.3); transform:scale(0.9); transition:transform 0.2s cubic-bezier(0.1, 0.8, 0.25, 1); display:flex; flex-direction:column; gap:16px; align-items:center; text-align:center;';
+  
+  box.innerHTML = `
+    <div style="width:48px; height:48px; border-radius:50%; background:rgba(192,57,43,0.1); color:#c0392b; display:flex; align-items:center; justify-content:center;">
+      <i data-lucide="alert-triangle" style="width:24px; height:24px;"></i>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:6px;">
+      <h3 style="font-family:'DM Sans', sans-serif; font-size:16px; font-weight:700; color:var(--dark); margin:0;">Confirmation requise</h3>
+      <p style="font-size:13.5px; color:var(--muted); margin:0; line-height:1.5;">${message}</p>
+    </div>
+    <div style="display:flex; gap:10px; width:100%; margin-top:8px;">
+      <button id="confirmCancelBtn" style="flex:1; padding:10px 16px; background:#fff; border:1.5px solid var(--border); border-radius:8px; font-family:'DM Sans', sans-serif; font-size:13px; font-weight:600; color:var(--muted); cursor:pointer; transition:all 0.15s;">Annuler</button>
+      <button id="confirmConfirmBtn" style="flex:1; padding:10px 16px; background:#c0392b; border:none; border-radius:8px; font-family:'DM Sans', sans-serif; font-size:13px; font-weight:600; color:#fff; cursor:pointer; transition:background 0.15s;">Confirmer</button>
+    </div>
+  `;
+  
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+  
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+  
+  setTimeout(() => {
+    overlay.style.opacity = '1';
+    box.style.transform = 'scale(1)';
+  }, 10);
+  
+  const close = () => {
+    overlay.style.opacity = '0';
+    box.style.transform = 'scale(0.9)';
+    setTimeout(() => overlay.remove(), 200);
+  };
+  
+  box.querySelector('#confirmCancelBtn').addEventListener('click', close);
+  box.querySelector('#confirmConfirmBtn').addEventListener('click', () => {
+    close();
+    onConfirm();
+  });
+  
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) close();
+  });
+}
+
+function showNotification(title, message, isSuccess = true, callback = null) {
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(13,40,24,0.6); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; z-index:999999; opacity:0; transition:opacity 0.2s ease;';
+  
+  const box = document.createElement('div');
+  box.style.cssText = 'background:#fff; border-radius:12px; width:100%; max-width:400px; padding:24px; box-shadow:0 20px 60px rgba(0,0,0,0.3); transform:scale(0.9); transition:transform 0.2s cubic-bezier(0.1, 0.8, 0.25, 1); display:flex; flex-direction:column; gap:16px; align-items:center; text-align:center;';
+  
+  const color = isSuccess ? 'var(--emerald)' : '#c0392b';
+  const icon = isSuccess ? 'check-circle' : 'alert-circle';
+  const iconBg = isSuccess ? 'rgba(26,82,51,0.1)' : 'rgba(192,57,43,0.1)';
+  
+  box.innerHTML = `
+    <div style="width:48px; height:48px; border-radius:50%; background:${iconBg}; color:${color}; display:flex; align-items:center; justify-content:center;">
+      <i data-lucide="${icon}" style="width:24px; height:24px;"></i>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:6px;">
+      <h3 style="font-family:'DM Sans', sans-serif; font-size:16px; font-weight:700; color:var(--dark); margin:0;">${title}</h3>
+      <p style="font-size:13.5px; color:var(--muted); margin:0; line-height:1.5;">${message}</p>
+    </div>
+    <div style="display:flex; gap:10px; width:100%; margin-top:8px;">
+      <button id="notifyOkBtn" style="flex:1; padding:10px 16px; background:${isSuccess ? 'var(--emerald)' : '#c0392b'}; border:none; border-radius:8px; font-family:'DM Sans', sans-serif; font-size:13px; font-weight:600; color:#fff; cursor:pointer; transition:opacity 0.15s;">D'accord</button>
+    </div>
+  `;
+  
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+  
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+  
+  setTimeout(() => {
+    overlay.style.opacity = '1';
+    box.style.transform = 'scale(1)';
+  }, 10);
+  
+  const close = () => {
+    overlay.style.opacity = '0';
+    box.style.transform = 'scale(0.9)';
+    setTimeout(() => {
+      overlay.remove();
+      if (callback) callback();
+    }, 200);
+  };
+  
+  box.querySelector('#notifyOkBtn').addEventListener('click', close);
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) close();
+  });
+}
+
+window.showConfirm = showConfirm;
+window.showNotification = showNotification;
