@@ -135,6 +135,21 @@ document.addEventListener('DOMContentLoaded', () => {
   /* Auto-login si token présent */
   if (sessionStorage.getItem('talentyah_token')) showDashboard();
 
+  /* ── Toggle visibilité mot de passe ── */
+  const toggleBtn = document.getElementById('togglePasswordBtn');
+  const passwordInput = document.getElementById('admin-password');
+  if (toggleBtn && passwordInput) {
+    toggleBtn.addEventListener('click', () => {
+      const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      passwordInput.setAttribute('type', type);
+      const icon = toggleBtn.querySelector('i');
+      if (icon) {
+        icon.setAttribute('data-lucide', type === 'password' ? 'eye' : 'eye-off');
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+      }
+    });
+  }
+
   /* ── Formulaire login ── */
   const loginForm = document.getElementById('adminLoginForm');
   if (loginForm) {

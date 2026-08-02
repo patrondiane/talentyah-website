@@ -48,7 +48,12 @@
           </div>
           <div class="admin-form-field">
             <label for="admin-password">Mot de passe</label>
-            <input type="password" id="admin-password" name="password" placeholder="••••••••" required>
+            <div style="position: relative; display: flex; align-items: center;">
+              <input type="password" id="admin-password" name="password" placeholder="••••••••" required style="padding-right: 44px; width: 100%;">
+              <button type="button" id="togglePasswordBtn" style="position: absolute; right: 12px; background: none; border: none; cursor: pointer; color: var(--muted); display: flex; align-items: center; justify-content: center; padding: 4px;" title="Afficher/Masquer le mot de passe">
+                <i data-lucide="eye" style="width: 18px; height: 18px;"></i>
+              </button>
+            </div>
           </div>
           <button type="submit" class="admin-login-btn">Se connecter &rarr;</button>
           <div id="adminMsg" class="admin-msg"></div>
