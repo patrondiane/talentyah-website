@@ -867,6 +867,7 @@ function renderCandidatesPage() {
       <td style="color:var(--muted);">${_esc(r.role_target || '—')}</td>
       <td style="color:var(--muted);">${_esc(r.country || '—')}</td>
       <td style="color:var(--muted);">${_esc(r.experience_level || '—')}</td>
+      <td style="color:var(--muted); font-size: 13px;">${_esc(r.source || '—')}</td>
       <td>${r.cv_url
         ? '<a href="' + _fixCvUrl(r.cv_url) + '" target="_blank" rel="noopener" class="badge-cv">⬇ Télécharger CV</a>'
         : '<span style="color:var(--border);">—</span>'
