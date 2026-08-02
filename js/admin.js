@@ -1000,20 +1000,16 @@ function editJob(index) {
   const submitBtn = form.querySelector('.btn-publish-gold');
   if (submitBtn) submitBtn.textContent = "Enregistrer les modifications";
 
-  // Optionnel : ajouter un bouton d'annulation s'il n'existe pas encore
-  if (!document.getElementById('jobCancelBtn')) {
-    const cancelBtn = document.createElement('button');
-    cancelBtn.type = "button";
-    cancelBtn.id = "jobCancelBtn";
-    cancelBtn.className = "btn-filter btn-reset";
-    cancelBtn.style = "background:transparent; color:var(--muted); border:1px solid var(--border); margin-left: 10px; padding: 12px 24px; border-radius: 6px; font-weight: 600; cursor: pointer;";
-    cancelBtn.textContent = "Annuler";
-    cancelBtn.addEventListener('click', resetJobForm);
-    form.querySelector('.job-form-actions').appendChild(cancelBtn);
+  // Ouvrir le drawer
+  const overlay = document.getElementById('jobDrawerOverlay');
+  const drawer = document.getElementById('jobDrawer');
+  if (overlay && drawer) {
+    overlay.style.display = 'block';
+    setTimeout(() => {
+      overlay.style.opacity = '1';
+      drawer.style.right = '0';
+    }, 50);
   }
-
-  // Remonter en douceur vers le formulaire
-  form.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 // Réinitialiser le formulaire d'offre
