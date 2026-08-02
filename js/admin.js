@@ -754,6 +754,7 @@ async function loadCandidates() {
     if (sector)  params.append('sector', sector);
     if (country) params.append('country', country);
     const res  = await fetch(API + '/api/candidates?' + params, { headers: { 'Authorization': 'Bearer ' + token }});
+    if (!res.ok) throw new Error('Fetch failed with status ' + res.status);
     const data = await res.json();
     rows = data.candidates || data;
   } catch {
