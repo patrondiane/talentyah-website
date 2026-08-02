@@ -1,5 +1,13 @@
 // server.js — Talentyah Backend
 require('dotenv').config();
+
+// Protection anti-crash pour les rejets de promesses non interceptés
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('[UNHANDLED REJECTION]', reason);
+});
+process.on('uncaughtException', (error) => {
+  console.error('[UNCAUGHT EXCEPTION]', error);
+});
 const express = require('express');
 const cors    = require('cors');
 const path    = require('path');
