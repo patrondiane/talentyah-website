@@ -896,7 +896,7 @@ textarea { resize: vertical; min-height: 120px; }
 
 .select-wrap { position: relative; }
 .select-wrap::after {
-  content: 'v'; position: absolute; right: 16px; top: 50%;
+  content: ''; position: absolute; right: 16px; top: 50%;
   transform: translateY(-50%); pointer-events: none;
   color: var(--muted); font-size: 11px;
 }
