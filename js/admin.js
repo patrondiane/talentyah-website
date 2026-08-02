@@ -825,7 +825,7 @@ async function loadCompanies() {
 
   tbody.innerHTML = rows.map((r, idx) => {
     const msgBtn = r.message
-      ? '<button onclick="showCompanyMsg(' + idx + ')" style="background:none;border:1px solid var(--border);border-radius:4px;padding:4px 10px;cursor:pointer;font-size:12px;color:var(--muted);">📩 Voir message</button>'
+      ? '<button onclick="showCompanyMsg(' + idx + ')" style="background:none;border:1px solid var(--border);border-radius:4px;padding:4px 10px;cursor:pointer;font-size:12px;color:var(--muted);display:inline-flex;align-items:center;gap:5px;"><i data-lucide="message-square" style="width:13px;height:13px;"></i> Voir message</button>'
       : '—';
     return `
     <tr>
@@ -842,6 +842,7 @@ async function loadCompanies() {
       <td><button class="btn-delete" onclick="deleteCompany(${r.id}, this)">Supprimer</button></td>
     </tr>`;
   }).join('');
+  if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
 async function deleteCompany(id, btn) {
