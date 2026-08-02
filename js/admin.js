@@ -334,7 +334,7 @@ const jobForm = document.getElementById('jobForm');
   document.getElementById('addPartnerSlotBtn')?.addEventListener('click', () => {
     partners.push({ name: 'Partenaire ' + (partners.length + 1), desc: '', img: null });
     document.getElementById('countPartners').textContent = partners.length;
-    renderPartnersGrid(); renderPartnerNames();
+    renderPartners();
   });
   document.getElementById('savePartnersBtn')?.addEventListener('click', async () => {
     const msg = document.getElementById('partnersMsg');
@@ -1356,17 +1356,16 @@ async function loadPartners() {
   } catch { /* garde les données locales */ }
   const badge = document.getElementById('countPartners');
   if (badge) badge.textContent = partners.length;
-  renderPartnersGrid();
-  renderPartnerNames();
+  renderPartners();
 }
 
 function initPartners() { loadPartners(); }
 
-function renderPartnersGrid() {
-  const grid = document.getElementById('partnersGrid');
-  if (!grid) return;
-  grid.innerHTML = partners.map((p, i) => {
-    // Construire l'URL complète de l'image
+function renderPartners() {
+  const container = document.getElementById('partnersContainer');
+  if (!container) return;
+
+  container.innerHTML = partners.map((p, i) => {
     let imgSrc = null;
     if (p.img) {
       if (p.img.startsWith('data:') || p.img.startsWith('http')) {
@@ -1375,29 +1374,33 @@ function renderPartnersGrid() {
         imgSrc = p.img.startsWith('http') ? p.img : 'https://talentyah-website.onrender.com' + p.img;
       }
     }
+
     return `
-    <div class="partner-slot ${imgSrc ? 'filled' : ''}" id="pslot-${i}">
-      <input type="file" accept="image/*" onchange="handlePartnerImg(this, ${i})">
-      ${imgSrc
-        ? `<img src="${imgSrc}" alt="${_esc(p.name)}" onerror="this.style.display='none'"><button class="partner-remove" onclick="removePartnerImg(event,${i})"><i data-lucide="x" style="width:14px;height:14px;"></i></button>`
-        : `<div class="partner-slot-placeholder"><i data-lucide="image" style="width:24px;height:24px;color:#a8a2d1;margin-bottom:8px;"></i><span>${_esc(p.name)}</span></div>`
-      }
+    <div class="partner-row-item" style="display: flex; gap: 16px; align-items: center; background: #fff; padding: 14px 18px; border: 1px solid var(--border); border-radius: var(--radius); width: 100%;">
+      <!-- Mini Upload Logo -->
+      <div class="partner-mini-upload" style="position: relative; width: 56px; height: 56px; border: 1.5px dashed var(--border); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; background: var(--bg-off); overflow: hidden; flex-shrink: 0; cursor: pointer;">
+        <input type="file" accept="image/*" onchange="handlePartnerImg(this, ${i})" style="position: absolute; top:0; left:0; width:100%; height:100%; opacity:0; cursor:pointer; z-index:2;">
+        ${imgSrc
+          ? `<img src="${imgSrc}" style="width: 100%; height: 100%; object-fit: contain; padding: 4px;">
+             <button onclick="removePartnerImg(event, ${i})" style="position: absolute; top: 2px; right: 2px; width: 16px; height: 16px; border-radius: 50%; background: #c0392b; color: #fff; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 3; padding: 0;">
+               <i data-lucide="x" style="width:10px;height:10px;"></i>
+             </button>`
+          : `<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; color: var(--muted); font-size: 10px; text-align: center; padding: 4px;">
+               <i data-lucide="image" style="width: 16px; height: 16px; color: var(--muted); margin-bottom: 2px;"></i>
+               <span>Logo</span>
+             </div>`
+        }
+      </div>
+      <!-- Nom & Description Inputs -->
+      <div style="flex: 1; display: grid; grid-template-columns: 1fr 2fr; gap: 12px;">
+        <input type="text" class="admin-filter-input" placeholder="Nom du partenaire" value="${_esc(p.name)}" style="margin: 0; width: 100%;" oninput="partners[${i}].name=this.value">
+        <input type="text" class="admin-filter-input" placeholder="Description / Secteur d'activité" value="${_esc(p.desc)}" style="margin: 0; width: 100%;" oninput="partners[${i}].desc=this.value">
+      </div>
+      <!-- Retirer -->
+      <button class="btn-delete" onclick="removePartner(${i})" style="padding: 8px 16px; flex-shrink: 0;">Retirer</button>
     </div>`;
   }).join('');
-}
 
-function renderPartnerNames() {
-  const list = document.getElementById('partnerNamesList');
-  if (!list) return;
-  list.innerHTML = partners.map((p, i) => `
-    <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:center;">
-      <input type="text" class="admin-filter-input" placeholder="Nom du partenaire"
-             value="${_esc(p.name)}" style="margin:0;" oninput="partners[${i}].name=this.value">
-      <input type="text" class="admin-filter-input" placeholder="Description (optionnel)"
-             value="${_esc(p.desc)}" style="margin:0;" oninput="partners[${i}].desc=this.value">
-      <button class="btn-delete" onclick="removePartner(${i})">Retirer</button>
-    </div>
-  `).join('');
   if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
@@ -1407,7 +1410,7 @@ async function handlePartnerImg(input, i) {
 
   // Aperçu local immédiat
   const reader = new FileReader();
-  reader.onload = (e) => { partners[i].img = e.target.result; renderPartnersGrid(); renderPartnerNames(); };
+  reader.onload = (e) => { partners[i].img = e.target.result; renderPartners(); };
   reader.readAsDataURL(file);
 
   // Upload réel au backend si le partenaire a un id
@@ -1432,7 +1435,7 @@ async function handlePartnerImg(input, i) {
 
 function removePartnerImg(e, i) {
   e.preventDefault(); e.stopPropagation();
-  partners[i].img = null; renderPartnersGrid();
+  partners[i].img = null; renderPartners();
 }
 
 async function removePartner(i) {
@@ -1451,7 +1454,7 @@ async function removePartner(i) {
   partners.splice(i, 1);
   const badge = document.getElementById('countPartners');
   if (badge) badge.textContent = partners.length;
-  renderPartnersGrid(); renderPartnerNames();
+  renderPartners();
 }
 
 /* ══════════════════════════════
