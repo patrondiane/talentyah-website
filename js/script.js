@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       } catch (err) {
         // Si le backend est injoignable, message clair
-        _showError(btn, errorEl, 'Impossible de joindre le serveur. Vérifiez que le backend tourne sur le port 4000.');
+        _showError(btn, errorEl, 'Impossible de joindre le serveur. Vérifiez que le backend tourne sur le port 4001.');
       }
     });
   }
@@ -130,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       } catch {
         _btnReset(btn, 'Réessayer');
-        alert('Impossible de joindre le serveur. Vérifiez que le backend tourne sur le port 4000.');
+        alert('Impossible de joindre le serveur. Vérifiez que le backend tourne sur le port 4001.');
       }
     });
   }
@@ -177,7 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       } catch {
         _btnReset(btn, 'Réessayer');
-        alert('Impossible de joindre le serveur. Vérifiez que le backend tourne sur le port 4000.');
+        alert('Impossible de joindre le serveur. Vérifiez que le backend tourne sur le port 4001.');
       }
     });
   }
