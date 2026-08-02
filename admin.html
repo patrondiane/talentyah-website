@@ -293,25 +293,23 @@
                   <input type="text" name="country" placeholder="Ex : Sénégal" style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;box-sizing:border-box;">
                 </div>
                 <div class="job-form-field">
-                  <label>Secteur <span style="font-size:11px;color:var(--muted);font-weight:400;">— existant ou nouveau</span></label>
-                  <input type="text" name="sector" id="sectorInput" list="sectorSuggestions"
-                         placeholder="Ex : Finance, RH, Tech, Juridique…"
-                         style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;box-sizing:border-box;">
-                  <datalist id="sectorSuggestions">
-                    <option value="Finance">
-                    <option value="RH">
-                    <option value="Tech">
-                    <option value="Commercial">
-                    <option value="Juridique">
-                    <option value="Marketing">
-                    <option value="Direction Générale">
-                    <option value="Opérations">
-                    <option value="Logistique">
-                    <option value="Santé">
-                    <option value="Éducation">
-                    <option value="Immobilier">
-                    <option value="Industrie">
-                  </datalist>
+                  <label>Secteur</label>
+                  <select name="sector" data-search="true" placeholder="— Sélectionner le secteur —" style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;box-sizing:border-box;background:#fff;height:42px;">
+                    <option value="">— Sélectionner le secteur —</option>
+                    <option>Finance</option>
+                    <option>RH</option>
+                    <option>Tech</option>
+                    <option>Commercial</option>
+                    <option>Juridique</option>
+                    <option>Marketing</option>
+                    <option>Direction Générale</option>
+                    <option>Opérations</option>
+                    <option>Logistique</option>
+                    <option>Santé</option>
+                    <option>Éducation</option>
+                    <option>Immobilier</option>
+                    <option>Industrie</option>
+                  </select>
                 </div>
                 <div class="job-form-field">
                   <label>Type de contrat</label>

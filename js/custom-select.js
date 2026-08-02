@@ -124,6 +124,30 @@ function convertNativeSelects() {
   }
 }
 
+function syncCustomSelects() {
+  const selects = document.querySelectorAll('select[data-customized="true"]');
+  selects.forEach(select => {
+    const wrapper = select.nextSibling;
+    if (wrapper && wrapper.classList.contains('searchable-select')) {
+      const displayValue = wrapper.querySelector('.searchable-select-value');
+      const activeOpt = Array.from(select.options).find(o => o.value === select.value && !o.disabled);
+      if (displayValue && activeOpt) {
+        displayValue.textContent = activeOpt.text;
+      } else if (displayValue && select.options[0]) {
+        displayValue.textContent = select.options[0].text;
+      }
+      const options = wrapper.querySelectorAll('.searchable-select-option');
+      options.forEach(opt => {
+        if (opt.dataset.value === select.value) {
+          opt.classList.add('is-selected');
+        } else {
+          opt.classList.remove('is-selected');
+        }
+      });
+    }
+  });
+}
+
 document.addEventListener('click', () => {
   document.querySelectorAll('.searchable-select.is-open').forEach(openSelect => {
     openSelect.classList.remove('is-open');
@@ -132,10 +156,9 @@ document.addEventListener('click', () => {
 
 document.addEventListener('DOMContentLoaded', () => {
   convertNativeSelects();
-  // Delay run for dynamically generated selects (e.g. ATS templates)
   setTimeout(convertNativeSelects, 100);
   setTimeout(convertNativeSelects, 500);
 });
 
-// Also export to window for manual calls
 window.convertNativeSelects = convertNativeSelects;
+window.syncCustomSelects = syncCustomSelects;

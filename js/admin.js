@@ -999,6 +999,8 @@ function editJob(index) {
   // Adapter les textes des boutons
   const submitBtn = form.querySelector('.btn-publish-gold');
   if (submitBtn) submitBtn.textContent = "Enregistrer les modifications";
+  
+  if (typeof syncCustomSelects !== 'undefined') syncCustomSelects();
 
   // Ouvrir le drawer
   const overlay = document.getElementById('jobDrawerOverlay');
@@ -1018,6 +1020,8 @@ function resetJobForm() {
   if (!form) return;
   form.reset();
   document.getElementById('job-id').value = '';
+  
+  if (typeof syncCustomSelects !== 'undefined') syncCustomSelects();
   if (jobDescQuill) jobDescQuill.setContents([]);
   if (jobReqsQuill) jobReqsQuill.setContents([]);
   
