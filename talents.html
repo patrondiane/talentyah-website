@@ -269,7 +269,22 @@
               </div>
             </div>
             <div class="form-field"><label for="cand-message">Message (facultatif)</label><textarea id="cand-message" name="message" placeholder="Précisez vos attentes, disponibilités, ou toute information utile..."></textarea></div>
-            <div class="form-field"><label for="source">Comment nous avez-vous connu ? (facultatif)</label><input type="text" id="source" name="source" placeholder="Ex: LinkedIn, ami, etc."></div>
+            <div class="form-field">
+              <label for="source_select">Comment nous avez-vous connu ? (facultatif)</label>
+              <input type="hidden" name="source" id="source_hidden">
+              <select id="source_select" style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;box-sizing:border-box;background:#fff;height:42px;">
+                <option value="">— Sélectionner une option —</option>
+                <option value="LinkedIn">LinkedIn</option>
+                <option value="Recommandation / Un ami">Recommandation / Un ami</option>
+                <option value="Recherche Google">Recherche Google</option>
+                <option value="Facebook">Facebook</option>
+                <option value="Instagram">Instagram</option>
+                <option value="Autre">Autre (préciser)</option>
+              </select>
+              <div id="source_other_wrap" style="display:none; margin-top:10px;">
+                <input type="text" id="source_other" placeholder="Précisez..." style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;box-sizing:border-box;">
+              </div>
+            </div>
             <button type="submit" class="btn-submit">Soumettre mon profil <i data-lucide="arrow-right" style="width:18px;height:18px;vertical-align:middle;margin-left:6px;"></i></button>
             <p class="form-note">Vos données sont traitées de manière strictement confidentielle.</p>
             <div class="form-success" id="candidateSuccess"><p>Votre profil a bien été transmis. Nous vous contacterons dès qu'une opportunité correspond.</p></div>
@@ -326,5 +341,36 @@
     });
   </script>
   <script src="js/custom-select.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const select = document.getElementById('source_select');
+      const otherWrap = document.getElementById('source_other_wrap');
+      const otherInput = document.getElementById('source_other');
+      const hiddenInput = document.getElementById('source_hidden');
+
+      if (select && otherWrap && otherInput && hiddenInput) {
+        const syncValue = () => {
+          if (select.value === 'Autre') {
+            hiddenInput.value = otherInput.value.trim();
+          } else {
+            hiddenInput.value = select.value;
+          }
+        };
+
+        select.addEventListener('change', () => {
+          if (select.value === 'Autre') {
+            otherWrap.style.display = 'block';
+            otherInput.focus();
+          } else {
+            otherWrap.style.display = 'none';
+          }
+          syncValue();
+        });
+
+        otherInput.addEventListener('input', syncValue);
+      }
+    });
+  </script>
 </body>
 </html>
