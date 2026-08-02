@@ -5,6 +5,29 @@
 
 const API = 'http://localhost:4001';
 
+// Intercepteur global pour déconnecter automatiquement si le token est expiré (401)
+const originalFetch = window.fetch;
+window.fetch = async function(...args) {
+  const res = await originalFetch(...args);
+  if (res.status === 401) {
+    console.warn('Session expirée ou non autorisée (401) — Déconnexion automatique.');
+    if (!args[0].includes('/api/admin/login')) {
+      sessionStorage.removeItem('talentyah_token');
+      const dashboard = document.getElementById('adminDashboardSection');
+      const loginSection = document.getElementById('adminLoginSection');
+      if (dashboard) dashboard.style.display = 'none';
+      if (loginSection) loginSection.style.display = 'flex';
+      document.documentElement.classList.remove('is-logged-in');
+      
+      // Afficher un toast d'erreur
+      if (typeof showToast !== 'undefined') {
+        showToast('Session expirée. Veuillez vous reconnecter.', 'error');
+      }
+    }
+  }
+  return res;
+};
+
 /* ══════════════════════════════
    MATRICE DES PRIVILÈGES
    Modifier ici pour ajuster les accès par rôle.
