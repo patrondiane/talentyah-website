@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
           sessionStorage.setItem('talentyah_email', email);
           showDashboard();
         } else {
-          if (msgEl) { msgEl.textContent = 'Email ou mot de passe incorrect.'; msgEl.style.color = '#c0392b'; }
+          if (msgEl) { msgEl.textContent = data.error || 'Email ou mot de passe incorrect.'; msgEl.style.color = '#c0392b'; }
           btn.textContent = 'Se connecter'; btn.disabled = false;
         }
       } catch {

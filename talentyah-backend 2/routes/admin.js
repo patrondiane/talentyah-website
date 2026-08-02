@@ -11,7 +11,7 @@ const rateLimiter = require('../middleware/rateLimiter');
 
 const loginLimiter = rateLimiter({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  maxRequests: 10,
+  maxRequests: 100,
   message: 'Trop de tentatives de connexion échouées. Veuillez réessayer dans 15 minutes.'
 });
 
