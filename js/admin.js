@@ -786,7 +786,12 @@ async function loadCandidates() {
   const sector  = document.getElementById('filterSector')?.value.trim()  || '';
   const country = document.getElementById('filterCountry')?.value.trim() || '';
   if (!tbody) return;
-  tbody.innerHTML = '<tr class="empty-row"><td colspan="8">Chargement…</td></tr>';
+  tbody.innerHTML = `<tr class="empty-row"><td colspan="8">
+    <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:280px; gap:12px; width:100%;">
+      <div class="admin-spinner"></div>
+      <span style="font-size:13px; color:var(--muted); font-weight:500;">Chargement des candidatures...</span>
+    </div>
+  </td></tr>`;
 
   let rows = [];
   try {
@@ -965,7 +970,10 @@ let adminJobsDemo = [];
 async function loadJobs() {
   const container = document.getElementById('adminJobsList');
   if (!container) return;
-  container.innerHTML = '<p style="color:var(--muted);font-size:14px;">Chargement…</p>';
+  container.innerHTML = `<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:300px; gap:12px; width:100%;">
+    <div class="admin-spinner"></div>
+    <span style="font-size:13px; color:var(--muted); font-weight:500;">Chargement des offres d'emploi...</span>
+  </div>`;
 
   try {
     const res  = await fetch(API + '/api/jobs');
@@ -1029,11 +1037,13 @@ function renderAdminJobsPage() {
     paginationWrap.className = 'admin-pagination';
     paginationWrap.style.cssText = 'display:flex; justify-content:center; align-items:center; gap:8px; margin-top:24px; margin-bottom:12px; width:100%;';
     
-    let html = `<button class="btn-filter" style="padding: 6px 12px;" onclick="changeAdminJobsPage(${currentAdminJobsPage - 1})" ${currentAdminJobsPage === 1 ? 'disabled' : ''}>Précédent</button>`;
+    let html = `<button class="admin-page-btn" style="padding: 6px 14px; border-radius: 6px; border: 1.5px solid var(--border); background: #fff; color: var(--dark); font-weight: 600; cursor: pointer; transition: all 0.2s;" onclick="changeAdminJobsPage(${currentAdminJobsPage - 1})" ${currentAdminJobsPage === 1 ? 'disabled' : ''}>Précédent</button>`;
     for (let p = 1; p <= totalPages; p++) {
-      html += `<button class="btn-filter" style="padding: 6px 12px; ${currentAdminJobsPage === p ? 'background: var(--emerald); color:#fff; border-color:var(--emerald);' : 'background:transparent;'}" onclick="changeAdminJobsPage(${p})">${p}</button>`;
+      const activeStyle = `background: var(--emerald); color: #fff; border-color: var(--emerald); cursor: default;`;
+      const inactiveStyle = `background: #fff; color: var(--dark); border-color: var(--border); cursor: pointer;`;
+      html += `<button class="admin-page-btn" style="padding: 6px 14px; margin: 0 2px; border-radius: 6px; border: 1.5px solid ${currentAdminJobsPage === p ? 'var(--emerald)' : 'var(--border)'}; ${currentAdminJobsPage === p ? activeStyle : inactiveStyle} font-weight: 600; transition: all 0.2s;" onclick="changeAdminJobsPage(${p})">${p}</button>`;
     }
-    html += `<button class="btn-filter" style="padding: 6px 12px;" onclick="changeAdminJobsPage(${currentAdminJobsPage + 1})" ${currentAdminJobsPage === totalPages ? 'disabled' : ''}>Suivant</button>`;
+    html += `<button class="admin-page-btn" style="padding: 6px 14px; border-radius: 6px; border: 1.5px solid var(--border); background: #fff; color: var(--dark); font-weight: 600; cursor: pointer; transition: all 0.2s;" onclick="changeAdminJobsPage(${currentAdminJobsPage + 1})" ${currentAdminJobsPage === totalPages ? 'disabled' : ''}>Suivant</button>`;
     
     paginationWrap.innerHTML = html;
     container.parentNode.insertBefore(paginationWrap, container.nextSibling);
