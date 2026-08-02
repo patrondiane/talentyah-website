@@ -943,12 +943,15 @@ async function loadCompanies() {
     const res   = await fetch(API + '/api/companies', { headers: { 'Authorization': 'Bearer ' + token }});
     const data  = await res.json();
     rows = data.companies || data;
-  } catch {
-    rows = [
-      { created_at:'2026-03-28', company_name:'Groupe Sonatel', email:'rh@sonatel.sn', region:'Dakar, Sénégal',  role_needed:'Directeur IT',  urgency:'elevee',  message:'Remplacement urgent' },
-      { created_at:'2026-03-24', company_name:'Orange CI',      email:'rh@orange.ci',  region:'Abidjan, CI',     role_needed:'Chef de projet', urgency:'moyenne', message:'Création de poste'  },
-      { created_at:'2026-03-20', company_name:'Africa Finance',  email:'ceo@afin.com',  region:'Paris, France',   role_needed:'RAF',            urgency:'faible',  message:'Développement'      },
-    ];
+  } catch (err) {
+    cachedCompanies = [];
+    const tbody = document.getElementById('companiesTbody');
+    if (tbody) {
+      tbody.innerHTML = '<tr class="empty-row"><td colspan="8" style="color: #c0392b; font-weight: 600; text-align: center; padding: 36px; background: #fff;">⚠️ Erreur : Impossible de contacter la base de données / le serveur backend.</td></tr>';
+    }
+    const badge = document.getElementById('countCompanies');
+    if (badge) badge.textContent = 'Err';
+    return;
   }
 
   cachedCompanies = rows;
@@ -1288,12 +1291,7 @@ async function deleteJob(index, id) {
 /* ══════════════════════════════
    PARTENAIRES
 ══════════════════════════════ */
-let partners = [
-  { name:'Orange Africa',   desc:'Télécommunications',  img:null },
-  { name:'Ecobank',         desc:'Services financiers', img:null },
-  { name:'NSIA Banque',     desc:'Banque & Assurances', img:null },
-  { name:'Africa Finance',  desc:'Conseil & Finance',   img:null },
-];
+let partners = [];
 
 /* ══════════════════════════════
    CAROUSEL
@@ -1369,7 +1367,17 @@ async function loadPartners() {
     const res   = await fetch(API + '/api/partners/all', { headers: { 'Authorization': 'Bearer ' + token } });
     const data  = await res.json();
     partners = (data.partners || []).map(p => ({ id: p.id, name: p.name, desc: p.description || '', img: p.image_url || null }));
-  } catch { /* garde les données locales */ }
+  } catch (err) {
+    publications = [];
+    cachedPublications = [];
+    const container = document.getElementById('pubList');
+    if (container) {
+      container.innerHTML = '<div style="color: #c0392b; font-weight: 600; text-align: center; padding: 30px; background: #fff; border: 1px solid var(--border); border-radius: 8px;">⚠️ Erreur : Impossible de contacter la base de données / le serveur backend.</div>';
+    }
+    const badge = document.getElementById('countPublications');
+    if (badge) badge.textContent = 'Err';
+    return;
+  }
   const badge = document.getElementById('countPartners');
   if (badge) badge.textContent = partners.length;
   renderPartners();
@@ -1476,11 +1484,7 @@ async function removePartner(i) {
 /* ══════════════════════════════
    PUBLICATIONS
 ══════════════════════════════ */
-let publications = [
-  { id:1, title:'Comment réussir sa mobilité internationale en Afrique', category:'Conseil carrière', status:'published', excerpt:"Les clés pour préparer et réussir un projet de relocation professionnelle...", content:'', image:null, date:'2026-03-15' },
-  { id:2, title:"Les profils les plus recherchés en Afrique de l'Ouest en 2026", category:"Marché de l'emploi", status:'published', excerpt:'Analyse des tendances de recrutement et des compétences en forte demande...', content:'', image:null, date:'2026-03-01' },
-  { id:3, title:"Brouillon : Guide de l'entretien en visioconférence", category:'Conseil carrière', status:'draft', excerpt:'', content:'', image:null, date:'2026-03-28' },
-];
+let publications = [];
 
 let currentPubImg = null;
 
