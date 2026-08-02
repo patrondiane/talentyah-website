@@ -1344,16 +1344,28 @@ function editPub(i) {
   document.getElementById('pub-status').value   = p.status;
   document.getElementById('pub-excerpt').value  = p.excerpt;
 
-// Insérer le contenu dans Quill
   if (quillEditor) {
     quillEditor.clipboard.dangerouslyPasteHTML(p.content || '');
   }
 
   document.getElementById('pubFormTitle').textContent  = 'Modifier la publication';
   document.getElementById('pubSubmitBtn').textContent  = 'Enregistrer les modifications →';
-  document.getElementById('pubCancelBtn').style.display = 'inline-flex';
-  currentPubImg = p.image;
-  document.getElementById('pub-title').scrollIntoView({ behavior:'smooth', block:'center' });
+  
+  const cancelBtn = document.getElementById('pubCancelBtn');
+  if (cancelBtn) cancelBtn.style.display = 'inline-flex';
+
+  currentPubImg = p.image || p.image_url || p.img || null;
+  updatePubImgPreview(currentPubImg);
+
+  const overlay = document.getElementById('pubDrawerOverlay');
+  const drawer = document.getElementById('pubDrawer');
+  if (overlay && drawer) {
+    overlay.style.display = 'block';
+    setTimeout(() => {
+      overlay.style.opacity = '1';
+      drawer.style.right = '0';
+    }, 50);
+  }
 }
 
 async function togglePubStatus(i) {
@@ -1384,7 +1396,7 @@ function resetPubForm() {
   document.getElementById('pub-id').value = '';
   document.getElementById('pubFormTitle').textContent   = 'Nouvelle publication';
   document.getElementById('pubSubmitBtn').textContent   = "Publier l'article →";
-  document.getElementById('pubCancelBtn').style.display = 'none';
+  const cancelBtn = document.getElementById('pubCancelBtn'); if (cancelBtn) cancelBtn.style.display = 'none';
   currentPubImg = null;
   updatePubImgPreview(null);
 
