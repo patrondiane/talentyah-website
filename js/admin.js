@@ -859,7 +859,10 @@ function renderCandidatesPage() {
   const end = start + candidatesPerPage;
   const pageItems = cachedCandidates.slice(start, end);
 
-  tbody.innerHTML = pageItems.map(r => `
+  window._candidatesData = cachedCandidates;
+  tbody.innerHTML = pageItems.map((r, i) => {
+    const globalIdx = start + i;
+    return `
     <tr>
       <td style="color:var(--muted);white-space:nowrap;">${_fmtDate(r.created_at)}</td>
       <td><strong>${_esc(r.first_name)} ${_esc(r.last_name)}</strong></td>
@@ -869,13 +872,21 @@ function renderCandidatesPage() {
       <td style="color:var(--muted);">${_esc(r.experience_level || '—')}</td>
       <td style="color:var(--muted); font-size: 13px;">${_esc(r.source || '—')}</td>
       <td>${r.cv_url
-        ? '<a href="' + _fixCvUrl(r.cv_url) + '" target="_blank" rel="noopener" class="badge-cv">⬇ Télécharger CV</a>'
+        ? `<a href="${_fixCvUrl(r.cv_url)}" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:6px; background:#fff; border:1px solid var(--border); border-radius:6px; padding:6px 12px; color:var(--emerald); font-weight:600; font-size:12px; text-decoration:none; transition:all 0.15s; cursor:pointer;" onmouseover="this.style.background='rgba(26,82,51,0.05)'" onmouseout="this.style.background='#fff'">
+             <i data-lucide="file-text" style="width:14px; height:14px;"></i> CV
+           </a>`
         : '<span style="color:var(--border);">—</span>'
       }</td>
       <td>
-        <button class="btn-delete" onclick="deleteCandidate(${r.id}, this)">Supprimer</button>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <button class="btn-edit" onclick="showCandidateDetails(${globalIdx})" style="padding: 6px 12px; background: none; border: 1px solid var(--border); border-radius: 6px; color: var(--muted); cursor: pointer; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
+            <i data-lucide="eye" style="width:13px; height:13px;"></i> Voir
+          </button>
+          <button class="btn-delete" onclick="deleteCandidate(${r.id}, this)" style="padding: 6px 12px;">Supprimer</button>
+        </div>
       </td>
-    </tr>`).join('');
+    </tr>`;
+  }).join('');
 
   if (totalPages > 1) {
     const paginationWrap = document.createElement('div');
@@ -2291,3 +2302,76 @@ function showNotification(title, message, isSuccess = true, callback = null) {
 
 window.showConfirm = showConfirm;
 window.showNotification = showNotification;
+
+/* ── Popup de détails candidat ── */
+function showCandidateDetails(idx) {
+  const r = (window._candidatesData || [])[idx];
+  if (!r) return;
+  
+  const modal = document.createElement('div');
+  modal.id = 'candidateDetailsModal';
+  modal.style.cssText = 'position:fixed; inset:0; background:rgba(13,40,24,0.6); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); z-index:99999; display:flex; align-items:center; justify-content:center; padding:20px;';
+  
+  modal.innerHTML = `
+    <div style="background:#fff; border-radius:12px; max-width:560px; width:100%; padding:32px; position:relative; max-height:85vh; overflow-y:auto; box-shadow:0 24px 64px rgba(0,0,0,0.3); display:flex; flex-direction:column; gap:20px; box-sizing:border-box; animation: modalFadeIn 0.25s cubic-bezier(0.1, 0.8, 0.25, 1);">
+      <!-- Header -->
+      <div style="display:flex; justify-content:space-between; align-items:flex-start; border-bottom:1px solid var(--border); padding-bottom:16px;">
+        <div style="display:flex; flex-direction:column; gap:4px;">
+          <span style="font-size:12px; font-weight:600; color:var(--emerald); text-transform:uppercase; letter-spacing:0.5px;">Profil Candidat</span>
+          <h3 style="font-family:'DM Sans', sans-serif; font-size:19px; font-weight:700; color:var(--dark); margin:0;">${_esc(r.first_name)} ${_esc(r.last_name)}</h3>
+        </div>
+        <button onclick="this.closest('[style*=fixed]').remove()" style="background:none; border:none; color:var(--muted); cursor:pointer; font-size:20px; padding:4px;"><i data-lucide="x" style="width:20px; height:20px;"></i></button>
+      </div>
+      
+      <!-- Body details -->
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; font-size:13.5px; line-height:1.5;">
+        <div>
+          <strong style="color:var(--muted); display:block; font-size:11px; text-transform:uppercase; margin-bottom:2px;">Email</strong>
+          <a href="mailto:${_esc(r.email)}" style="color:var(--emerald); font-weight:600; text-decoration:none;">${_esc(r.email)}</a>
+        </div>
+        <div>
+          <strong style="color:var(--muted); display:block; font-size:11px; text-transform:uppercase; margin-bottom:2px;">Téléphone</strong>
+          <span style="color:var(--dark); font-weight:600;">${_esc(r.phone || '—')}</span>
+        </div>
+        <div>
+          <strong style="color:var(--muted); display:block; font-size:11px; text-transform:uppercase; margin-bottom:2px;">Métier / Poste visé</strong>
+          <span style="color:var(--dark); font-weight:600;">${_esc(r.role_target || '—')}</span>
+        </div>
+        <div>
+          <strong style="color:var(--muted); display:block; font-size:11px; text-transform:uppercase; margin-bottom:2px;">Pays de résidence</strong>
+          <span style="color:var(--dark); font-weight:600;">${_esc(r.country || '—')}</span>
+        </div>
+        <div>
+          <strong style="color:var(--muted); display:block; font-size:11px; text-transform:uppercase; margin-bottom:2px;">Expérience</strong>
+          <span style="color:var(--dark); font-weight:600;">${_esc(r.experience_level || '—')}</span>
+        </div>
+        <div>
+          <strong style="color:var(--muted); display:block; font-size:11px; text-transform:uppercase; margin-bottom:2px;">Source de provenance</strong>
+          <span style="color:var(--dark); font-weight:600;">${_esc(r.source || '—')}</span>
+        </div>
+      </div>
+      
+      <!-- Message / Motivations -->
+      <div style="background:#f8faf9; border-radius:8px; padding:16px; border:1px solid rgba(26,82,51,0.06);">
+        <strong style="color:var(--muted); display:block; font-size:11px; text-transform:uppercase; margin-bottom:6px;">Message / Lettre de motivation</strong>
+        <p style="margin:0; font-size:13px; color:var(--dark); white-space:pre-wrap; line-height:1.5;">${_esc(r.message || 'Aucun message accompagnant la candidature.')}</p>
+      </div>
+      
+      <!-- Footer Actions -->
+      <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border); padding-top:16px; margin-top:8px;">
+        <span style="font-size:12px; color:var(--muted);">Reçu le : ${_fmtDate(r.created_at)}</span>
+        <div style="display:flex; gap:10px;">
+          ${r.cv_url 
+            ? `<a href="${_fixCvUrl(r.cv_url)}" target="_blank" rel="noopener" style="padding:8px 16px; border-radius:6px; font-weight:600; font-size:12.5px; background:var(--emerald); color:#fff; text-decoration:none; display:inline-flex; align-items:center; gap:6px; cursor:pointer;"><i data-lucide="download" style="width:14px; height:14px;"></i> Télécharger le CV</a>`
+            : `<span style="color:var(--muted); font-size:13px;">Pas de CV joint</span>`
+          }
+          <button onclick="this.closest('[style*=fixed]').remove()" style="padding:8px 16px; border-radius:6px; border:1.5px solid var(--border); background:none; font-family:'DM Sans', sans-serif; font-size:12.5px; font-weight:600; color:var(--muted); cursor:pointer;">Fermer</button>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+window.showCandidateDetails = showCandidateDetails;
