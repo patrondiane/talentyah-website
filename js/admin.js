@@ -649,6 +649,19 @@ function getUserRole() {
   }
 }
 
+/* Décoder l'email depuis le token */
+function getUserEmail() {
+  const token = sessionStorage.getItem('talentyah_token');
+  if (!token) return null;
+  try {
+    const part = token.split('.')[1];
+    const payload = JSON.parse(atob(part));
+    return payload.email || null;
+  } catch {
+    return null;
+  }
+}
+
 /*
   applyPermissions()
   Lit la matrice PRIVILEGES, masque les boutons nav et les panels
@@ -671,6 +684,17 @@ function applyPermissions() {
       `<span style="display:inline-flex;align-items:center;gap:5px;">` +
       `<span style="width:6px;height:6px;border-radius:50%;background:${ui.color};flex-shrink:0;"></span>` +
       `${ui.label}</span>`;
+  }
+  
+  // Renseigner l'email et l'initiale de l'avatar dans la sidebar
+  const emailEl = document.getElementById('profileEmail');
+  const avatarEl = document.getElementById('profileAvatar');
+  if (emailEl) {
+    const email = getUserEmail() || 'Utilisateur';
+    emailEl.textContent = email;
+    if (avatarEl) {
+      avatarEl.textContent = email.charAt(0).toUpperCase();
+    }
   }
 
 /* Masquer les panels et boutons nav non autorisés */
