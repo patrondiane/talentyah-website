@@ -5,6 +5,9 @@
 
 const API = 'http://localhost:4001';
 
+let currentAdminJobsPage = 1;
+const adminJobsPerPage = 8;
+
 // Intercepteur global pour déconnecter automatiquement si le token est expiré (401)
 const originalFetch = window.fetch;
 window.fetch = async function(...args) {
@@ -978,35 +981,74 @@ async function loadJobs() {
 
   const badge = document.getElementById('countJobs');
   if (badge) badge.textContent = adminJobsDemo.length;
-  renderAdminJobs(adminJobsDemo);
+  currentAdminJobsPage = 1;
+  renderAdminJobsPage();
 }
 
-function renderAdminJobs(jobs) {
+function renderAdminJobsPage() {
   const container = document.getElementById('adminJobsList');
   if (!container) return;
-  if (!jobs || !jobs.length) {
+
+  const totalJobs = adminJobsDemo.length;
+  const oldPagination = document.getElementById('adminJobsPagination');
+  if (oldPagination) oldPagination.remove();
+
+  if (!adminJobsDemo || !totalJobs) {
     container.innerHTML = '<p style="color:var(--muted);font-size:14px;">Aucune offre publiée.</p>';
     return;
   }
-  container.innerHTML = jobs.map((j, i) => `
-    <div class="admin-job-row" style="display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 16px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; margin-bottom: 12px;">
-      <div>
-        <div class="admin-job-title" style="font-size: 15px; font-weight: 600; color: var(--dark); margin-bottom: 3px;">${_esc(j.title)}</div>
-        <div class="admin-job-meta" style="font-size: 12px; color: var(--muted); display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
-          <span style="display:inline-flex;align-items:center;gap:4px;"><i data-lucide="map-pin" style="width:13px;height:13px;"></i> ${_esc([j.city, j.country].filter(Boolean).join(', ') || '—')}</span>
-          <span style="display:inline-flex;align-items:center;gap:4px;"><i data-lucide="tag" style="width:13px;height:13px;"></i> ${_esc(j.contract_type || '—')}</span>
-          <span style="display:inline-flex;align-items:center;gap:4px;"><i data-lucide="briefcase" style="width:13px;height:13px;"></i> ${_esc(j.sector || '—')}</span>
-          ${j.salary ? `<span style="display:inline-flex;align-items:center;gap:4px;"><i data-lucide="banknote" style="width:13px;height:13px;"></i> ${_esc(j.salary)}</span>` : ''}
+
+  const totalPages = Math.ceil(totalJobs / adminJobsPerPage);
+  const start = (currentAdminJobsPage - 1) * adminJobsPerPage;
+  const end = start + adminJobsPerPage;
+  const pageJobs = adminJobsDemo.slice(start, end);
+
+  container.innerHTML = pageJobs.map((j, i) => {
+    const globalIndex = start + i;
+    return `
+      <div class="admin-job-row" style="display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 16px; background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 18px 20px; margin-bottom: 12px;">
+        <div>
+          <div class="admin-job-title" style="font-size: 15px; font-weight: 600; color: var(--dark); margin-bottom: 3px;">${_esc(j.title)}</div>
+          <div class="admin-job-meta" style="font-size: 12px; color: var(--muted); display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+            <span style="display:inline-flex;align-items:center;gap:4px;"><i data-lucide="map-pin" style="width:13px;height:13px;"></i> ${_esc([j.city, j.country].filter(Boolean).join(', ') || '—')}</span>
+            <span style="display:inline-flex;align-items:center;gap:4px;"><i data-lucide="tag" style="width:13px;height:13px;"></i> ${_esc(j.contract_type || '—')}</span>
+            <span style="display:inline-flex;align-items:center;gap:4px;"><i data-lucide="briefcase" style="width:13px;height:13px;"></i> ${_esc(j.sector || '—')}</span>
+            ${j.salary ? `<span style="display:inline-flex;align-items:center;gap:4px;"><i data-lucide="banknote" style="width:13px;height:13px;"></i> ${_esc(j.salary)}</span>` : ''}
+          </div>
         </div>
-      </div>
-      <div style="display: flex; gap: 8px;">
-        <button class="btn-edit-pub" type="button" onclick="editJob(${i})" style="padding: 7px 14px; background: transparent; border: 1px solid var(--border); border-radius: 6px; color: var(--mid); font-size: 12px; font-weight: 600; cursor: pointer; display:inline-flex;align-items:center;gap:5px;"><i data-lucide="pencil" style="width:13px;height:13px;"></i> Modifier</button>
-        <button class="btn-delete" type="button" onclick="deleteJob(${i}, ${j.id || 'null'})">Supprimer</button>
-      </div>
-    </div>
-  `).join('');
+        <div style="display: flex; gap: 8px;">
+          <button class="btn-edit-pub" type="button" onclick="editJob(${globalIndex})" style="padding: 7px 14px; background: transparent; border: 1px solid var(--border); border-radius: 6px; color: var(--mid); font-size: 12px; font-weight: 600; cursor: pointer; display:inline-flex;align-items:center;gap:5px;"><i data-lucide="pencil" style="width:13px;height:13px;"></i> Modifier</button>
+          <button class="btn-delete" type="button" onclick="deleteJob(${globalIndex}, ${j.id || 'null'})">Supprimer</button>
+        </div>
+      </div>`;
+  }).join('');
+
+  if (totalPages > 1) {
+    const paginationWrap = document.createElement('div');
+    paginationWrap.id = 'adminJobsPagination';
+    paginationWrap.className = 'admin-pagination';
+    paginationWrap.style.cssText = 'display:flex; justify-content:center; align-items:center; gap:8px; margin-top:24px; margin-bottom:12px; width:100%;';
+    
+    let html = `<button class="btn-filter" style="padding: 6px 12px;" onclick="changeAdminJobsPage(${currentAdminJobsPage - 1})" ${currentAdminJobsPage === 1 ? 'disabled' : ''}>Précédent</button>`;
+    for (let p = 1; p <= totalPages; p++) {
+      html += `<button class="btn-filter" style="padding: 6px 12px; ${currentAdminJobsPage === p ? 'background: var(--emerald); color:#fff; border-color:var(--emerald);' : 'background:transparent;'}" onclick="changeAdminJobsPage(${p})">${p}</button>`;
+    }
+    html += `<button class="btn-filter" style="padding: 6px 12px;" onclick="changeAdminJobsPage(${currentAdminJobsPage + 1})" ${currentAdminJobsPage === totalPages ? 'disabled' : ''}>Suivant</button>`;
+    
+    paginationWrap.innerHTML = html;
+    container.parentNode.insertBefore(paginationWrap, container.nextSibling);
+  }
+
   if (typeof lucide !== 'undefined') lucide.createIcons();
 }
+
+function changeAdminJobsPage(page) {
+  currentAdminJobsPage = page;
+  renderAdminJobsPage();
+  document.getElementById('adminJobsList')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+window.changeAdminJobsPage = changeAdminJobsPage;
 
 // Charger une offre existante dans le formulaire pour la modifier
 
