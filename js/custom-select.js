@@ -116,15 +116,33 @@ function convertNativeSelects() {
     trigger.addEventListener('click', (e) => {
       e.stopPropagation();
       document.querySelectorAll('.searchable-select.is-open').forEach(openSelect => {
-        if (openSelect !== wrapper) openSelect.classList.remove('is-open');
+        if (openSelect !== wrapper) {
+          openSelect.classList.remove('is-open');
+          openSelect.classList.remove('is-dropup');
+        }
       });
-      wrapper.classList.toggle('is-open');
+      const isOpen = wrapper.classList.toggle('is-open');
       
-      if (wrapper.classList.contains('is-open') && hasSearch) {
-        searchInput.value = '';
-        options.forEach(opt => opt.classList.remove('is-hidden'));
-        noResults.style.display = 'none';
-        setTimeout(() => searchInput.focus(), 50);
+      if (isOpen) {
+        // Smart vertical positioning check
+        const rect = wrapper.getBoundingClientRect();
+        const dropdownHeight = 240; // Max expected height of the dropdown
+        const spaceBelow = window.innerHeight - rect.bottom;
+        const spaceAbove = rect.top;
+        if (spaceBelow < dropdownHeight && spaceAbove > spaceBelow) {
+          wrapper.classList.add('is-dropup');
+        } else {
+          wrapper.classList.remove('is-dropup');
+        }
+        
+        if (hasSearch) {
+          searchInput.value = '';
+          options.forEach(opt => opt.classList.remove('is-hidden'));
+          noResults.style.display = 'none';
+          setTimeout(() => searchInput.focus(), 50);
+        }
+      } else {
+        wrapper.classList.remove('is-dropup');
       }
     });
     
@@ -206,5 +224,17 @@ document.addEventListener('DOMContentLoaded', () => {
   setTimeout(convertNativeSelects, 500);
 });
 
+function rebuildCustomSelect(select) {
+  if (!select) return;
+  const wrapper = select.nextSibling;
+  if (wrapper && wrapper.classList.contains('searchable-select')) {
+    wrapper.remove();
+  }
+  select.style.display = '';
+  select.dataset.customized = 'false';
+  convertNativeSelects();
+}
+
 window.convertNativeSelects = convertNativeSelects;
 window.syncCustomSelects = syncCustomSelects;
+window.rebuildCustomSelect = rebuildCustomSelect;

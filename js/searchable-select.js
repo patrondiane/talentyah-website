@@ -68,7 +68,7 @@ function initSearchableSelects() {
     const hiddenInput = container.querySelector('input[type="hidden"]');
     const displayValue = container.querySelector('.searchable-select-value');
 
-    // Toggle dropdown
+    // Toggle dropdown with smart dropup positioning
     trigger.addEventListener('click', (e) => {
       e.stopPropagation();
       
@@ -76,15 +76,29 @@ function initSearchableSelects() {
       document.querySelectorAll('.searchable-select.is-open').forEach(openSelect => {
         if (openSelect !== selectEl) {
           openSelect.classList.remove('is-open');
+          openSelect.classList.remove('is-dropup');
         }
       });
 
-      selectEl.classList.toggle('is-open');
-      if (selectEl.classList.contains('is-open')) {
+      const isOpen = selectEl.classList.toggle('is-open');
+      if (isOpen) {
+        // Smart vertical positioning check
+        const rect = selectEl.getBoundingClientRect();
+        const dropdownHeight = 240; // Max expected height
+        const spaceBelow = window.innerHeight - rect.bottom;
+        const spaceAbove = rect.top;
+        if (spaceBelow < dropdownHeight && spaceAbove > spaceBelow) {
+          selectEl.classList.add('is-dropup');
+        } else {
+          selectEl.classList.remove('is-dropup');
+        }
+        
         searchInput.value = '';
         options.forEach(opt => opt.classList.remove('is-hidden'));
         noResults.style.display = 'none';
         setTimeout(() => searchInput.focus(), 50);
+      } else {
+        selectEl.classList.remove('is-dropup');
       }
     });
 
