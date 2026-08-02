@@ -196,6 +196,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   /* ── Filtres candidatures ── */
   document.getElementById('applyFiltersBtn')?.addEventListener('click', loadCandidates);
+  document.getElementById('filterSector')?.addEventListener('input', loadCandidates);
+  document.getElementById('filterCountry')?.addEventListener('input', loadCandidates);
   document.getElementById('resetFiltersBtn')?.addEventListener('click', () => {
     document.getElementById('filterSector').value  = '';
     document.getElementById('filterCountry').value = '';

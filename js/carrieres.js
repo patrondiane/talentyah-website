@@ -68,6 +68,9 @@ function buildDynamicFilters(jobs) {
   if (sectorSelect) {
     sectorSelect.innerHTML = '<option value="">Tous les secteurs</option>' +
       Object.keys(sectors).sort().map(s => `<option value="${s}">${s}</option>`).join('');
+    if (typeof rebuildCustomSelect !== 'undefined') {
+      rebuildCustomSelect(sectorSelect);
+    }
   }
 
   // Mettre à jour les compteurs types de contrat
