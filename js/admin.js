@@ -8,6 +8,18 @@ const API = 'http://localhost:4001';
 let currentAdminJobsPage = 1;
 const adminJobsPerPage = 8;
 
+let currentCandidatesPage = 1;
+const candidatesPerPage = 8;
+let cachedCandidates = [];
+
+let currentCompaniesPage = 1;
+const companiesPerPage = 8;
+let cachedCompanies = [];
+
+let currentPublicationsPage = 1;
+const publicationsPerPage = 8;
+let cachedPublications = [];
+
 // Intercepteur global pour déconnecter automatiquement si le token est expiré (401)
 const originalFetch = window.fetch;
 window.fetch = async function(...args) {
@@ -814,6 +826,9 @@ async function loadCandidates() {
     if (country) rows = rows.filter(r => (r.country||'').toLowerCase().includes(country.toLowerCase()));
   }
 
+  cachedCandidates = rows;
+  currentCandidatesPage = 1;
+
   const badge = document.getElementById('countCandidates');
   const stat1 = document.getElementById('statTotalCandidates');
   const stat2 = document.getElementById('statWithCV');
@@ -823,11 +838,28 @@ async function loadCandidates() {
   if (stat2) stat2.textContent = rows.filter(r => r.cv_url).length;
   if (stat3) stat3.textContent = new Set(rows.map(r => r.country).filter(Boolean)).size || '—';
 
-  if (!rows.length) {
+  renderCandidatesPage();
+}
+
+function renderCandidatesPage() {
+  const tbody = document.getElementById('candidatesTbody');
+  if (!tbody) return;
+
+  const total = cachedCandidates.length;
+  const oldPagination = document.getElementById('candidatesPagination');
+  if (oldPagination) oldPagination.remove();
+
+  if (!total) {
     tbody.innerHTML = '<tr class="empty-row"><td colspan="8">Aucune candidature reçue pour le moment.</td></tr>';
     return;
   }
-  tbody.innerHTML = rows.map(r => `
+
+  const totalPages = Math.ceil(total / candidatesPerPage);
+  const start = (currentCandidatesPage - 1) * candidatesPerPage;
+  const end = start + candidatesPerPage;
+  const pageItems = cachedCandidates.slice(start, end);
+
+  tbody.innerHTML = pageItems.map(r => `
     <tr>
       <td style="color:var(--muted);white-space:nowrap;">${_fmtDate(r.created_at)}</td>
       <td><strong>${_esc(r.first_name)} ${_esc(r.last_name)}</strong></td>
@@ -843,7 +875,34 @@ async function loadCandidates() {
         <button class="btn-delete" onclick="deleteCandidate(${r.id}, this)">Supprimer</button>
       </td>
     </tr>`).join('');
+
+  if (totalPages > 1) {
+    const paginationWrap = document.createElement('div');
+    paginationWrap.id = 'candidatesPagination';
+    paginationWrap.className = 'admin-pagination';
+    paginationWrap.style.cssText = 'display:flex; justify-content:center; align-items:center; gap:8px; margin-top:24px; margin-bottom:12px; width:100%;';
+    
+    let html = `<button class="admin-page-btn" style="padding: 6px 14px; border-radius: 6px; border: 1.5px solid var(--border); background: #fff; color: var(--dark); font-weight: 600; cursor: pointer; transition: all 0.2s;" onclick="changeCandidatesPage(${currentCandidatesPage - 1})" ${currentCandidatesPage === 1 ? 'disabled' : ''}>Précédent</button>`;
+    for (let p = 1; p <= totalPages; p++) {
+      const activeStyle = `background: var(--emerald); color: #fff; border-color: var(--emerald); cursor: default;`;
+      const inactiveStyle = `background: #fff; color: var(--dark); border-color: var(--border); cursor: pointer;`;
+      html += `<button class="admin-page-btn" style="padding: 6px 14px; margin: 0 2px; border-radius: 6px; border: 1.5px solid ${currentCandidatesPage === p ? 'var(--emerald)' : 'var(--border)'}; ${currentCandidatesPage === p ? activeStyle : inactiveStyle} font-weight: 600; transition: all 0.2s;" onclick="changeCandidatesPage(${p})">${p}</button>`;
+    }
+    html += `<button class="admin-page-btn" style="padding: 6px 14px; border-radius: 6px; border: 1.5px solid var(--border); background: #fff; color: var(--dark); font-weight: 600; cursor: pointer; transition: all 0.2s;" onclick="changeCandidatesPage(${currentCandidatesPage + 1})" ${currentCandidatesPage === totalPages ? 'disabled' : ''}>Suivant</button>`;
+    
+    paginationWrap.innerHTML = html;
+    const tableWrap = tbody.closest('.admin-table-wrap');
+    if (tableWrap) tableWrap.parentNode.insertBefore(paginationWrap, tableWrap.nextSibling);
+  }
+
+  if (typeof lucide !== 'undefined') lucide.createIcons();
 }
+
+function changeCandidatesPage(page) {
+  currentCandidatesPage = page;
+  renderCandidatesPage();
+}
+window.changeCandidatesPage = changeCandidatesPage;
 
 async function deleteCandidate(id, btn) {
   if (!confirm('Supprimer définitivement cette candidature ?')) return;
@@ -879,8 +938,30 @@ async function loadCompanies() {
     ];
   }
 
+  cachedCompanies = rows;
+  currentCompaniesPage = 1;
+
   const badge = document.getElementById('countCompanies');
   if (badge) badge.textContent = rows.length;
+
+  renderCompaniesPage();
+}
+
+function renderCompaniesPage() {
+  const tbody = document.getElementById('companiesTbody');
+  if (!tbody) return;
+
+  const total = cachedCompanies.length;
+  const oldPagination = document.getElementById('companiesPagination');
+  if (oldPagination) oldPagination.remove();
+
+  if (!total) {
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="8">Aucune demande reçue pour le moment.</td></tr>';
+    return;
+  }
+
+  // Stocker les données pour y accéder depuis showCompanyMsg
+  window._companiesData = cachedCompanies;
 
   const urgencyMap = {
     elevee:  '<span style="display:inline-block;padding:3px 8px;font-size:11px;font-weight:700;border-radius:3px;background:rgba(180,40,40,0.1);color:#b34040;border:1px solid rgba(180,40,40,0.2);">Élevée</span>',
@@ -888,17 +969,15 @@ async function loadCompanies() {
     faible:  '<span style="display:inline-block;padding:3px 8px;font-size:11px;font-weight:700;border-radius:3px;background:rgba(26,82,51,0.1);color:var(--emerald);border:1px solid rgba(26,82,51,0.2);">Faible</span>',
   };
 
-  if (!rows.length) {
-    tbody.innerHTML = '<tr class="empty-row"><td colspan="8">Aucune demande reçue pour le moment.</td></tr>';
-    return;
-  }
+  const totalPages = Math.ceil(total / companiesPerPage);
+  const start = (currentCompaniesPage - 1) * companiesPerPage;
+  const end = start + companiesPerPage;
+  const pageItems = cachedCompanies.slice(start, end);
 
-  // Stocker les données pour y accéder depuis showCompanyMsg
-  window._companiesData = rows;
-
-  tbody.innerHTML = rows.map((r, idx) => {
+  tbody.innerHTML = pageItems.map((r, i) => {
+    const globalIdx = start + i;
     const msgBtn = r.message
-      ? '<button onclick="showCompanyMsg(' + idx + ')" style="background:none;border:1px solid var(--border);border-radius:4px;padding:4px 10px;cursor:pointer;font-size:12px;color:var(--muted);display:inline-flex;align-items:center;gap:5px;"><i data-lucide="message-square" style="width:13px;height:13px;"></i> Voir message</button>'
+      ? '<button onclick="showCompanyMsg(' + globalIdx + ')" style="background:none;border:1px solid var(--border);border-radius:4px;padding:4px 10px;cursor:pointer;font-size:12px;color:var(--muted);display:inline-flex;align-items:center;gap:5px;"><i data-lucide="message-square" style="width:13px;height:13px;"></i> Voir message</button>'
       : '—';
     return `
     <tr>
@@ -915,8 +994,34 @@ async function loadCompanies() {
       <td><button class="btn-delete" onclick="deleteCompany(${r.id}, this)">Supprimer</button></td>
     </tr>`;
   }).join('');
+
+  if (totalPages > 1) {
+    const paginationWrap = document.createElement('div');
+    paginationWrap.id = 'companiesPagination';
+    paginationWrap.className = 'admin-pagination';
+    paginationWrap.style.cssText = 'display:flex; justify-content:center; align-items:center; gap:8px; margin-top:24px; margin-bottom:12px; width:100%;';
+    
+    let html = `<button class="admin-page-btn" style="padding: 6px 14px; border-radius: 6px; border: 1.5px solid var(--border); background: #fff; color: var(--dark); font-weight: 600; cursor: pointer; transition: all 0.2s;" onclick="changeCompaniesPage(${currentCompaniesPage - 1})" ${currentCompaniesPage === 1 ? 'disabled' : ''}>Précédent</button>`;
+    for (let p = 1; p <= totalPages; p++) {
+      const activeStyle = `background: var(--emerald); color: #fff; border-color: var(--emerald); cursor: default;`;
+      const inactiveStyle = `background: #fff; color: var(--dark); border-color: var(--border); cursor: pointer;`;
+      html += `<button class="admin-page-btn" style="padding: 6px 14px; margin: 0 2px; border-radius: 6px; border: 1.5px solid ${currentCompaniesPage === p ? 'var(--emerald)' : 'var(--border)'}; ${currentCompaniesPage === p ? activeStyle : inactiveStyle} font-weight: 600; transition: all 0.2s;" onclick="changeCompaniesPage(${p})">${p}</button>`;
+    }
+    html += `<button class="admin-page-btn" style="padding: 6px 14px; border-radius: 6px; border: 1.5px solid var(--border); background: #fff; color: var(--dark); font-weight: 600; cursor: pointer; transition: all 0.2s;" onclick="changeCompaniesPage(${currentCompaniesPage + 1})" ${currentCompaniesPage === totalPages ? 'disabled' : ''}>Suivant</button>`;
+    
+    paginationWrap.innerHTML = html;
+    const tableWrap = tbody.closest('.admin-table-wrap');
+    if (tableWrap) tableWrap.parentNode.insertBefore(paginationWrap, tableWrap.nextSibling);
+  }
+
   if (typeof lucide !== 'undefined') lucide.createIcons();
 }
+
+function changeCompaniesPage(page) {
+  currentCompaniesPage = page;
+  renderCompaniesPage();
+}
+window.changeCompaniesPage = changeCompaniesPage;
 
 async function deleteCompany(id, btn) {
   if (!confirm('Supprimer définitivement cette demande entreprise ?')) return;
@@ -1377,6 +1482,8 @@ async function loadPublications() {
       date:     p.published_at || p.created_at || '',
     }));
   } catch { /* garde les données locales */ }
+  cachedPublications = publications;
+  currentPublicationsPage = 1;
   const badge = document.getElementById('countPublications');
   if (badge) badge.textContent = publications.length;
   renderPubList();
