@@ -80,9 +80,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             fileLabel.textContent = 'Cliquez pour ajouter votre CV';
             fileLabel.parentElement.classList.remove('has-file');
           }
-          form.style.opacity      = '0.3';
-          form.style.pointerEvents = 'none';
-          if (successBox) successBox.style.display = 'block';
+          form.classList.add('is-submitted');
+          if (successBox) {
+            successBox.classList.add('show');
+            successBox.style.display = 'flex';
+          }
           btn.textContent = 'Candidature envoyée !';
         } else {
           const data = await res.json();

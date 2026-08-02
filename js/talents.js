@@ -145,7 +145,11 @@ function cardHTML(job) {
         });
 
         form.reset();
-        if (successBox) successBox.style.display = 'block';
+        form.classList.add('is-submitted');
+        if (successBox) {
+          successBox.classList.add('show');
+          successBox.style.display = 'flex';
+        }
 
         // Reset label fichier
         if (fileLabel) fileLabel.textContent = 'Cliquez pour ajouter votre CV';

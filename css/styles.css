@@ -903,13 +903,70 @@ textarea { resize: vertical; min-height: 120px; }
 
 .form-note { font-size: 12px; color: var(--muted); text-align: center; margin-top: 16px; line-height: 1.6; }
 
+/* Success Overlay Centré */
 .form-success {
-  display: none; text-align: center; padding: 20px;
-  background: rgba(26,82,51,0.06); border: 1px solid rgba(26,82,51,0.2);
-  border-radius: var(--radius-md); margin-top: 16px;
+  display: none;
 }
-.form-success.show { display: block; }
-.form-success p { font-size: 15px; color: var(--emerald); font-weight: 500; }
+.form-success.show {
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: calc(100% - 32px);
+  max-width: 380px;
+  background: #ffffff;
+  border: 1.5px solid rgba(26,82,51,0.15);
+  border-radius: 12px;
+  padding: 36px 24px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+  z-index: 10;
+  text-align: center;
+  box-sizing: border-box;
+  animation: formSuccessPop 0.35s cubic-bezier(0.1, 0.8, 0.25, 1) forwards;
+}
+
+.form-success.show::before {
+  content: '✓';
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(26,82,51,0.1);
+  color: var(--emerald, #1a5233);
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.form-success.show p {
+  font-size: 14.5px;
+  color: var(--dark, #1e293b);
+  line-height: 1.5;
+  font-weight: 500;
+  margin: 0;
+}
+
+@keyframes formSuccessPop {
+  from { opacity: 0; transform: translate(-50%, -42%); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+/* Blur effect on form elements when submitted */
+form.is-submitted {
+  position: relative;
+}
+form.is-submitted > *:not(.form-success) {
+  filter: blur(4px) grayscale(40%);
+  opacity: 0.15;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
 
 .rdv-card {
   margin-top: 32px; padding: 28px 32px;
