@@ -5,6 +5,9 @@
 
 const API = window.API_BASE;
 let allJobs = [];
+let filteredJobsGlobal = [];
+let currentPage = 1;
+const jobsPerPage = 6;
 
 document.addEventListener('DOMContentLoaded', () => {
   loadJobs();
@@ -27,7 +30,9 @@ async function loadJobs() {
     allJobs = [];
   }
   buildDynamicFilters(allJobs);
-  renderJobs(allJobs);
+  filteredJobsGlobal = allJobs;
+  currentPage = 1;
+  renderJobsPage();
   updateCount(allJobs.length);
   updateFilterCounts(allJobs);
 }
@@ -174,11 +179,17 @@ function _sectorBadge(sector) {
   return `<span style="font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px;background:${bg};color:${col};">${sector}</span>`;
 }
 
-function renderJobs(jobs) {
+function renderJobsPage() {
   const list = document.getElementById('jobsList');
   if (!list) return;
 
-  if (!jobs || jobs.length === 0) {
+  const totalJobs = filteredJobsGlobal.length;
+  
+  // Supprimer l'ancien wrapper de pagination s'il existe
+  const oldPagination = document.getElementById('jobsPagination');
+  if (oldPagination) oldPagination.remove();
+
+  if (totalJobs === 0) {
     list.innerHTML = `
       <div class="jobs-empty">
         <i data-lucide="briefcase" style="width:48px;height:48px;stroke-width:1.25;color:var(--muted);"></i>
@@ -199,7 +210,12 @@ function renderJobs(jobs) {
 
   function stripHtml(html) { return (html || '').replace(/<[^>]*>?/gm, '').trim(); }
 
-  list.innerHTML = jobs.map(job => `
+  const totalPages = Math.ceil(totalJobs / jobsPerPage);
+  const start = (currentPage - 1) * jobsPerPage;
+  const end = start + jobsPerPage;
+  const pageJobs = filteredJobsGlobal.slice(start, end);
+
+  list.innerHTML = pageJobs.map(job => `
     <article class="job-card" onclick="window.location='offre.html?id=${job.id}'">
       <div>
         <div class="job-top">
@@ -218,8 +234,33 @@ function renderJobs(jobs) {
       </div>
     </article>
   `).join('');
+
+  // Création dynamique de la pagination
+  if (totalPages > 1) {
+    const paginationWrap = document.createElement('div');
+    paginationWrap.id = 'jobsPagination';
+    paginationWrap.className = 'jobs-pagination';
+    
+    let html = `<button class="nav-btn" onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>Précédent</button>`;
+    for (let p = 1; p <= totalPages; p++) {
+      html += `<button class="${currentPage === p ? 'active' : ''}" onclick="changePage(${p})">${p}</button>`;
+    }
+    html += `<button class="nav-btn" onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>Suivant</button>`;
+    
+    paginationWrap.innerHTML = html;
+    list.parentNode.insertBefore(paginationWrap, list.nextSibling);
+  }
+
   if (typeof lucide !== 'undefined') lucide.createIcons();
 }
+
+function changePage(page) {
+  currentPage = page;
+  renderJobsPage();
+  document.getElementById('jobsList')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+window.changePage = changePage;
 
 function updateCount(n) {
   const el = document.getElementById('jobsCount');
