@@ -141,7 +141,7 @@ function cardHTML(job) {
         await window.apiFetch('/api/candidates', {
           method: 'POST',
           body: fd
-          // ⚠️ Ne pas mettre Content-Type : le navigateur gère le boundary
+          // NOTE: Ne pas mettre Content-Type : le navigateur gère le boundary
         });
 
         form.reset();

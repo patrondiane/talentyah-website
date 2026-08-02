@@ -934,7 +934,7 @@ function showCompanyMsg(idx) {
       <div style="font-size:11px;color:#999;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Message de</div>
       <h3 style="margin:0 0 4px;font-size:18px;color:#1a2a1a;">${_esc(r.company_name || '—')}</h3>
       <a href="mailto:${_esc(r.email)}" style="color:#1a5233;font-size:13px;text-decoration:none;">${_esc(r.email)}</a>
-      ${r.phone ? `<span style="color:#999;font-size:13px;margin-left:12px;">📞 ${_esc(r.phone)}</span>` : ''}
+      ${r.phone ? `<span style="color:#999;font-size:13px;margin-left:12px;"><i data-lucide="phone" style="width:13px;height:13px;vertical-align:middle;margin-right:3px;"></i> ${_esc(r.phone)}</span>` : ''}
       <hr style="margin:16px 0;border:none;border-top:1px solid #eee;">
       <table style="width:100%;font-size:13px;margin-bottom:16px;">
         <tr><td style="color:#999;padding:4px 0;width:120px;">Région</td><td style="font-weight:500;">${_esc(r.region||'—')}</td></tr>
@@ -946,7 +946,7 @@ function showCompanyMsg(idx) {
       <div style="margin-top:20px;">
         <a href="mailto:${_esc(r.email)}?subject=Suite à votre demande — Talentyah&body=Bonjour%2C%0A%0ANous avons bien reçu votre demande concernant le poste de ${_esc(r.role_needed||'')}. %0A%0ACordialement%2C%0AL'équipe Talentyah"
            style="display:inline-block;background:#1a5233;color:#fff;padding:10px 20px;border-radius:6px;text-decoration:none;font-size:13px;font-weight:600;">
-          ✉️ Répondre par email →
+          <i data-lucide="mail" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Répondre par email →
         </a>
       </div>
     </div>`;
@@ -1178,6 +1178,7 @@ function renderCarouselList(slides) {
       </div>
     </div>`;
   }).join('');
+  if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
 async function deleteSlide(id) {
@@ -1240,6 +1241,7 @@ function renderPartnerNames() {
       <button class="btn-delete" onclick="removePartner(${i})">Retirer</button>
     </div>
   `).join('');
+  if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
 async function handlePartnerImg(input, i) {
@@ -1351,8 +1353,8 @@ function renderPubList() {
             </span>
           </div>
           <div class="pub-card-meta">
-            <span>🗂 ${_esc(p.category)}</span>
-            <span>📅 ${new Date(p.date).toLocaleDateString('fr-FR')}</span>
+            <span><i data-lucide="folder" style="width:13px;height:13px;vertical-align:middle;margin-right:4px;"></i> ${_esc(p.category)}</span>
+            <span><i data-lucide="calendar" style="width:13px;height:13px;vertical-align:middle;margin-right:4px;"></i> ${new Date(p.date).toLocaleDateString('fr-FR')}</span>
           </div>
           ${p.excerpt ? '<div class="pub-card-excerpt">' + _esc(p.excerpt.substring(0, 120)) + '…</div>' : ''}
         </div>
@@ -1362,7 +1364,7 @@ function renderPubList() {
         }
       </div>
       <div class="pub-actions">
-        <button class="btn-edit-pub" onclick="editPub(${i})">✎ Modifier</button>
+        <button class="btn-edit-pub" onclick="editPub(${i})"><i data-lucide="pencil" style="width:13px;height:13px;vertical-align:middle;margin-right:4px;"></i> Modifier</button>
         <button class="btn-edit-pub" onclick="togglePubStatus(${i})"
                 style="color:${p.status === 'published' ? 'var(--muted)' : 'var(--emerald)'}">
           ${p.status === 'published' ? 'Dépublier' : 'Publier'}
@@ -1529,7 +1531,7 @@ function renderAccessList(users) {
       <td style="display:flex;gap:6px;flex-wrap:wrap;">
         <button onclick="resetPassword(${u.id}, '${_esc(u.email)}')"
                 style="background:none;border:1px solid var(--border);border-radius:4px;padding:4px 10px;cursor:pointer;font-size:12px;color:var(--dark);">
-          🔑 Réinitialiser
+          <i data-lucide="key-round" style="width:13px;height:13px;vertical-align:middle;margin-right:4px;"></i> Réinitialiser
         </button>
         ${u.role !== 'superadmin' && !isSelf
           ? `<button class="btn-delete" onclick="deleteAccess(${u.id})" style="font-size:12px;padding:4px 10px;">Révoquer</button>`
