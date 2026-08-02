@@ -41,6 +41,7 @@ function convertNativeSelects() {
       })
       .join('');
       
+    const allowNew = select.dataset.allowNew === 'true';
     wrapper.innerHTML = `
       <div class="searchable-select-trigger">
         <span class="searchable-select-value">${selectedText}</span>
@@ -54,6 +55,7 @@ function convertNativeSelects() {
         <ul class="searchable-select-options">
           ${optionsMarkup}
           <li class="searchable-select-no-results">Aucun résultat trouvé</li>
+          ${allowNew ? `<li class="searchable-select-add-new" style="display:none; padding:10px 14px; color:var(--emerald); font-weight:600; cursor:pointer; border-top:1px dashed var(--border); font-size:13px; display:flex; align-items:center; gap:6px;"></li>` : ''}
         </ul>
       </div>
     `;
@@ -65,8 +67,52 @@ function convertNativeSelects() {
     const searchInput = wrapper.querySelector('.searchable-select-search');
     const options = wrapper.querySelectorAll('.searchable-select-option');
     const noResults = wrapper.querySelector('.searchable-select-no-results');
+    const addNewBtn = wrapper.querySelector('.searchable-select-add-new');
     const displayValue = wrapper.querySelector('.searchable-select-value');
     
+    if (addNewBtn) {
+      addNewBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const val = addNewBtn.dataset.value;
+        if (!val) return;
+        
+        // Add to native select
+        const opt = document.createElement('option');
+        opt.value = val;
+        opt.textContent = val;
+        select.appendChild(opt);
+        select.value = val;
+        
+        // Add to custom options representation
+        const li = document.createElement('li');
+        li.className = 'searchable-select-option is-selected';
+        li.dataset.value = val;
+        li.textContent = val;
+        
+        // Remove selection from others
+        wrapper.querySelectorAll('.searchable-select-option').forEach(o => o.classList.remove('is-selected'));
+        
+        const parent = wrapper.querySelector('.searchable-select-options');
+        parent.insertBefore(li, noResults);
+        
+        displayValue.textContent = val;
+        
+        li.addEventListener('click', (ev) => {
+          ev.stopPropagation();
+          wrapper.querySelectorAll('.searchable-select-option').forEach(o => o.classList.remove('is-selected'));
+          li.classList.add('is-selected');
+          select.value = val;
+          displayValue.textContent = val;
+          select.dispatchEvent(new Event('change', { bubbles: true }));
+          wrapper.classList.remove('is-open');
+        });
+        
+        select.dispatchEvent(new Event('change', { bubbles: true }));
+        wrapper.classList.remove('is-open');
+        addNewBtn.style.display = 'none';
+      });
+    }
+
     trigger.addEventListener('click', (e) => {
       e.stopPropagation();
       document.querySelectorAll('.searchable-select.is-open').forEach(openSelect => {
