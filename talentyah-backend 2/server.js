@@ -53,7 +53,7 @@ app.get('/api/health', (req, res) => res.json({ status: 'ok', version: '1.0.0' }
 // Rate limiting
 const apiLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 heure
-  max: 100, // Limite globale
+  max: 5000, // Limite généreuse pour permettre le polling et l'administration fluide
   message: { error: 'Trop de requêtes, veuillez réessayer plus tard.' }
 });
 

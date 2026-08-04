@@ -20,6 +20,19 @@ let currentPublicationsPage = 1;
 const publicationsPerPage = 8;
 let cachedPublications = [];
 
+
+function resetLoginForm() {
+  const loginForm = document.getElementById('adminLoginForm');
+  if (loginForm) {
+    const btn = loginForm.querySelector('.admin-login-btn') || loginForm.querySelector('button[type="submit"]');
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = 'Se connecter';
+    }
+  }
+}
+window.resetLoginForm = resetLoginForm;
+
 // Intercepteur global pour déconnecter automatiquement si le token est expiré (401)
 const originalFetch = window.fetch;
 window.fetch = async function(...args) {
@@ -33,6 +46,7 @@ window.fetch = async function(...args) {
       if (dashboard) dashboard.style.display = 'none';
       if (loginSection) loginSection.style.display = 'flex';
       document.documentElement.classList.remove('is-logged-in');
+      resetLoginForm();
       
       // Afficher un toast d'erreur
       if (typeof showToast !== 'undefined') {
@@ -148,7 +162,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* Auto-login si token présent */
-  if (sessionStorage.getItem('talentyah_token')) showDashboard();
+  if (sessionStorage.getItem('talentyah_token')) {
+    showDashboard();
+  } else {
+    resetLoginForm();
+  }
 
   /* ── Toggle visibilité mot de passe ── */
   const toggleBtn = document.getElementById('togglePasswordBtn');
