@@ -1202,16 +1202,17 @@ window.changeAdminJobsPage = changeAdminJobsPage;
 
 // Charger une offre existante dans le formulaire pour la modifier
 
-// Fonctions pour ouvrir et fermer le tiroir (drawer) des offres d'emploi
+// Fonctions pour ouvrir et fermer la modal centrée des offres d'emploi
 function openJobDrawer() {
   resetJobForm();
   const overlay = document.getElementById('jobDrawerOverlay');
   const drawer = document.getElementById('jobDrawer');
   if (overlay && drawer) {
-    overlay.style.display = 'block';
+    overlay.style.display = 'flex';
     setTimeout(() => {
       overlay.style.opacity = '1';
-      drawer.style.right = '0';
+      drawer.style.transform = 'scale(1)';
+      drawer.style.opacity = '1';
     }, 50);
   }
 }
@@ -1221,7 +1222,8 @@ function closeJobDrawer() {
   const drawer = document.getElementById('jobDrawer');
   if (overlay && drawer) {
     overlay.style.opacity = '0';
-    drawer.style.right = '-600px';
+    drawer.style.transform = 'scale(0.9)';
+    drawer.style.opacity = '0';
     setTimeout(() => {
       overlay.style.display = 'none';
     }, 250);
@@ -1264,10 +1266,10 @@ function editJob(index) {
   const overlay = document.getElementById('jobDrawerOverlay');
   const drawer = document.getElementById('jobDrawer');
   if (overlay && drawer) {
-    overlay.style.display = 'block';
+    overlay.style.display = 'flex';
     setTimeout(() => {
       overlay.style.opacity = '1';
-      drawer.style.right = '0';
+      drawer.style.transform = 'scale(1)'; drawer.style.opacity = '1';
     }, 50);
   }
 }
@@ -1581,10 +1583,11 @@ function openPubDrawer() {
   const overlay = document.getElementById('pubDrawerOverlay');
   const drawer = document.getElementById('pubDrawer');
   if (overlay && drawer) {
-    overlay.style.display = 'block';
+    overlay.style.display = 'flex';
     setTimeout(() => {
       overlay.style.opacity = '1';
-      drawer.style.right = '0';
+      drawer.style.transform = 'scale(1)';
+      drawer.style.opacity = '1';
     }, 50);
   }
 }
@@ -1594,7 +1597,8 @@ function closePubDrawer() {
   const drawer = document.getElementById('pubDrawer');
   if (overlay && drawer) {
     overlay.style.opacity = '0';
-    drawer.style.right = '-600px';
+    drawer.style.transform = 'scale(0.9)';
+    drawer.style.opacity = '0';
     setTimeout(() => {
       overlay.style.display = 'none';
     }, 250);
@@ -1628,10 +1632,10 @@ function editPub(i) {
   const overlay = document.getElementById('pubDrawerOverlay');
   const drawer = document.getElementById('pubDrawer');
   if (overlay && drawer) {
-    overlay.style.display = 'block';
+    overlay.style.display = 'flex';
     setTimeout(() => {
       overlay.style.opacity = '1';
-      drawer.style.right = '0';
+      drawer.style.transform = 'scale(1)'; drawer.style.opacity = '1';
     }, 50);
   }
 }

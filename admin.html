@@ -285,8 +285,8 @@
         </div>
 
         <!-- Drawer de création / modification d'offre -->
-        <div class="job-drawer-overlay" id="jobDrawerOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); backdrop-filter:blur(4px); z-index:9999; opacity:0; transition:opacity 0.25s ease;" onclick="if(event.target===this)closeJobDrawer()">
-          <div class="job-drawer" id="jobDrawer" style="position:fixed; top:0; right:-600px; width:100%; max-width:600px; height:100%; background:#fff; box-shadow:-10px 0 30px rgba(0,0,0,0.15); z-index:10000; transition:right 0.3s cubic-bezier(0.16, 1, 0.3, 1); display:flex; flex-direction:column;">
+        <div class="job-drawer-overlay" id="jobDrawerOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); backdrop-filter:blur(4px); z-index:9999; opacity:0; transition:opacity 0.25s ease; align-items:center; justify-content:center; padding:20px; box-sizing:border-box;" onclick="if(event.target===this)closeJobDrawer()">
+          <div class="job-drawer" id="jobDrawer" style="position:relative; width:100%; max-width:640px; max-height:90vh; background:#fff; border-radius:12px; box-shadow:0 24px 64px rgba(0,0,0,0.3); z-index:10000; display:flex; flex-direction:column; transform:scale(0.9); transition:transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease; opacity:0; overflow:hidden;">
             <div style="background:var(--dark); padding:24px 28px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0;">
               <div>
                 <p style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:4px;margin-top:0;" id="drawerSubtitle">Nouvelle opportunité</p>
@@ -507,8 +507,8 @@
         </div>
 
         <!-- Drawer de création / modification de publication -->
-        <div class="job-drawer-overlay" id="pubDrawerOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); backdrop-filter:blur(4px); z-index:9999; opacity:0; transition:opacity 0.25s ease;" onclick="if(event.target===this)closePubDrawer()">
-          <div class="job-drawer" id="pubDrawer" style="position:fixed; top:0; right:-600px; width:100%; max-width:600px; height:100%; background:#fff; box-shadow:-10px 0 30px rgba(0,0,0,0.15); z-index:10000; transition:right 0.3s cubic-bezier(0.16, 1, 0.3, 1); display:flex; flex-direction:column;">
+        <div class="job-drawer-overlay" id="pubDrawerOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); backdrop-filter:blur(4px); z-index:9999; opacity:0; transition:opacity 0.25s ease; align-items:center; justify-content:center; padding:20px; box-sizing:border-box;" onclick="if(event.target===this)closePubDrawer()">
+          <div class="job-drawer" id="pubDrawer" style="position:relative; width:100%; max-width:640px; max-height:90vh; background:#fff; border-radius:12px; box-shadow:0 24px 64px rgba(0,0,0,0.3); z-index:10000; display:flex; flex-direction:column; transform:scale(0.9); transition:transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s ease; opacity:0; overflow:hidden;">
             <div style="background:var(--dark); padding:24px 28px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0;">
               <div>
                 <p style="font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);margin-bottom:4px;margin-top:0;" id="pubDrawerSubtitle">RÉDACTION</p>
