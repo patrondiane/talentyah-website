@@ -161,7 +161,9 @@ function filterJobs() {
   if (sort === 'recent') filtered.sort((a, b) => b.id - a.id);
   if (sort === 'alpha')  filtered.sort((a, b) => a.title.localeCompare(b.title));
 
-  renderJobs(filtered);
+  filteredJobsGlobal = filtered;
+  currentPage = 1;
+  renderJobsPage();
   updateCount(filtered.length);
 }
 
@@ -282,7 +284,9 @@ function resetAll() {
     cb.checked = false;
     _updateCheckedStyle(cb);
   });
-  renderJobs(allJobs);
+  filteredJobsGlobal = allJobs;
+  currentPage = 1;
+  renderJobsPage();
   updateCount(allJobs.length);
   updateFilterCounts(allJobs);
 }
