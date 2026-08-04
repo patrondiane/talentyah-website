@@ -1434,3 +1434,27 @@ nav.open {
     height: 32px !important;
   }
 }
+/* ── Styles pour corriger l'alignement des listes de l'éditeur riche ── */
+.rich-text-content, .article-body-text {
+  white-space: normal !important;
+  text-align: left !important;
+}
+.rich-text-content p, .article-body-text p {
+  margin-bottom: 12px;
+}
+.rich-text-content ul, .article-body-text ul {
+  list-style-type: disc !important;
+  padding-left: 24px !important;
+  margin: 12px 0 !important;
+}
+.rich-text-content ol, .article-body-text ol {
+  list-style-type: decimal !important;
+  padding-left: 24px !important;
+  margin: 12px 0 !important;
+}
+.rich-text-content li, .article-body-text li {
+  margin-bottom: 6px !important;
+  display: list-item !important;
+  list-style: inherit !important;
+  text-align: left !important;
+}
