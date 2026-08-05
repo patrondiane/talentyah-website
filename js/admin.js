@@ -2032,7 +2032,7 @@ const ATS = (() => {
   function onColDragLeave(ev) {
     ev.currentTarget.classList.remove('ats-drop-hover');
   }
-  function onColDrop(ev) {
+  async function onColDrop(ev) {
     ev.preventDefault();
     ev.currentTarget.classList.remove('ats-drop-hover');
     const newStade = ev.currentTarget.dataset.stade;
@@ -2043,11 +2043,23 @@ const ATS = (() => {
     r.stade = newStade;
     if (!Array.isArray(r.historique)) r.historique = [];
     r.historique.push({ date: new Date().toISOString(), text: `Stade changé : "${oldStade || '—'}" → "${newStade}"` });
-    db.sort((a,b)=>(STADE_ORDER[a.stade]||10)-(STADE_ORDER[b.stade]||10));
-    db.forEach((row,i)=>row._idx=i);
-    persist();
-    renderPipeline(); renderClients(); renderRelances(); initDashboard();
-    toast(`<i data-lucide="check-circle" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> ${r.entreprise} déplacé vers "${newStade}"`);
+
+    try {
+      const token = sessionStorage.getItem('talentyah_token');
+      const res = await fetch(API + '/api/crm/clients/' + r.id, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify(r)
+      });
+      if (res.ok) {
+        toast(`<i data-lucide="check-circle" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> ${r.entreprise} déplacé vers "${newStade}"`);
+        await loadCRMFromServer();
+      } else {
+        toast('❌ Erreur lors du déplacement');
+      }
+    } catch {
+      toast('❌ Erreur de connexion');
+    }
     dragIdx = null;
   }
 
@@ -2210,11 +2222,7 @@ const ATS = (() => {
 
   /* ── Entry point (appelé par loadCRM) ── */
   function init() {
-    initDashboard();
-    renderClients();
-    renderPipeline();
-    renderPartenariats();
-    renderRelances();
+    loadCRMFromServer();
   }
 
   /* ── Expose public API ── */

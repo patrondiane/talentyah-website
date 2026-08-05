@@ -74,6 +74,7 @@ app.use('/api/jobs',         require('./routes/jobs'));
 app.use('/api/publications', require('./routes/publications'));
 app.use('/api/partners',     require('./routes/partners'));
 app.use('/api/contact',      require('./routes/contact'));
+app.use('/api/crm',          require('./routes/crm'));
 
 // Alias routes
 app.use('/api/candidate',    require('./routes/candidates'));
