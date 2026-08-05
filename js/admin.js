@@ -1842,31 +1842,55 @@ const ATS = (() => {
   const STADE_ORDER = {'Partenaire actif':1,'B2C actif':2,'Client actif':3,'Négociation':4,'Relance':5,'Premier contact':6,'A contacter':7,'Mission terminée':8,"Repositionner l'offre":9,'Fermée':10,'Stand by':11,'':12};
   const STORAGE_KEY = 'talentyah_crm_data_v2';
 
-  /* Charge les données sauvegardées localement si elles existent, sinon les données par défaut */
-  function loadInitialData() {
+  let db = [];
+  let parts = [];
+  let sortCol = 'stade', sortDir = 1;
+  let currentModalIdx = null;
+
+  async function loadCRMFromServer() {
+    const token = sessionStorage.getItem('talentyah_token');
+    if (!token) return;
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed && Array.isArray(parsed.clients) && Array.isArray(parsed.partenariats)) {
-          return parsed;
+        if (parsed && (parsed.clients?.length || parsed.partenariats?.length)) {
+          console.log('CRM: Migration des données locales vers Supabase...');
+          const migRes = await fetch(API + '/api/crm/migrate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+            body: saved
+          });
+          if (migRes.ok) {
+            localStorage.removeItem(STORAGE_KEY);
+            console.log('CRM: Migration réussie.');
+          }
+        } else {
+          localStorage.removeItem(STORAGE_KEY);
         }
       }
-    } catch (e) { console.warn('CRM: lecture localStorage impossible, utilisation des données par défaut.', e); }
-    return ATS_RAW;
+
+      const resClients = await fetch(API + '/api/crm/clients', { headers: { 'Authorization': 'Bearer ' + token } });
+      const clientsData = await resClients.json();
+      db = (Array.isArray(clientsData) ? clientsData : []).map((r, i) => ({ ...r, _idx: i }));
+
+      const resPartners = await fetch(API + '/api/crm/partners', { headers: { 'Authorization': 'Bearer ' + token } });
+      const partnersData = await resPartners.json();
+      parts = (Array.isArray(partnersData) ? partnersData : []).map((r, i) => ({ ...r, _idx: i }));
+
+      initDashboard();
+      renderClients();
+      renderPipeline();
+      renderPartenariats();
+      renderRelances();
+    } catch (err) {
+      console.error('Erreur chargement CRM depuis serveur:', err);
+    }
   }
+  window.loadCRMFromServer = loadCRMFromServer;
 
-  const initialData = loadInitialData();
-  let db = initialData.clients.map((r,i) => ({...r, _idx:i}));
-  let parts = initialData.partenariats.map((r,i) => ({...r, _idx:i}));
-  let sortCol = 'stade', sortDir = 1;
-  let currentModalIdx = null;
-
-  /* Sauvegarde l'état courant dans localStorage (persiste entre les sessions/rechargements) */
   function persist() {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ clients: db, partenariats: parts }));
-    } catch (e) { console.warn('CRM: échec de la sauvegarde locale.', e); }
+    // La persistance locale est obsolète, les requêtes s'exécutent en ligne directement
   }
 
   /* ── Badge stade ── */
