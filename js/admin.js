@@ -2403,6 +2403,50 @@ function showCandidateDetails(idx) {
 }
 window.showCandidateDetails = showCandidateDetails;
 
+
+  // Popover profil utilisateur (bas de sidebar)
+  const profileCard = document.getElementById('userProfileCard');
+  const profilePopover = document.getElementById('userProfilePopover');
+  const popoverBtnProfile = document.getElementById('popoverBtnProfile');
+
+  if (profileCard && profilePopover) {
+    profileCard.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isVisible = profilePopover.style.display === 'block';
+      profilePopover.style.display = isVisible ? 'none' : 'block';
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!profileCard.contains(e.target)) {
+        profilePopover.style.display = 'none';
+      }
+    });
+  }
+
+  if (popoverBtnProfile) {
+    popoverBtnProfile.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (profilePopover) profilePopover.style.display = 'none';
+      
+      // Activer le panneau Mon Profil
+      const navButtons = document.querySelectorAll('.admin-nav-btn');
+      navButtons.forEach(btn => btn.classList.remove('active'));
+
+      const panels = document.querySelectorAll('.admin-panel');
+      panels.forEach(p => p.style.display = 'none');
+
+      const profilePanel = document.getElementById('panelProfile');
+      if (profilePanel) profilePanel.style.display = 'block';
+
+      const titleEl = document.getElementById('adminTopbarTitle');
+      const subEl   = document.getElementById('adminTopbarSubtitle');
+      if (titleEl) titleEl.textContent = 'Mon Profil';
+      if (subEl)   subEl.textContent   = 'Gérez vos informations personnelles et votre mot de passe';
+
+      loadProfile();
+    });
+  }
+
 /* ── Mon Profil Controller ── */
 async function loadProfile() {
   const token = sessionStorage.getItem('talentyah_token');

@@ -160,11 +160,20 @@
       </nav>
 
       <div class="admin-sidebar-footer" style="padding: 20px 24px; border-top: 1px solid rgba(255,255,255,0.06); display: flex; flex-direction: column; gap: 10px; background: rgba(0,0,0,0.15);">
-        <div class="admin-profile-info" style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+        <div class="admin-profile-info" id="userProfileCard" style="display: flex; align-items: center; gap: 10px; cursor: pointer; position: relative; padding: 6px 8px; border-radius: 8px; transition: background 0.15s ease; user-select: none;" onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background='transparent'">
           <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--emerald); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px;" id="profileAvatar">U</div>
-          <div style="display: flex; flex-direction: column; gap: 2px; overflow: hidden;">
+          <div style="display: flex; flex-direction: column; gap: 2px; overflow: hidden; flex: 1;">
             <span id="profileEmail" style="font-size: 12px; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px;">Email</span>
             <span class="admin-user-role" style="font-size: 11px; color: rgba(255,255,255,0.5);"></span>
+          </div>
+          <i data-lucide="chevron-up" style="width: 14px; height: 14px; color: rgba(255,255,255,0.6); flex-shrink: 0;"></i>
+          
+          <!-- Popover Menu -->
+          <div id="userProfilePopover" style="display: none; position: absolute; bottom: 100%; left: 0; margin-bottom: 8px; width: 220px; background: #fff; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); border: 1px solid var(--border); padding: 6px; z-index: 99999;">
+            <button type="button" id="popoverBtnProfile" style="width: 100%; display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: none; border: none; border-radius: 6px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; color: var(--dark); cursor: pointer; transition: background 0.15s ease;" onmouseover="this.style.background='rgba(26,82,51,0.08)'" onmouseout="this.style.background='none'">
+              <i data-lucide="user" style="width: 16px; height: 16px; color: var(--emerald);"></i>
+              Mon profil
+            </button>
           </div>
         </div>
         <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
