@@ -570,6 +570,7 @@ function showDashboard() {
   loadPartners();
   loadPublications();
   loadCRM();
+  loadProfile();
   applyPermissions();
   initNotifications(); // démarrer les notifications
 }
@@ -2401,3 +2402,101 @@ function showCandidateDetails(idx) {
   if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 window.showCandidateDetails = showCandidateDetails;
+
+/* ── Mon Profil Controller ── */
+async function loadProfile() {
+  const token = sessionStorage.getItem('talentyah_token');
+  if (!token) return;
+  try {
+    const res = await fetch(API + '/api/admin/profile', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    });
+    if (!res.ok) return;
+    const u = await res.json();
+    
+    const firstNameEl = document.getElementById('prof_first_name');
+    const lastNameEl  = document.getElementById('prof_last_name');
+    const emailEl     = document.getElementById('prof_email');
+    const roleEl      = document.getElementById('prof_role');
+    const sidebarEmail = document.getElementById('adminSidebarUserEmail');
+    
+    if (firstNameEl) firstNameEl.value = u.first_name || '';
+    if (lastNameEl)  lastNameEl.value  = u.last_name || '';
+    if (emailEl)     emailEl.value     = u.email || '';
+    if (roleEl)      roleEl.value      = u.role || '';
+    
+    if (sidebarEmail) {
+      const fullName = [u.first_name, u.last_name].filter(Boolean).join(' ');
+      sidebarEmail.textContent = fullName ? `${fullName} (${u.email})` : u.email;
+    }
+  } catch (err) {
+    console.error('Erreur chargement profil:', err);
+  }
+}
+window.loadProfile = loadProfile;
+
+document.addEventListener('DOMContentLoaded', () => {
+  const profForm = document.getElementById('profileForm');
+  if (profForm) {
+    profForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const token = sessionStorage.getItem('talentyah_token');
+      if (!token) return;
+
+      const firstName       = document.getElementById('prof_first_name')?.value.trim();
+      const lastName        = document.getElementById('prof_last_name')?.value.trim();
+      const currentPassword = document.getElementById('prof_current_password')?.value;
+      const newPassword     = document.getElementById('prof_new_password')?.value;
+      const confirmPassword = document.getElementById('prof_confirm_password')?.value;
+
+      if (newPassword) {
+        if (!currentPassword) {
+          showNotification('Erreur', 'Veuillez saisir votre mot de passe actuel pour le modifier.', false);
+          return;
+        }
+        if (newPassword !== confirmPassword) {
+          showNotification('Erreur', 'Les nouveaux mots de passe ne correspondent pas.', false);
+          return;
+        }
+        if (newPassword.length < 4) {
+          showNotification('Erreur', 'Le nouveau mot de passe doit comporter au moins 4 caractères.', false);
+          return;
+        }
+      }
+
+      const btn = document.getElementById('profSubmitBtn');
+      if (btn) { btn.disabled = true; btn.textContent = 'Enregistrement...'; }
+
+      try {
+        const res = await fetch(API + '/api/admin/profile', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify({
+            first_name: firstName,
+            last_name: lastName,
+            current_password: currentPassword || undefined,
+            new_password: newPassword || undefined
+          })
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          showNotification('Succès', 'Votre profil a été mis à jour avec succès !', true);
+          document.getElementById('prof_current_password').value = '';
+          document.getElementById('prof_new_password').value = '';
+          document.getElementById('prof_confirm_password').value = '';
+          loadProfile();
+        } else {
+          showNotification('Erreur', data.error || 'Impossible de mettre à jour le profil.', false);
+        }
+      } catch (err) {
+        showNotification('Erreur', 'Erreur de connexion au serveur.', false);
+      } finally {
+        if (btn) { btn.disabled = false; btn.textContent = 'Enregistrer les modifications'; }
+      }
+    });
+  }
+});

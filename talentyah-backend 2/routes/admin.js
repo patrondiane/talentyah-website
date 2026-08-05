@@ -106,4 +106,48 @@ router.get('/stats', auth, async (req, res) => {
   });
 });
 
+
+/* ── GET /api/admin/profile ── fetch logged-in user profile */
+router.get('/profile', auth, async (req, res) => {
+  try {
+    const user = await db.get('SELECT id, email, first_name, last_name, role, created_at FROM admin_users WHERE id = ?', [req.user.id]);
+    if (!user) return res.status(404).json({ error: 'Utilisateur non trouvé' });
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ error: 'Erreur lors de la récupération du profil.' });
+  }
+});
+
+/* ── PUT /api/admin/profile ── update profile and password */
+router.put('/profile', auth, async (req, res) => {
+  try {
+    const { first_name, last_name, current_password, new_password } = req.body;
+    const user = await db.get('SELECT * FROM admin_users WHERE id = ?', [req.user.id]);
+    if (!user) return res.status(404).json({ error: 'Utilisateur non trouvé' });
+
+    if (new_password) {
+      if (!current_password) {
+        return res.status(400).json({ error: 'Le mot de passe actuel est requis pour changer de mot de passe.' });
+      }
+      const ok = bcrypt.compareSync(current_password, user.password);
+      if (!ok) {
+        return res.status(401).json({ error: 'Le mot de passe actuel est incorrect.' });
+      }
+      if (new_password.length < 4) {
+        return res.status(400).json({ error: 'Le nouveau mot de passe doit contenir au moins 4 caractères.' });
+      }
+      const hash = bcrypt.hashSync(new_password, 10);
+      await db.run('UPDATE admin_users SET password = ?, first_name = ?, last_name = ? WHERE id = ?', [hash, first_name || null, last_name || null, req.user.id]);
+    } else {
+      await db.run('UPDATE admin_users SET first_name = ?, last_name = ? WHERE id = ?', [first_name || null, last_name || null, req.user.id]);
+    }
+
+    const updated = await db.get('SELECT id, email, first_name, last_name, role, created_at FROM admin_users WHERE id = ?', [req.user.id]);
+    res.json({ message: 'Profil mis à jour avec succès', user: updated });
+  } catch (err) {
+    console.error('[PUT /admin/profile]', err.message);
+    res.status(500).json({ error: 'Erreur lors de la mise à jour du profil.' });
+  }
+});
+
 module.exports = router;

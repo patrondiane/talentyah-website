@@ -854,7 +854,74 @@
         </div>
       </div>
 
-            <!-- ══════════ PANEL : ACCÈS & RÔLES ══════════ -->
+            <!-- ══════════ PANEL : MON PROFIL ══════════ -->
+      <div class="admin-panel" id="panelProfile" style="display:none;">
+        <div style="max-width: 680px; margin: 0 auto;">
+          <div class="admin-card" style="box-shadow: 0 4px 20px rgba(0,0,0,0.05); border-radius:12px; padding:32px;">
+            <h3 class="admin-card-title" style="display:flex; align-items:center; gap:10px; font-size:22px;">
+              <i data-lucide="user" style="width:22px; height:22px; color:var(--emerald);"></i>
+              Mon Profil & Sécurité
+            </h3>
+            
+            <form id="profileForm" style="display: flex; flex-direction: column; gap: 20px; margin-top:16px;">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div class="job-form-field">
+                  <label for="prof_first_name">Prénom</label>
+                  <input type="text" id="prof_first_name" name="first_name" placeholder="Votre prénom" style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;box-sizing:border-box;">
+                </div>
+                <div class="job-form-field">
+                  <label for="prof_last_name">Nom</label>
+                  <input type="text" id="prof_last_name" name="last_name" placeholder="Votre nom" style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;box-sizing:border-box;">
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div class="job-form-field">
+                  <label>Adresse E-mail (identifiant)</label>
+                  <input type="email" id="prof_email" disabled readonly style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;box-sizing:border-box;background:#f5f8f6;color:var(--muted);cursor:not-allowed;">
+                </div>
+                <div class="job-form-field">
+                  <label>Rôle attribué</label>
+                  <input type="text" id="prof_role" disabled readonly style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;box-sizing:border-box;background:#f5f8f6;color:var(--emerald);font-weight:600;text-transform:capitalize;cursor:not-allowed;">
+                </div>
+              </div>
+
+              <hr style="border:none; border-top:1px solid var(--border); margin: 8px 0;">
+
+              <div>
+                <h4 style="font-family:'DM Sans', sans-serif; font-size:15px; font-weight:700; color:var(--dark); margin:0 0 4px 0;">
+                  Changer de mot de passe
+                </h4>
+                <p style="font-size:12.5px; color:var(--muted); margin:0;">Laissez les champs vides si vous ne souhaitez pas modifier votre mot de passe.</p>
+              </div>
+
+              <div class="job-form-field">
+                <label for="prof_current_password">Mot de passe actuel</label>
+                <input type="password" id="prof_current_password" name="current_password" placeholder="Renseignez votre mot de passe actuel" style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;box-sizing:border-box;">
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div class="job-form-field">
+                  <label for="prof_new_password">Nouveau mot de passe</label>
+                  <input type="password" id="prof_new_password" name="new_password" placeholder="Nouveau mot de passe" style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;box-sizing:border-box;">
+                </div>
+                <div class="job-form-field">
+                  <label for="prof_confirm_password">Confirmer le nouveau mot de passe</label>
+                  <input type="password" id="prof_confirm_password" placeholder="Confirmez le nouveau mot de passe" style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;box-sizing:border-box;">
+                </div>
+              </div>
+
+              <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:12px;">
+                <button type="submit" id="profSubmitBtn" class="btn-publish-gold" style="padding:12px 28px; font-size:13.5px; font-weight:700; border-radius:6px; background:var(--emerald); color:#fff; border:none; cursor:pointer; font-family:'DM Sans', sans-serif;">
+                  Enregistrer les modifications
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════ PANEL : ACCÈS & RÔLES ══════════ -->
       <div class="admin-panel" id="panelAccess" style="display:none;">
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start;">
