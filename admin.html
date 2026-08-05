@@ -783,11 +783,17 @@
         <!-- ── PAGE : AJOUTER ── -->
         <div class="ats-page" id="ats-page-ajouter">
           <h2 style="font-family:'Cormorant Garamond',serif;font-size:22px;margin-bottom:6px;color:var(--forest-dark)">Nouvelle entrée</h2>
-          <p style="font-size:13px;color:var(--muted);margin-bottom:22px">Ajoutez un client, prospect ou partenaire à votre base B2B.</p>
+          <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Ajoutez un client, prospect ou partenaire à votre BDD B2B.</p>
+          
+          <div style="display:flex; gap:8px; margin-bottom:24px; background:#f1f5f9; padding:4px; border-radius:8px; width:fit-content; border:1px solid var(--border);">
+            <button type="button" id="atsTypeClientBtn" class="active" style="padding:6px 14px; font-size:12.5px; font-weight:600; border:none; border-radius:6px; cursor:pointer; background:var(--emerald); color:#fff; transition:all 0.2s;">Prospect / Client</button>
+            <button type="button" id="atsTypePartnerBtn" style="padding:6px 14px; font-size:12.5px; font-weight:600; border:none; border-radius:6px; cursor:pointer; background:transparent; color:var(--muted); transition:all 0.2s;">Partenaire</button>
+          </div>
+
           <div class="ats-add-form-wrap">
             <div class="ats-form-grid">
-              <div class="ats-form-field"><label>Entreprise *</label><input id="ats-add-entreprise" placeholder="Nom de l'entreprise"></div>
-              <div class="ats-form-field"><label>Secteur</label><input id="ats-add-secteur" placeholder="Ex: Banque, Conseil…"></div>
+              <div class="ats-form-field"><label id="lbl-ats-add-entreprise">Entreprise *</label><input id="ats-add-entreprise" placeholder="Nom de l'entreprise"></div>
+              <div class="ats-form-field"><label id="lbl-ats-add-secteur">Secteur</label><input id="ats-add-secteur" placeholder="Ex: Banque, Conseil…"></div>
               <div class="ats-form-field"><label>Contact principal</label><input id="ats-add-contact" placeholder="Prénom NOM"></div>
               <div class="ats-form-field"><label>Fonction</label><input id="ats-add-fonction" placeholder="DRH, CEO…"></div>
               <div class="ats-form-field"><label>Email</label><input id="ats-add-email" type="email" placeholder="email@company.com"></div>
@@ -795,13 +801,19 @@
               <div class="ats-form-field"><label>Source</label><input id="ats-add-source" placeholder="LinkedIn, recommandation…"></div>
               <div class="ats-form-field"><label>Stade *</label>
                 <select id="ats-add-stade">
-                  <option>A contacter</option><option>Premier contact</option><option>Relance</option>
-                  <option>Négociation</option><option>Client actif</option><option>Mission terminée</option>
-                  <option>Repositionner l'offre</option><option>Fermée</option><option>Stand by</option>
-                  <option>B2C actif</option><option>Partenaire actif</option>
+                  <option value="A contacter">A contacter</option>
+                  <option value="Premier contact">Premier contact</option>
+                  <option value="Relance">Relance</option>
+                  <option value="Négociation">Négociation</option>
+                  <option value="Client actif">Client actif</option>
+                  <option value="Mission terminée">Mission terminée</option>
+                  <option value="Repositionner l'offre">Repositionner l'offre</option>
+                  <option value="Fermée">Fermée</option>
+                  <option value="Stand by">Stand by</option>
+                  <option value="B2C actif">B2C actif</option>
                 </select>
               </div>
-              <div class="ats-form-field full"><label>Besoin identifié</label><textarea id="ats-add-besoin" placeholder="Description du besoin…"></textarea></div>
+              <div class="ats-form-field full" id="ats-add-besoin-row"><label>Besoin identifié</label><textarea id="ats-add-besoin" placeholder="Description du besoin…"></textarea></div>
               <div class="ats-form-field full"><label>Commentaires</label><textarea id="ats-add-commentaires" placeholder="Notes libres…"></textarea></div>
             </div>
             <div style="display:flex;gap:12px;align-items:center;">

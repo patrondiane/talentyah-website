@@ -1846,6 +1846,7 @@ const ATS = (() => {
   let parts = [];
   let sortCol = 'stade', sortDir = 1;
   let currentModalIdx = null;
+  let currentAddType = 'client';
 
   async function loadCRMFromServer() {
     const token = sessionStorage.getItem('talentyah_token');
@@ -2244,8 +2245,83 @@ const ATS = (() => {
     if(btn) { document.querySelectorAll('.crm-tab').forEach(t=>t.classList.remove('active')); btn.classList.add('active'); }
   }
 
+  function setupAddTypeToggles() {
+    const clientBtn = document.getElementById('atsTypeClientBtn');
+    const partnerBtn = document.getElementById('atsTypePartnerBtn');
+    const lblEntreprise = document.getElementById('lbl-ats-add-entreprise');
+    const inputEntreprise = document.getElementById('ats-add-entreprise');
+    const lblSecteur = document.getElementById('lbl-ats-add-secteur');
+    const inputSecteur = document.getElementById('ats-add-secteur');
+    const besoinRow = document.getElementById('ats-add-besoin-row');
+    const selectStade = document.getElementById('ats-add-stade');
+
+    if (!clientBtn || !partnerBtn) return;
+
+    const setClientMode = () => {
+      currentAddType = 'client';
+      clientBtn.style.background = 'var(--emerald)';
+      clientBtn.style.color = '#fff';
+      partnerBtn.style.background = 'transparent';
+      partnerBtn.style.color = 'var(--muted)';
+      
+      if (lblEntreprise) lblEntreprise.textContent = 'Entreprise *';
+      if (inputEntreprise) inputEntreprise.placeholder = "Nom de l'entreprise";
+      if (lblSecteur) lblSecteur.textContent = 'Secteur';
+      if (inputSecteur) inputSecteur.placeholder = 'Ex: Banque, Conseil…';
+      if (besoinRow) besoinRow.style.display = 'block';
+
+      if (selectStade) {
+        selectStade.innerHTML = `
+          <option value="A contacter">A contacter</option>
+          <option value="Premier contact">Premier contact</option>
+          <option value="Relance">Relance</option>
+          <option value="Négociation">Négociation</option>
+          <option value="Client actif">Client actif</option>
+          <option value="Mission terminée">Mission terminée</option>
+          <option value="Repositionner l'offre">Repositionner l'offre</option>
+          <option value="Fermée">Fermée</option>
+          <option value="Stand by">Stand by</option>
+          <option value="B2C actif">B2C actif</option>
+        `;
+      }
+      if (typeof window.rebuildCustomSelect === 'function') window.rebuildCustomSelect(selectStade);
+    };
+
+    const setPartnerMode = () => {
+      currentAddType = 'partner';
+      partnerBtn.style.background = 'var(--emerald)';
+      partnerBtn.style.color = '#fff';
+      clientBtn.style.background = 'transparent';
+      clientBtn.style.color = 'var(--muted)';
+      
+      if (lblEntreprise) lblEntreprise.textContent = 'Organisme *';
+      if (inputEntreprise) inputEntreprise.placeholder = "Nom de l'organisme (ex: ESCP, HEC...)";
+      if (lblSecteur) lblSecteur.textContent = 'Activité';
+      if (inputSecteur) inputSecteur.placeholder = 'Ex: Grande école, Association…';
+      if (besoinRow) besoinRow.style.display = 'none';
+
+      if (selectStade) {
+        selectStade.innerHTML = `
+          <option value="Partenaire actif">Partenaire actif</option>
+          <option value="Négociation">Négociation</option>
+          <option value="Relance">Relance</option>
+          <option value="A contacter">A contacter</option>
+          <option value="Stand by">Stand by</option>
+        `;
+      }
+      if (typeof window.rebuildCustomSelect === 'function') window.rebuildCustomSelect(selectStade);
+    };
+
+    clientBtn.onclick = setClientMode;
+    partnerBtn.onclick = setPartnerMode;
+
+    // Reset to default on setup
+    setClientMode();
+  }
+
   /* ── Entry point (appelé par loadCRM) ── */
   function init() {
+    setupAddTypeToggles();
     loadCRMFromServer();
   }
 
