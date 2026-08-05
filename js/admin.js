@@ -1584,6 +1584,7 @@ function renderPubList() {
 
 function openPubDrawer() {
   resetPubForm();
+  if (typeof syncCustomSelects !== 'undefined') syncCustomSelects();
   const overlay = document.getElementById('pubDrawerOverlay');
   const drawer = document.getElementById('pubDrawer');
   if (overlay && drawer) {
@@ -1632,6 +1633,7 @@ function editPub(i) {
 
   currentPubImg = p.image || p.image_url || p.img || null;
   updatePubImgPreview(currentPubImg);
+  if (typeof syncCustomSelects !== 'undefined') syncCustomSelects();
 
   const overlay = document.getElementById('pubDrawerOverlay');
   const drawer = document.getElementById('pubDrawer');
