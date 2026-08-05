@@ -222,6 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ── Logout ── */
   document.getElementById('logoutBtn')?.addEventListener('click', () => {
     sessionStorage.removeItem('talentyah_token');
+    document.documentElement.classList.remove('is-logged-in');
     document.getElementById('adminDashboardSection').style.display = 'none';
     document.getElementById('adminLoginSection').style.display     = 'flex';
     loginForm?.reset();
@@ -560,6 +561,7 @@ const jobForm = document.getElementById('jobForm');
    SHOW DASHBOARD
 ══════════════════════════════ */
 function showDashboard() {
+  document.documentElement.classList.add('is-logged-in');
   document.getElementById('adminLoginSection').style.display     = 'none';
   document.getElementById('adminDashboardSection').style.display = 'flex';
   loadStats();
