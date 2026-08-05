@@ -2448,6 +2448,26 @@ window.showCandidateDetails = showCandidateDetails;
   }
 
 /* ── Mon Profil Controller ── */
+let originalFirstName = '';
+let originalLastName = '';
+
+function updateProfileSubmitButtonState() {
+  const firstNameEl = document.getElementById('prof_first_name');
+  const lastNameEl  = document.getElementById('prof_last_name');
+  const newPasswordEl = document.getElementById('prof_new_password');
+  const btn = document.getElementById('profSubmitBtn');
+  if (!firstNameEl || !lastNameEl || !newPasswordEl || !btn) return;
+
+  const isDirty =
+    (firstNameEl.value.trim() !== originalFirstName) ||
+    (lastNameEl.value.trim() !== originalLastName) ||
+    (newPasswordEl.value.length > 0);
+
+  btn.disabled = !isDirty;
+  btn.style.opacity = isDirty ? '1' : '0.5';
+  btn.style.cursor = isDirty ? 'pointer' : 'not-allowed';
+}
+
 async function loadProfile() {
   const token = sessionStorage.getItem('talentyah_token');
   if (!token) return;
@@ -2464,8 +2484,11 @@ async function loadProfile() {
     const roleEl      = document.getElementById('prof_role');
     const sidebarEmail = document.getElementById('adminSidebarUserEmail');
     
-    if (firstNameEl) firstNameEl.value = u.first_name || '';
-    if (lastNameEl)  lastNameEl.value  = u.last_name || '';
+    originalFirstName = u.first_name || '';
+    originalLastName  = u.last_name || '';
+    
+    if (firstNameEl) firstNameEl.value = originalFirstName;
+    if (lastNameEl)  lastNameEl.value  = originalLastName;
     if (emailEl)     emailEl.value     = u.email || '';
     if (roleEl)      roleEl.value      = u.role || '';
     
@@ -2473,6 +2496,8 @@ async function loadProfile() {
       const fullName = [u.first_name, u.last_name].filter(Boolean).join(' ');
       sidebarEmail.textContent = fullName ? `${fullName} (${u.email})` : u.email;
     }
+    
+    updateProfileSubmitButtonState();
   } catch (err) {
     console.error('Erreur chargement profil:', err);
   }
@@ -2482,6 +2507,14 @@ window.loadProfile = loadProfile;
 document.addEventListener('DOMContentLoaded', () => {
   const profForm = document.getElementById('profileForm');
   if (profForm) {
+    const firstNameEl = document.getElementById('prof_first_name');
+    const lastNameEl  = document.getElementById('prof_last_name');
+    const newPasswordEl = document.getElementById('prof_new_password');
+    
+    if (firstNameEl) firstNameEl.addEventListener('input', updateProfileSubmitButtonState);
+    if (lastNameEl)  lastNameEl.addEventListener('input', updateProfileSubmitButtonState);
+    if (newPasswordEl) newPasswordEl.addEventListener('input', updateProfileSubmitButtonState);
+
     profForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const token = sessionStorage.getItem('talentyah_token');
