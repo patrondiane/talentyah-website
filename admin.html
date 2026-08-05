@@ -780,49 +780,60 @@
           <div class="ats-activity-list" id="ats-relances-list"></div>
         </div>
 
-        <!-- ── PAGE : AJOUTER ── -->
-        <div class="ats-page" id="ats-page-ajouter">
-          <h2 style="font-family:'Cormorant Garamond',serif;font-size:22px;margin-bottom:6px;color:var(--forest-dark)">Nouvelle entrée</h2>
-          <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Ajoutez un client, prospect ou partenaire à votre BDD B2B.</p>
-          
-          <div style="display:flex; gap:8px; margin-bottom:24px; background:#f1f5f9; padding:4px; border-radius:8px; width:fit-content; border:1px solid var(--border);">
-            <button type="button" id="atsTypeClientBtn" class="active" style="padding:6px 14px; font-size:12.5px; font-weight:600; border:none; border-radius:6px; cursor:pointer; background:var(--emerald); color:#fff; transition:all 0.2s;">Prospect / Client</button>
-            <button type="button" id="atsTypePartnerBtn" style="padding:6px 14px; font-size:12.5px; font-weight:600; border:none; border-radius:6px; cursor:pointer; background:transparent; color:var(--muted); transition:all 0.2s;">Partenaire</button>
-          </div>
 
-          <div class="ats-add-form-wrap">
-            <div class="ats-form-grid">
-              <div class="ats-form-field"><label id="lbl-ats-add-entreprise">Entreprise *</label><input id="ats-add-entreprise" placeholder="Nom de l'entreprise"></div>
-              <div class="ats-form-field"><label id="lbl-ats-add-secteur">Secteur</label><input id="ats-add-secteur" placeholder="Ex: Banque, Conseil…"></div>
-              <div class="ats-form-field"><label>Contact principal</label><input id="ats-add-contact" placeholder="Prénom NOM"></div>
-              <div class="ats-form-field"><label>Fonction</label><input id="ats-add-fonction" placeholder="DRH, CEO…"></div>
-              <div class="ats-form-field"><label>Email</label><input id="ats-add-email" type="email" placeholder="email@company.com"></div>
-              <div class="ats-form-field"><label>Téléphone</label><input id="ats-add-tel" placeholder="+33…"></div>
-              <div class="ats-form-field"><label>Source</label><input id="ats-add-source" placeholder="LinkedIn, recommandation…"></div>
-              <div class="ats-form-field"><label>Stade *</label>
-                <select id="ats-add-stade">
-                  <option value="A contacter">A contacter</option>
-                  <option value="Premier contact">Premier contact</option>
-                  <option value="Relance">Relance</option>
-                  <option value="Négociation">Négociation</option>
-                  <option value="Client actif">Client actif</option>
-                  <option value="Mission terminée">Mission terminée</option>
-                  <option value="Repositionner l'offre">Repositionner l'offre</option>
-                  <option value="Fermée">Fermée</option>
-                  <option value="Stand by">Stand by</option>
-                  <option value="B2C actif">B2C actif</option>
-                </select>
-              </div>
-              <div class="ats-form-field full" id="ats-add-besoin-row"><label>Besoin identifié</label><textarea id="ats-add-besoin" placeholder="Description du besoin…"></textarea></div>
-              <div class="ats-form-field full"><label>Commentaires</label><textarea id="ats-add-commentaires" placeholder="Notes libres…"></textarea></div>
+
+      </div>
+
+      <!-- ══════════ MODAL AJOUT ATS ══════════ -->
+      <div class="ats-modal-overlay" id="ats-add-modal-overlay" onclick="ATS.closeAddModal(event)">
+        <div class="ats-modal" onclick="event.stopPropagation()">
+          <div class="ats-modal-header" style="padding: 22px 26px 14px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-family:'Cormorant Garamond',serif; font-size:22px; margin-bottom:6px; color:var(--forest-dark); font-weight:600;">Nouvelle entrée B2B</div>
+              <div style="font-size:13px; color:var(--muted);">Ajoutez un client, prospect ou partenaire à votre BDD.</div>
             </div>
-            <div style="display:flex;gap:12px;align-items:center;">
-              <button class="btn-publish-gold" onclick="ATS.addEntry()" style="display:flex;align-items:center;gap:6px;"><i data-lucide="plus" style="width:15px;height:15px;"></i> Ajouter à la base</button>
-              <button class="btn-filter btn-reset" onclick="['ats-add-entreprise','ats-add-secteur','ats-add-contact','ats-add-fonction','ats-add-email','ats-add-tel','ats-add-source','ats-add-besoin','ats-add-commentaires'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''})">Effacer</button>
+            <button class="ats-modal-close" onclick="ATS.closeAddModal()" style="background:transparent; border:none; cursor:pointer; color:var(--muted); font-size:18px;"><i data-lucide="x"></i></button>
+          </div>
+          
+          <div class="ats-modal-body" style="padding: 26px; max-height: calc(88vh - 80px); overflow-y: auto;">
+            <div style="display:flex; gap:8px; margin-bottom:24px; background:#f1f5f9; padding:4px; border-radius:8px; width:fit-content; border:1px solid var(--border);">
+              <button type="button" id="atsTypeClientBtn" class="active" style="padding:6px 14px; font-size:12.5px; font-weight:600; border:none; border-radius:6px; cursor:pointer; background:var(--emerald); color:#fff; transition:all 0.2s;">Prospect / Client</button>
+              <button type="button" id="atsTypePartnerBtn" style="padding:6px 14px; font-size:12.5px; font-weight:600; border:none; border-radius:6px; cursor:pointer; background:transparent; color:var(--muted); transition:all 0.2s;">Partenaire</button>
+            </div>
+
+            <div class="ats-add-form-wrap">
+              <div class="ats-form-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                <div class="ats-form-field"><label id="lbl-ats-add-entreprise">Entreprise *</label><input id="ats-add-entreprise" placeholder="Nom de l'entreprise" style="border:1px solid var(--border); border-radius:6px; padding:10px; width:100%; box-sizing:border-box;"></div>
+                <div class="ats-form-field"><label id="lbl-ats-add-secteur">Secteur</label><input id="ats-add-secteur" placeholder="Ex: Banque, Conseil…" style="border:1px solid var(--border); border-radius:6px; padding:10px; width:100%; box-sizing:border-box;"></div>
+                <div class="ats-form-field"><label>Contact principal</label><input id="ats-add-contact" placeholder="Prénom NOM" style="border:1px solid var(--border); border-radius:6px; padding:10px; width:100%; box-sizing:border-box;"></div>
+                <div class="ats-form-field"><label>Fonction</label><input id="ats-add-fonction" placeholder="DRH, CEO…" style="border:1px solid var(--border); border-radius:6px; padding:10px; width:100%; box-sizing:border-box;"></div>
+                <div class="ats-form-field"><label>Email</label><input id="ats-add-email" type="email" placeholder="email@company.com" style="border:1px solid var(--border); border-radius:6px; padding:10px; width:100%; box-sizing:border-box;"></div>
+                <div class="ats-form-field"><label>Téléphone</label><input id="ats-add-tel" placeholder="+33…" style="border:1px solid var(--border); border-radius:6px; padding:10px; width:100%; box-sizing:border-box;"></div>
+                <div class="ats-form-field"><label>Source</label><input id="ats-add-source" placeholder="LinkedIn, recommandation…" style="border:1px solid var(--border); border-radius:6px; padding:10px; width:100%; box-sizing:border-box;"></div>
+                <div class="ats-form-field"><label>Stade *</label>
+                  <select id="ats-add-stade" style="border:1px solid var(--border); border-radius:6px; padding:10px; width:100%; box-sizing:border-box; background:#fff; height: 38px;">
+                    <option value="A contacter">A contacter</option>
+                    <option value="Premier contact">Premier contact</option>
+                    <option value="Relance">Relance</option>
+                    <option value="Négociation">Négociation</option>
+                    <option value="Client actif">Client actif</option>
+                    <option value="Mission terminée">Mission terminée</option>
+                    <option value="Repositionner l'offre">Repositionner l'offre</option>
+                    <option value="Fermée">Fermée</option>
+                    <option value="Stand by">Stand by</option>
+                    <option value="B2C actif">B2C actif</option>
+                  </select>
+                </div>
+                <div class="ats-form-field full" id="ats-add-besoin-row" style="grid-column:span 2;"><label>Besoin identifié</label><textarea id="ats-add-besoin" placeholder="Description du besoin…" style="border:1px solid var(--border); border-radius:6px; padding:10px; width:100%; box-sizing:border-box; min-height:72px;"></textarea></div>
+                <div class="ats-form-field full" style="grid-column:span 2;"><label>Commentaires</label><textarea id="ats-add-commentaires" placeholder="Notes libres…" style="border:1px solid var(--border); border-radius:6px; padding:10px; width:100%; box-sizing:border-box; min-height:72px;"></textarea></div>
+              </div>
+              <div style="display:flex; gap:12px; align-items:center; margin-top:20px;">
+                <button class="btn-publish-gold" onclick="ATS.addEntry()" style="display:flex; align-items:center; gap:6px; padding:10px 20px; border-radius:6px; font-weight:600; border:none; cursor:pointer; background:var(--emerald); color:#fff; font-family:'DM Sans', sans-serif;"><i data-lucide="plus" style="width:15px;height:15px;"></i> Ajouter à la base</button>
+                <button class="btn-filter btn-reset" onclick="['ats-add-entreprise','ats-add-secteur','ats-add-contact','ats-add-fonction','ats-add-email','ats-add-tel','ats-add-source','ats-add-besoin','ats-add-commentaires'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=''})" style="padding:10px 20px; border-radius:6px; border:1px solid var(--border); background:transparent; cursor:pointer; color:var(--muted); font-family:'DM Sans', sans-serif;">Effacer</button>
+              </div>
             </div>
           </div>
         </div>
-
       </div>
 
       <!-- ══════════ MODAL ATS ══════════ -->

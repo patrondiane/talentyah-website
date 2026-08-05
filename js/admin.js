@@ -2189,6 +2189,22 @@ const ATS = (() => {
     currentModalIdx=null;
   }
 
+  function openAddModal() {
+    const overlay = document.getElementById('ats-add-modal-overlay');
+    if (overlay) {
+      overlay.classList.add('open');
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+  }
+
+  function closeAddModal(ev) {
+    if (ev && ev.target !== document.getElementById('ats-add-modal-overlay')) return;
+    const overlay = document.getElementById('ats-add-modal-overlay');
+    if (overlay) {
+      overlay.classList.remove('open');
+    }
+  }
+
   function updateStadeBadge() {
     const s=document.getElementById('ats-modal-stade-select').value;
     document.getElementById('ats-modal-stade-badge').innerHTML=badge(s);
@@ -2326,7 +2342,7 @@ const ATS = (() => {
   }
 
   /* ── Expose public API ── */
-  return { init, openModal, openPartModal, closeModal, updateStadeBadge, saveModal, addEntry, filterByStade, showAtsPage, renderClients, renderPartenariats, renderRelances, badge, exportClientsCSV, addHistoryNote, onCardDragStart, onCardDragEnd, onColDragOver, onColDragLeave, onColDrop };
+  return { init, openModal, openPartModal, closeModal, openAddModal, closeAddModal, updateStadeBadge, saveModal, addEntry, filterByStade, showAtsPage, renderClients, renderPartenariats, renderRelances, badge, exportClientsCSV, addHistoryNote, onCardDragStart, onCardDragEnd, onColDragOver, onColDragLeave, onColDrop };
 })();
 
 /* Override loadCRM pour pointer vers ATS.init */
