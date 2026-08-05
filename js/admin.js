@@ -226,6 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('adminDashboardSection').style.display = 'none';
     document.getElementById('adminLoginSection').style.display     = 'flex';
     loginForm?.reset();
+    if (typeof resetLoginForm === 'function') resetLoginForm();
   });
 
   /* ── Navigation sidebar ── */
