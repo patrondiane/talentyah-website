@@ -1845,6 +1845,7 @@ const ATS = (() => {
   let db = [];
   let parts = [];
   let currentPage = 1;
+  let relancesCurrentPage = 1;
   const itemsPerPage = 20;
   let sortCol = 'stade', sortDir = 1;
   let currentModalIdx = null;
@@ -2193,10 +2194,24 @@ const ATS = (() => {
   /* ── Relances ── */
   function renderRelances() {
     const list = document.getElementById('ats-relances-list');
+    const pagination = document.getElementById('ats-relances-pagination');
     if(!list) return;
-    const relances = db.filter(r=>['Relance','Négociation','Premier contact'].includes(r.stade));
-    if(!relances.length) { list.innerHTML=`<div class="ats-empty"><div class="ats-empty-icon" style="margin-bottom:10px;"></div><p>Aucune relance en attente</p></div>`; return; }
-    list.innerHTML = relances.map(r=>`
+    
+    let relances = db.filter(r=>['Relance','Négociation','Premier contact'].includes(r.stade));
+    if(!relances.length) { 
+      list.innerHTML=`<div class="ats-empty"><div class="ats-empty-icon" style="margin-bottom:10px;"></div><p>Aucune relance en attente</p></div>`; 
+      if(pagination) pagination.innerHTML = '';
+      return; 
+    }
+
+    const totalPages = Math.ceil(relances.length / itemsPerPage);
+    if (relancesCurrentPage > totalPages) relancesCurrentPage = Math.max(1, totalPages);
+    if (relancesCurrentPage < 1) relancesCurrentPage = 1;
+
+    const startIndex = (relancesCurrentPage - 1) * itemsPerPage;
+    const pagedData = relances.slice(startIndex, startIndex + itemsPerPage);
+
+    list.innerHTML = pagedData.map(r=>`
       <div class="ats-activity-item" onclick="ATS.openModal(${r._idx})">
         <div class="ats-activity-dot" style="background:${stadeColor(r.stade)}"></div>
         <div class="ats-activity-content">
@@ -2205,6 +2220,32 @@ const ATS = (() => {
         </div>
         ${badge(r.stade)}
       </div>`).join('');
+
+    if (pagination) {
+      if (totalPages > 1) {
+        let html = `<button class="admin-page-btn" style="padding: 6px 14px; border-radius: 6px; border: 1.5px solid var(--border); background: #fff; color: var(--dark); font-weight: 600; cursor: pointer; transition: all 0.2s;" onclick="ATS.goToRelancesPage(${relancesCurrentPage - 1})" ${relancesCurrentPage === 1 ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}>Précédent</button>`;
+        
+        let startPage = Math.max(1, relancesCurrentPage - 2);
+        let endPage = Math.min(totalPages, startPage + 4);
+        if (endPage - startPage < 4) startPage = Math.max(1, endPage - 4);
+
+        for (let i = startPage; i <= endPage; i++) {
+          html += `<button class="admin-page-btn" style="width: 32px; height: 32px; border-radius: 6px; border: 1.5px solid ${i === relancesCurrentPage ? 'var(--emerald)' : 'var(--border)'}; background: ${i === relancesCurrentPage ? '#e8f5e9' : '#fff'}; color: ${i === relancesCurrentPage ? 'var(--emerald)' : 'var(--dark)'}; font-weight: ${i === relancesCurrentPage ? '700' : '600'}; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0;" onclick="ATS.goToRelancesPage(${i})">${i}</button>`;
+        }
+        
+        html += `<button class="admin-page-btn" style="padding: 6px 14px; border-radius: 6px; border: 1.5px solid var(--border); background: #fff; color: var(--dark); font-weight: 600; cursor: pointer; transition: all 0.2s;" onclick="ATS.goToRelancesPage(${relancesCurrentPage + 1})" ${relancesCurrentPage === totalPages ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}>Suivant</button>`;
+        pagination.innerHTML = html;
+      } else {
+        pagination.innerHTML = '';
+      }
+    }
+  }
+
+  function goToRelancesPage(page) {
+    relancesCurrentPage = page;
+    renderRelances();
+    const list = document.getElementById('ats-relances-list');
+    if(list) list.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   function renderHistory(r) {
@@ -2431,7 +2472,7 @@ const ATS = (() => {
   }
 
   /* ── Expose public API ── */
-  return { init, openModal, openPartModal, closeModal, openAddModal, closeAddModal, updateStadeBadge, saveModal, addEntry, filterByStade, showAtsPage, renderClients, resetPageAndRender, goToPage, renderPartenariats, renderRelances, badge, exportClientsCSV, addHistoryNote, onCardDragStart, onCardDragEnd, onColDragOver, onColDragLeave, onColDrop };
+  return { init, openModal, openPartModal, closeModal, openAddModal, closeAddModal, updateStadeBadge, saveModal, addEntry, filterByStade, showAtsPage, renderClients, resetPageAndRender, goToPage, goToRelancesPage, renderPartenariats, renderRelances, badge, exportClientsCSV, addHistoryNote, onCardDragStart, onCardDragEnd, onColDragOver, onColDragLeave, onColDrop };
 })();
 
 /* Override loadCRM pour pointer vers ATS.init */
