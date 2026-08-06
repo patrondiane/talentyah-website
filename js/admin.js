@@ -2009,8 +2009,9 @@ const ATS = (() => {
         <td>${r.email?`<a class="ats-email-link" href="mailto:${r.email}" onclick="event.stopPropagation()">${r.email}</a>`:'—'}</td>
         <td><small style="color:var(--muted)">${r.source||'—'}</small></td>
         <td>${badge(r.stade)}</td>
-        <td><button class="ats-action-btn" onclick="event.stopPropagation();ATS.openModal(${r._idx})">Ouvrir →</button></td>
+        <td><button class="ats-action-btn" onclick="event.stopPropagation();ATS.openModal(${r._idx})">Ouvrir <i data-lucide="external-link" style="width:14px;height:14px;margin-bottom:-2px;stroke-width:2.5px;"></i></button></td>
       </tr>`).join('');
+    if (typeof lucide !== 'undefined') lucide.createIcons();
   }
 
   /* ── Pipeline kanban (glisser-déposer) ── */

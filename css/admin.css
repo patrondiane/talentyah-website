@@ -867,18 +867,27 @@ body { font-family: 'DM Sans', sans-serif; background: #f0f4f1; color: var(--dar
 .ats-email-link { color: var(--emerald-mid); text-decoration: none; font-size: 12px; }
 .ats-email-link:hover { text-decoration: underline; }
 .ats-action-btn {
-  padding: 4px 10px;
-  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  border: 1.5px solid var(--border);
-  background: var(--white);
-  color: var(--emerald);
-  transition: all .15s;
+  border: 1px solid var(--border);
+  background: var(--bg-off);
+  color: var(--dark);
+  transition: all .2s;
   font-family: 'DM Sans', sans-serif;
+  white-space: nowrap;
 }
-.ats-action-btn:hover { background: #e8f5e9; border-color: var(--emerald-mid); }
+.ats-action-btn:hover {
+  background: var(--white);
+  border-color: var(--emerald-mid);
+  color: var(--emerald);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
 
 /* ── Pipeline ── */
 .ats-pipeline {
