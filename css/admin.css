@@ -914,6 +914,7 @@ body { font-family: 'DM Sans', sans-serif; background: #f0f4f1; color: var(--dar
   min-width: 280px;
   max-width: 280px;
   max-height: 100%;
+  overflow: hidden;
 }
 .ats-pipeline-header {
   flex-shrink: 0;
