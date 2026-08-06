@@ -912,8 +912,10 @@ body { font-family: 'DM Sans', sans-serif; background: #f0f4f1; color: var(--dar
 /* ── Pipeline ── */
 #ats-page-pipeline {
   height: calc(100vh - 210px);
-  display: flex;
   flex-direction: column;
+}
+#ats-page-pipeline.active {
+  display: flex;
 }
 .ats-pipeline {
   display: flex;
