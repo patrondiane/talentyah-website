@@ -991,9 +991,18 @@ body { font-family: 'DM Sans', sans-serif; background: #f0f4f1; color: var(--dar
   width: 100%;
   max-width: 640px;
   max-height: 88vh;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   box-shadow: 0 24px 64px rgba(13,40,24,0.28);
   animation: atsModalIn .22s ease;
+}
+.ats-modal-header {
+  flex-shrink: 0;
+}
+.ats-modal-body {
+  flex: 1;
+  overflow-y: auto;
 }
 @keyframes atsModalIn {
   from { opacity:0; transform: scale(.95) translateY(10px); }
