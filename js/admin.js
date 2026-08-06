@@ -2089,13 +2089,12 @@ const ATS = (() => {
             <span class="ats-pipeline-count">${items.length}</span>
           </div>
           <div class="ats-pipeline-cards">
-            ${items.slice(0,15).map(r=>`
+            ${items.map(r=>`
               <div class="ats-pipeline-card" draggable="true" ondragstart="ATS.onCardDragStart(event,${r._idx})" ondragend="ATS.onCardDragEnd(event)" onclick="ATS.openModal(${r._idx})">
                 <div class="ats-pc-company">${r.entreprise}</div>
                 <div class="ats-pc-contact">${r.contact||'—'}</div>
                 ${r.secteur?`<div class="ats-pc-sector">${r.secteur}</div>`:''}
               </div>`).join('')}
-            ${items.length>15?`<div style="text-align:center;font-size:11px;color:var(--muted);padding:6px">+${items.length-15} autres</div>`:''}
           </div>
         </div>`;
     }).join('');
