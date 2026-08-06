@@ -725,16 +725,16 @@
               <span class="ats-search-icon"><i data-lucide="search"></i></span>
               <input class="ats-search-input" type="text" id="ats-search"
                      placeholder="Rechercher entreprise, contact, secteur…"
-                     oninput="ATS.renderClients()">
+                     oninput="ATS.resetPageAndRender()">
             </div>
-            <select class="ats-filter-select" id="ats-filter-stade" onchange="ATS.renderClients()">
+            <select class="ats-filter-select" id="ats-filter-stade" onchange="ATS.resetPageAndRender()">
               <option value="">Tous les stades</option>
               <option>Client actif</option><option>Négociation</option><option>Relance</option>
               <option>Premier contact</option><option>A contacter</option><option>Mission terminée</option>
               <option>Repositionner l'offre</option><option>Fermée</option><option>Stand by</option>
               <option>B2C actif</option><option>Partenaire actif</option>
             </select>
-            <select class="ats-filter-select" id="ats-filter-secteur" onchange="ATS.renderClients()" data-search="true">
+            <select class="ats-filter-select" id="ats-filter-secteur" onchange="ATS.resetPageAndRender()" data-search="true">
               <option value="">Tous les secteurs</option>
             </select>
             <button type="button" class="btn-filter" onclick="ATS.exportClientsCSV()" style="white-space:nowrap;display:flex;align-items:center;gap:6px;"><i data-lucide="download" style="width:14px;height:14px;"></i> Exporter CSV</button>
@@ -749,6 +749,7 @@
               <tbody id="ats-clients-tbody"><tr><td colspan="8" style="text-align:center;color:var(--muted);padding:24px">Chargement…</td></tr></tbody>
             </table>
           </div>
+          <div class="ats-pagination" id="ats-clients-pagination" style="display:flex; justify-content:flex-end; align-items:center; gap:8px; margin-top:16px;"></div>
         </div>
 
         <!-- ── PAGE : PIPELINE ── -->

@@ -1844,6 +1844,8 @@ const ATS = (() => {
 
   let db = [];
   let parts = [];
+  let currentPage = 1;
+  const itemsPerPage = 20;
   let sortCol = 'stade', sortDir = 1;
   let currentModalIdx = null;
   let currentAddType = 'client';
@@ -1992,15 +1994,40 @@ const ATS = (() => {
   }
 
   /* ── Clients table ── */
+  function resetPageAndRender() {
+    currentPage = 1;
+    renderClients();
+  }
+
+  function changePage(delta) {
+    currentPage += delta;
+    renderClients();
+  }
+
   function renderClients() {
     const filtered = getFiltered();
     const s = sorted(filtered);
     const rc = document.getElementById('ats-result-count');
     if(rc) rc.textContent=`${s.length} résultat${s.length>1?'s':''}`;
+    
     const tbody = document.getElementById('ats-clients-tbody');
+    const pagination = document.getElementById('ats-clients-pagination');
     if(!tbody) return;
-    if(!s.length) { tbody.innerHTML=`<tr><td colspan="8"><div class="ats-empty"><div class="ats-empty-icon" style="margin-bottom:10px;"></div><p>Aucun résultat trouvé</p></div></td></tr>`; return; }
-    tbody.innerHTML = s.map(r=>`
+    
+    if(!s.length) { 
+      tbody.innerHTML=`<tr><td colspan="8"><div class="ats-empty"><div class="ats-empty-icon" style="margin-bottom:10px;"></div><p>Aucun résultat trouvé</p></div></td></tr>`; 
+      if(pagination) pagination.innerHTML = '';
+      return; 
+    }
+
+    const totalPages = Math.ceil(s.length / itemsPerPage);
+    if (currentPage > totalPages) currentPage = totalPages;
+    if (currentPage < 1) currentPage = 1;
+
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const pagedData = s.slice(startIndex, startIndex + itemsPerPage);
+
+    tbody.innerHTML = pagedData.map(r=>`
       <tr onclick="ATS.openModal(${r._idx})">
         <td><div class="ats-company-name">${r.entreprise}</div><div class="ats-contact-name">${r.contact||''}</div></td>
         <td>${r.secteur?`<span class="ats-sector-tag">${r.secteur}</span>`:'—'}</td>
@@ -2011,6 +2038,19 @@ const ATS = (() => {
         <td>${badge(r.stade)}</td>
         <td><button class="ats-action-btn" onclick="event.stopPropagation();ATS.openModal(${r._idx})">Ouvrir <i data-lucide="external-link" style="width:14px;height:14px;margin-bottom:-2px;stroke-width:2.5px;"></i></button></td>
       </tr>`).join('');
+
+    if (pagination) {
+      if (totalPages > 1) {
+        pagination.innerHTML = `
+          <button class="ats-action-btn" onclick="ATS.changePage(-1)" ${currentPage === 1 ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}><i data-lucide="chevron-left" style="width:16px;height:16px;"></i> Précédent</button>
+          <span style="font-size:13px; color:var(--muted); margin:0 8px;">Page ${currentPage} sur ${totalPages}</span>
+          <button class="ats-action-btn" onclick="ATS.changePage(1)" ${currentPage === totalPages ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}>Suivant <i data-lucide="chevron-right" style="width:16px;height:16px;"></i></button>
+        `;
+      } else {
+        pagination.innerHTML = '';
+      }
+    }
+
     if (typeof lucide !== 'undefined') lucide.createIcons();
   }
 
@@ -2343,7 +2383,7 @@ const ATS = (() => {
   }
 
   /* ── Expose public API ── */
-  return { init, openModal, openPartModal, closeModal, openAddModal, closeAddModal, updateStadeBadge, saveModal, addEntry, filterByStade, showAtsPage, renderClients, renderPartenariats, renderRelances, badge, exportClientsCSV, addHistoryNote, onCardDragStart, onCardDragEnd, onColDragOver, onColDragLeave, onColDrop };
+  return { init, openModal, openPartModal, closeModal, openAddModal, closeAddModal, updateStadeBadge, saveModal, addEntry, filterByStade, showAtsPage, renderClients, resetPageAndRender, changePage, renderPartenariats, renderRelances, badge, exportClientsCSV, addHistoryNote, onCardDragStart, onCardDragEnd, onColDragOver, onColDragLeave, onColDrop };
 })();
 
 /* Override loadCRM pour pointer vers ATS.init */
