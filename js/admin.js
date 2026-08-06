@@ -1849,6 +1849,25 @@ const ATS = (() => {
   let sortCol = 'stade', sortDir = 1;
   let currentModalIdx = null;
   let currentAddType = 'client';
+  
+  let modalInitialState = "";
+
+  function getModalState() {
+    const fields = ['mf2-contact','mf2-fonction','mf2-email','mf2-tel','mf2-source','mf2-linkedin','mf2-besoin','mf2-action','mf2-commentaires','ats-modal-stade-select'];
+    return fields.map(id => {
+      const el = document.getElementById(id);
+      return el ? el.value : '';
+    }).join('|');
+  }
+
+  function checkModalDirty() {
+    const btn = document.getElementById('ats-btn-save-modal');
+    if (!btn) return;
+    const isDirty = getModalState() !== modalInitialState;
+    btn.disabled = !isDirty;
+    btn.style.opacity = isDirty ? '1' : '0.5';
+    btn.style.cursor = isDirty ? 'pointer' : 'not-allowed';
+  }
 
   async function loadCRMFromServer() {
     const token = sessionStorage.getItem('talentyah_token');
@@ -2228,6 +2247,8 @@ const ATS = (() => {
     Object.entries(fields).forEach(([k,id])=>{ const el=document.getElementById(id); if(el) el.value=r[k]||''; });
     renderHistory(r);
     document.getElementById('ats-modal-overlay').classList.add('open');
+    modalInitialState = getModalState();
+    checkModalDirty();
   }
 
   function openPartModal(idx) {
@@ -2242,6 +2263,8 @@ const ATS = (() => {
     ['mf2-linkedin','mf2-besoin','mf2-action','mf2-commentaires'].forEach(id=>{ const e=document.getElementById(id); if(e) e.value=r.commentaires||''; });
     renderHistory(r);
     document.getElementById('ats-modal-overlay').classList.add('open');
+    modalInitialState = getModalState();
+    checkModalDirty();
   }
 
   function closeModal(ev) {
@@ -2400,6 +2423,11 @@ const ATS = (() => {
   function init() {
     setupAddTypeToggles();
     loadCRMFromServer();
+    const modalOverlay = document.getElementById('ats-modal-overlay');
+    if (modalOverlay) {
+      modalOverlay.addEventListener('input', checkModalDirty);
+      modalOverlay.addEventListener('change', checkModalDirty);
+    }
   }
 
   /* ── Expose public API ── */
