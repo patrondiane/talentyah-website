@@ -29,6 +29,26 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'DM Sans', sans-serif; background: #f0f4f1; color: var(--dark); overflow-x: hidden; max-width: 100vw; }
 
+/* ── Custom Scrollbars ── */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(26, 82, 51, 0.3) transparent; /* var(--emerald) with opacity */
+}
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(26, 82, 51, 0.25);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(26, 82, 51, 0.4);
+}
+
 /* =====================
    PAGE LOGIN
 ===================== */
