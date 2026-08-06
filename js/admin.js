@@ -1999,9 +1999,10 @@ const ATS = (() => {
     renderClients();
   }
 
-  function changePage(delta) {
-    currentPage += delta;
+  function goToPage(page) {
+    currentPage = page;
     renderClients();
+    document.getElementById('ats-page-clients')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   function renderClients() {
@@ -2041,11 +2042,31 @@ const ATS = (() => {
 
     if (pagination) {
       if (totalPages > 1) {
-        pagination.innerHTML = `
-          <button class="ats-action-btn" onclick="ATS.changePage(-1)" ${currentPage === 1 ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}><i data-lucide="chevron-left" style="width:16px;height:16px;"></i> Précédent</button>
-          <span style="font-size:13px; color:var(--muted); margin:0 8px;">Page ${currentPage} sur ${totalPages}</span>
-          <button class="ats-action-btn" onclick="ATS.changePage(1)" ${currentPage === totalPages ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}>Suivant <i data-lucide="chevron-right" style="width:16px;height:16px;"></i></button>
-        `;
+        let html = `<button class="admin-page-btn" style="padding: 6px 14px; border-radius: 6px; border: 1.5px solid var(--border); background: #fff; color: var(--dark); font-weight: 600; cursor: pointer; transition: all 0.2s;" onclick="ATS.goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}>Précédent</button>`;
+        
+        let startPage = Math.max(1, currentPage - 2);
+        let endPage = Math.min(totalPages, currentPage + 2);
+        
+        if (startPage > 1) {
+          html += `<button class="admin-page-btn" style="padding: 6px 14px; margin: 0 2px; border-radius: 6px; border: 1.5px solid var(--border); background: #fff; color: var(--dark); font-weight: 600; transition: all 0.2s; cursor: pointer;" onclick="ATS.goToPage(1)">1</button>`;
+          if (startPage > 2) html += `<span style="margin:0 4px;color:var(--muted)">...</span>`;
+        }
+
+        for (let p = startPage; p <= endPage; p++) {
+          const activeStyle = `background: var(--emerald); color: #fff; border-color: var(--emerald); cursor: default;`;
+          const inactiveStyle = `background: #fff; color: var(--dark); border-color: var(--border); cursor: pointer;`;
+          html += `<button class="admin-page-btn" style="padding: 6px 14px; margin: 0 2px; border-radius: 6px; border: 1.5px solid ${currentPage === p ? 'var(--emerald)' : 'var(--border)'}; ${currentPage === p ? activeStyle : inactiveStyle} font-weight: 600; transition: all 0.2s;" onclick="ATS.goToPage(${p})">${p}</button>`;
+        }
+
+        if (endPage < totalPages) {
+          if (endPage < totalPages - 1) html += `<span style="margin:0 4px;color:var(--muted)">...</span>`;
+          html += `<button class="admin-page-btn" style="padding: 6px 14px; margin: 0 2px; border-radius: 6px; border: 1.5px solid var(--border); background: #fff; color: var(--dark); font-weight: 600; transition: all 0.2s; cursor: pointer;" onclick="ATS.goToPage(${totalPages})">${totalPages}</button>`;
+        }
+
+        html += `<button class="admin-page-btn" style="padding: 6px 14px; border-radius: 6px; border: 1.5px solid var(--border); background: #fff; color: var(--dark); font-weight: 600; cursor: pointer; transition: all 0.2s;" onclick="ATS.goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}>Suivant</button>`;
+        
+        pagination.innerHTML = html;
+        pagination.style.cssText = 'display:flex; justify-content:center; align-items:center; gap:8px; margin-top:24px; margin-bottom:12px; width:100%;';
       } else {
         pagination.innerHTML = '';
       }
@@ -2383,7 +2404,7 @@ const ATS = (() => {
   }
 
   /* ── Expose public API ── */
-  return { init, openModal, openPartModal, closeModal, openAddModal, closeAddModal, updateStadeBadge, saveModal, addEntry, filterByStade, showAtsPage, renderClients, resetPageAndRender, changePage, renderPartenariats, renderRelances, badge, exportClientsCSV, addHistoryNote, onCardDragStart, onCardDragEnd, onColDragOver, onColDragLeave, onColDrop };
+  return { init, openModal, openPartModal, closeModal, openAddModal, closeAddModal, updateStadeBadge, saveModal, addEntry, filterByStade, showAtsPage, renderClients, resetPageAndRender, goToPage, renderPartenariats, renderRelances, badge, exportClientsCSV, addHistoryNote, onCardDragStart, onCardDragEnd, onColDragOver, onColDragLeave, onColDrop };
 })();
 
 /* Override loadCRM pour pointer vers ATS.init */
