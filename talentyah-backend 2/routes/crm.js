@@ -27,7 +27,7 @@ router.post('/clients', auth, async (req, res) => {
     const histStr = JSON.stringify(historique || []);
     const result = await db.run(
       `INSERT INTO crm_clients (entreprise, secteur, contact, fonction, email, tel, source, stade, besoin, commentaires, linkedin, prochaine_action, historique)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?::json)`,
       [entreprise, secteur||null, contact||null, fonction||null, email||null, tel||null, source||null, stade||'A contacter', besoin||null, commentaires||null, linkedin||null, prochaine_action||null, histStr]
     );
     const id = db.lastInsertRowId(result);
@@ -47,14 +47,15 @@ router.put('/clients/:id', auth, async (req, res) => {
     const histStr = JSON.stringify(historique || []);
     await db.run(
       `UPDATE crm_clients
-       SET entreprise = ?, secteur = ?, contact = ?, fonction = ?, email = ?, tel = ?, source = ?, stade = ?, besoin = ?, commentaires = ?, linkedin = ?, prochaine_action = ?, historique = ?
+       SET entreprise = ?, secteur = ?, contact = ?, fonction = ?, email = ?, tel = ?, source = ?, stade = ?, besoin = ?, commentaires = ?, linkedin = ?, prochaine_action = ?, historique = ?::json
        WHERE id = ?`,
       [entreprise, secteur||null, contact||null, fonction||null, email||null, tel||null, source||null, stade||'A contacter', besoin||null, commentaires||null, linkedin||null, prochaine_action||null, histStr, id]
     );
     res.json({ message: 'Client mis à jour avec succès' });
   } catch (err) {
-    console.error('[PUT /crm/clients]', err.message);
-    res.status(500).json({ error: 'Erreur de mise à jour du client.' });
+    console.error('[PUT /crm/clients]', err.message, err.stack);
+    console.error('Params were:', [entreprise, secteur, contact, fonction, email, tel, source, stade, besoin, commentaires, linkedin, prochaine_action, req.body.historique, id]);
+    res.status(500).json({ error: 'Erreur de mise à jour du client.', details: err.message });
   }
 });
 
@@ -92,7 +93,7 @@ router.post('/partners', auth, async (req, res) => {
     const histStr = JSON.stringify(historique || []);
     const result = await db.run(
       `INSERT INTO crm_partners (organisme, activite, contact, fonction, email, tel, source, stade, commentaires, historique)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?::json)`,
       [organisme, activite||null, contact||null, fonction||null, email||null, tel||null, source||null, stade||'A contacter', commentaires||null, histStr]
     );
     const id = db.lastInsertRowId(result);
@@ -112,7 +113,7 @@ router.put('/partners/:id', auth, async (req, res) => {
     const histStr = JSON.stringify(historique || []);
     await db.run(
       `UPDATE crm_partners
-       SET organisme = ?, activite = ?, contact = ?, fonction = ?, email = ?, tel = ?, source = ?, stade = ?, commentaires = ?, historique = ?
+       SET organisme = ?, activite = ?, contact = ?, fonction = ?, email = ?, tel = ?, source = ?, stade = ?, commentaires = ?, historique = ?::json
        WHERE id = ?`,
       [organisme, activite||null, contact||null, fonction||null, email||null, tel||null, source||null, stade||'A contacter', commentaires||null, histStr, id]
     );
@@ -144,7 +145,7 @@ router.post('/migrate', auth, async (req, res) => {
         const histStr = JSON.stringify(c.historique || []);
         await db.run(
           `INSERT INTO crm_clients (entreprise, secteur, contact, fonction, email, tel, source, stade, besoin, commentaires, linkedin, prochaine_action, historique)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?::json)`,
           [c.entreprise, c.secteur||null, c.contact||null, c.fonction||null, c.email||null, c.tel||null, c.source||null, c.stade||'A contacter', c.besoin||null, c.commentaires||null, c.linkedin||null, c.prochaine_action||null, histStr]
         );
       }
@@ -158,7 +159,7 @@ router.post('/migrate', auth, async (req, res) => {
         const histStr = JSON.stringify(p.historique || []);
         await db.run(
           `INSERT INTO crm_partners (organisme, activite, contact, fonction, email, tel, source, stade, commentaires, historique)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?::json)`,
           [org, act, p.contact||null, p.fonction||null, p.email||null, p.tel||null, p.source||null, p.stade||'A contacter', p.commentaires||null, histStr]
         );
       }

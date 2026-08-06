@@ -2147,7 +2147,7 @@ const ATS = (() => {
     const oldStade = r.stade;
     r.stade = newStade;
     if (!Array.isArray(r.historique)) r.historique = [];
-    r.historique.push({ date: new Date().toISOString(), text: `Stade changé : "${oldStade || '—'}" → "${newStade}"` });
+    r.historique.push({ date: new Date().toISOString(), text: `Stade changé : '${oldStade || '—'}' → '${newStade}'` });
 
     try {
       const token = sessionStorage.getItem('talentyah_token');
