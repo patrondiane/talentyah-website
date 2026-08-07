@@ -420,7 +420,7 @@ const jobForm = document.getElementById('jobForm');
           msg.innerHTML = '<i data-lucide="check" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Slide ajouté !'; 
           if (typeof lucide !== "undefined") lucide.createIcons();
           msg.style.color='var(--emerald)'; 
-          setTimeout(() => { msg.innerHTML =''; }, 3000); 
+          setTimeout(() => { msg.innerHTML =''; closeAddCarouselModal(); }, 1500); 
         }
         e.target.reset();
         loadCarousel();
@@ -549,7 +549,7 @@ const jobForm = document.getElementById('jobForm');
           msg.innerHTML = '<i data-lucide="check" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Slide ajouté !'; 
           if (typeof lucide !== "undefined") lucide.createIcons();
           msg.style.color='var(--emerald)'; 
-          setTimeout(() => { msg.innerHTML =''; }, 3000); 
+          setTimeout(() => { msg.innerHTML =''; closeAddCarouselModal(); }, 1500); 
         }
         e.target.reset();
         // Remettre "Toutes les pages" coché par défaut
@@ -2858,6 +2858,19 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+
+function openAddCarouselModal() {
+  document.getElementById('carouselForm').reset();
+  const allCb = document.querySelector('#carouselForm input[name="pages"][value="all"]');
+  if (allCb) allCb.checked = true;
+  document.getElementById('add-carousel-modal-overlay').style.display = 'flex';
+}
+
+function closeAddCarouselModal() {
+  const modal = document.getElementById('add-carousel-modal-overlay');
+  if (modal) modal.style.display = 'none';
+}
+
 function openEditCarouselModal(id) {
   const slide = currentCarouselSlides.find(s => s.id === id);
   if (!slide) return;
@@ -2952,3 +2965,5 @@ window.closeEditCarouselModal = closeEditCarouselModal;
 window.openEditCarouselModal = openEditCarouselModal;
 window.toggleCarouselSlide = toggleCarouselSlide;
 window.moveSlide = moveSlide;
+window.openAddCarouselModal = openAddCarouselModal;
+window.closeAddCarouselModal = closeAddCarouselModal;
