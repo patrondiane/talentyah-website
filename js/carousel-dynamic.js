@@ -30,7 +30,12 @@ async function initDynamicCarousel() {
     if (!slides.length) return; // fallback slides statiques HTML
 
     // Utiliser <img> au lieu de background-image pour iOS Safari
-    const resolveUrl = (url) => (url && url.startsWith('http')) ? url : window.API_BASE + url;
+    const resolveUrl = (url) => {
+      if (!url) return '';
+      if (url.startsWith('http')) return url;
+      if (url.startsWith('images/')) return url;
+      return window.API_BASE + url;
+    };
 
     slidesContainer.innerHTML = slides.map(s => `
       <div class="carousel-slide">

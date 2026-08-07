@@ -416,7 +416,12 @@ const jobForm = document.getElementById('jobForm');
         body: fd
       });
       if (res.ok) {
-        if (msg) { msg.innerHTML = '<i data-lucide="check" style="width:14px; setTimeout(() => { if (typeof lucide !== "undefined") lucide.createIcons(); }, 10);height:14px;vertical-align:middle;margin-right:4px;"></i> Slide ajouté !'; msg.style.color = 'var(--emerald)'; setTimeout(() => { msg.innerHTML = ''; }, 3000); }
+        if (msg) { 
+          msg.innerHTML = '<i data-lucide="check" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Slide ajouté !'; 
+          if (typeof lucide !== "undefined") lucide.createIcons();
+          msg.style.color='var(--emerald)'; 
+          setTimeout(() => { msg.innerHTML =''; }, 3000); 
+        }
         e.target.reset();
         loadCarousel();
       } else {
@@ -540,7 +545,12 @@ const jobForm = document.getElementById('jobForm');
         method: 'POST', headers: { 'Authorization': 'Bearer ' + token }, body: fd
       });
       if (res.ok) {
-        if (msg) { msg.innerHTML = '<i data-lucide="check" style="width:14px; setTimeout(() => { if (typeof lucide !== "undefined") lucide.createIcons(); }, 10);height:14px;vertical-align:middle;margin-right:4px;"></i> Slide ajouté !'; msg.style.color='var(--emerald)'; setTimeout(() => { msg.innerHTML =''; }, 3000); }
+        if (msg) { 
+          msg.innerHTML = '<i data-lucide="check" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Slide ajouté !'; 
+          if (typeof lucide !== "undefined") lucide.createIcons();
+          msg.style.color='var(--emerald)'; 
+          setTimeout(() => { msg.innerHTML =''; }, 3000); 
+        }
         e.target.reset();
         // Remettre "Toutes les pages" coché par défaut
         const allCb = e.target.querySelector('input[name="pages"][value="all"]');
@@ -1358,7 +1368,7 @@ function renderCarouselList(slides) {
 
     return `
     <div style="display:grid;grid-template-columns:120px 1fr auto;gap:16px;align-items:center;background:#fff;border:1px solid var(--border);border-radius:8px;padding:12px 16px;">
-      <img src="${s.image_url && s.image_url.startsWith('http') ? s.image_url : API + s.image_url}" alt="${_esc(s.title)}"
+      <img src="${s.image_url && s.image_url.startsWith('http') ? s.image_url : s.image_url}" alt="${_esc(s.title)}"
            style="width:120px;height:70px;object-fit:cover;border-radius:6px;background:#eee;">
       <div>
         <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;">${_esc(s.eyebrow||'')}</div>

@@ -19,6 +19,9 @@
 
     if (!slides.length) return;
 
+    // Clear previous timers if re-initializing
+    if (carouselEl._carouselTimer) clearInterval(carouselEl._carouselTimer);
+
     let current      = 0;
     let timer        = null;
     let progressTimer = null;
@@ -71,6 +74,7 @@
       timer = setInterval(() => {
         if (!paused) next();
       }, AUTOPLAY_DURATION);
+      carouselEl._carouselTimer = timer;
     }
 
     function stopAutoplay() {
@@ -141,4 +145,8 @@
   } else {
     init();
   }
+
+  // Expose globally so carousel-dynamic.js can re-init after fetching API data
+  window.initCarousel = initCarousel;
+  window.reinitCarousel = init;
 })();
