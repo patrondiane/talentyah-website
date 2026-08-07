@@ -1331,6 +1331,8 @@ let partners = [];
    CAROUSEL
 ══════════════════════════════ */
 
+let currentCarouselSlides = [];
+
 async function loadCarousel() {
   const token = sessionStorage.getItem('talentyah_token');
   try {
@@ -1347,6 +1349,7 @@ async function loadCarousel() {
 }
 
 function renderCarouselList(slides) {
+  currentCarouselSlides = slides;
   const list = document.getElementById('carouselList');
   if (!list) return;
   if (!slides.length) {
@@ -1360,7 +1363,7 @@ function renderCarouselList(slides) {
     apropos: 'À propos', 'notre-approche': 'Notre approche', ressources: 'Ressources'
   };
 
-  list.innerHTML = slides.map(s => {
+  list.innerHTML = slides.map((s, idx) => {
     const pagesList = (s.pages || 'all').split(',').map(p => p.trim());
     const pagesBadges = pagesList.map(p =>
       `<span style="font-size:11px;padding:2px 8px;background:rgba(26,82,51,0.08);color:var(--emerald);border-radius:10px;border:1px solid rgba(26,82,51,0.15);">${pageLabels[p] || p}</span>`
@@ -1377,8 +1380,16 @@ function renderCarouselList(slides) {
         <div style="display:flex;flex-wrap:wrap;gap:4px;">${pagesBadges}</div>
       </div>
       <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
-        <span style="font-size:11px;padding:3px 8px;border-radius:12px;background:${s.active?'#e8f5e9':'#f5f5f5'};color:${s.active?'var(--emerald)':'var(--muted)'};">${s.active?'Actif':'Masqué'}</span>
-        <button class="btn-delete" onclick="deleteSlide(${s.id})" style="font-size:12px;padding:5px 12px;">Supprimer</button>
+        <div style="display:flex; gap:6px; align-items:center;">
+          <span style="font-size:11px;padding:3px 8px;border-radius:12px;background:${s.active?'#e8f5e9':'#f5f5f5'};color:${s.active?'var(--emerald)':'var(--muted)'};">${s.active?'Actif':'Masqué'}</span>
+          <button class="btn-ghost" onclick="moveSlide(${s.id}, -1)" title="Monter" style="padding:4px 8px;font-size:14px;border:1px solid var(--border);border-radius:4px;cursor:pointer;" ${idx === 0 ? 'disabled' : ''}>↑</button>
+          <button class="btn-ghost" onclick="moveSlide(${s.id}, 1)" title="Descendre" style="padding:4px 8px;font-size:14px;border:1px solid var(--border);border-radius:4px;cursor:pointer;" ${idx === slides.length-1 ? 'disabled' : ''}>↓</button>
+        </div>
+        <div style="display:flex; gap:6px;">
+          <button class="btn-gold" onclick="openEditCarouselModal(${s.id})" style="font-size:12px;padding:5px 12px;cursor:pointer;">Modifier</button>
+          <button class="btn-ghost" onclick="toggleCarouselSlide(${s.id}, ${s.active ? 0 : 1})" style="font-size:12px;padding:5px 12px;border:1px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;">${s.active ? 'Masquer' : 'Afficher'}</button>
+          <button class="btn-delete" onclick="deleteSlide(${s.id})" style="font-size:12px;padding:5px 12px;cursor:pointer;">Supprimer</button>
+        </div>
       </div>
     </div>`;
   }).join('');
@@ -2846,3 +2857,98 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
+function openEditCarouselModal(id) {
+  const slide = currentCarouselSlides.find(s => s.id === id);
+  if (!slide) return;
+  document.getElementById('editSlideId').value = slide.id;
+  document.getElementById('editSlideEyebrow').value = slide.eyebrow || '';
+  document.getElementById('editSlideTitle').value = slide.title || '';
+  document.getElementById('editSlideSubtitle').value = slide.subtitle || '';
+  document.getElementById('editSlideCta1Text').value = slide.cta1_text || '';
+  document.getElementById('editSlideCta1Url').value = slide.cta1_url || '';
+  document.getElementById('editSlideCta2Text').value = slide.cta2_text || '';
+  document.getElementById('editSlideCta2Url').value = slide.cta2_url || '';
+
+  const pages = (slide.pages || 'all').split(',').map(p => p.trim());
+  document.querySelectorAll('#editSlidePagesContainer input[type="checkbox"]').forEach(cb => {
+    cb.checked = pages.includes(cb.value);
+  });
+  
+  document.getElementById('edit-carousel-modal-overlay').style.display = 'flex';
+}
+
+function closeEditCarouselModal() {
+  const modal = document.getElementById('edit-carousel-modal-overlay');
+  if (modal) modal.style.display = 'none';
+}
+
+document.getElementById('editCarouselForm')?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = e.target.querySelector('button[type="submit"]');
+  const msg = document.getElementById('editCarouselMsg');
+  const id = document.getElementById('editSlideId').value;
+  btn.disabled = true; btn.textContent = 'Enregistrement…';
+  
+  const fd = new FormData(e.target);
+  const checkedPages = [...e.target.querySelectorAll('#editSlidePagesContainer input[name="pages"]:checked')].map(cb => cb.value);
+  fd.delete('pages');
+  fd.append('pages', checkedPages.length ? checkedPages.join(',') : 'all');
+  
+  const token = sessionStorage.getItem('talentyah_token');
+  try {
+    const res = await fetch(API + '/api/carousel/' + id, {
+      method: 'PUT', headers: { 'Authorization': 'Bearer ' + token }, body: fd
+    });
+    if (res.ok) {
+      if (msg) { msg.textContent = 'Slide mis à jour !'; msg.style.color = 'var(--emerald)'; setTimeout(() => { msg.textContent = ''; closeEditCarouselModal(); }, 1500); }
+      loadCarousel();
+    } else {
+      const d = await res.json();
+      if (msg) { msg.textContent = d.error || 'Erreur.'; msg.style.color = '#c0392b'; }
+    }
+  } catch {
+    if (msg) { msg.textContent = 'Erreur réseau.'; msg.style.color = '#c0392b'; }
+  }
+  btn.disabled = false; btn.textContent = 'Enregistrer';
+});
+
+async function toggleCarouselSlide(id, activeStatus) {
+  const token = sessionStorage.getItem('talentyah_token');
+  const fd = new FormData();
+  fd.append('active', activeStatus);
+  try {
+    await fetch(API + '/api/carousel/' + id, {
+      method: 'PUT', headers: { 'Authorization': 'Bearer ' + token }, body: fd
+    });
+    loadCarousel();
+  } catch (err) { console.error(err); }
+}
+
+async function moveSlide(id, direction) {
+  const idx = currentCarouselSlides.findIndex(s => s.id === id);
+  if (idx < 0) return;
+  const slide = currentCarouselSlides[idx];
+  const targetIdx = idx + direction;
+  if (targetIdx < 0 || targetIdx >= currentCarouselSlides.length) return;
+  const swapSlide = currentCarouselSlides[targetIdx];
+  
+  const token = sessionStorage.getItem('talentyah_token');
+  
+  try {
+    // We send two PUT requests to swap sort_order
+    const fd1 = new FormData(); fd1.append('sort_order', swapSlide.sort_order || targetIdx);
+    const fd2 = new FormData(); fd2.append('sort_order', slide.sort_order || idx);
+    
+    await fetch(API + '/api/carousel/' + slide.id, { method: 'PUT', headers: { 'Authorization': 'Bearer ' + token }, body: fd1 });
+    await fetch(API + '/api/carousel/' + swapSlide.id, { method: 'PUT', headers: { 'Authorization': 'Bearer ' + token }, body: fd2 });
+    
+    loadCarousel();
+  } catch (err) { console.error(err); }
+}
+
+
+window.closeEditCarouselModal = closeEditCarouselModal;
+window.openEditCarouselModal = openEditCarouselModal;
+window.toggleCarouselSlide = toggleCarouselSlide;
+window.moveSlide = moveSlide;

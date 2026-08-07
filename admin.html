@@ -788,7 +788,98 @@
 
       </div>
 
-      <!-- ══════════ MODAL AJOUT ATS ══════════ -->
+      <!-- ══════════ MODAL EDIT CAROUSEL ══════════ -->
+<div class="ats-modal-overlay" id="edit-carousel-modal-overlay" onclick="closeEditCarouselModal(event)" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:9999; justify-content:center; align-items:center;">
+  <div class="ats-modal" onclick="event.stopPropagation()" style="background:#fff; border-radius:12px; width:90%; max-width:600px; max-height:90vh; overflow-y:auto; box-shadow:0 10px 30px rgba(0,0,0,0.2);">
+    <div class="ats-modal-header" style="padding: 22px 26px 14px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position:sticky; top:0; background:#fff; z-index:10;">
+      <h3 style="margin:0; font-size:16px; color:var(--dark);">Modifier le slide</h3>
+      <button class="ats-modal-close" onclick="closeEditCarouselModal()" style="background:transparent; border:none; cursor:pointer; color:var(--muted); font-size:18px;"><i data-lucide="x"></i></button>
+    </div>
+    <div class="ats-modal-body" style="padding: 26px;">
+      <form id="editCarouselForm" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <input type="hidden" id="editSlideId" name="id">
+        <div class="job-form-field full" style="grid-column:1/-1;">
+          <label>Image de fond <span style="font-size:11px;color:var(--muted);">(Laisser vide pour conserver l'actuelle)</span></label>
+          <input type="file" id="editSlideImageInput" name="image" accept="image/*"
+                 style="border:1px solid var(--border);border-radius:6px;padding:8px 12px;font-size:13px;width:100%;box-sizing:border-box;cursor:pointer;">
+        </div>
+        <div class="job-form-field">
+          <label>Sous-titre (eyebrow)</label>
+          <input type="text" id="editSlideEyebrow" name="eyebrow"
+                 style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;box-sizing:border-box;">
+        </div>
+        <div class="job-form-field">
+          <label>Titre principal *</label>
+          <input type="text" id="editSlideTitle" name="title" required
+                 style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;box-sizing:border-box;">
+        </div>
+        <div class="job-form-field full" style="grid-column:1/-1;">
+          <label>Description</label>
+          <textarea id="editSlideSubtitle" name="subtitle" rows="2"
+                    style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;resize:vertical;width:100%;box-sizing:border-box;"></textarea>
+        </div>
+        <div class="job-form-field">
+          <label>Bouton 1 — texte</label>
+          <input type="text" id="editSlideCta1Text" name="cta1_text"
+                 style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;box-sizing:border-box;">
+        </div>
+        <div class="job-form-field">
+          <label>Bouton 1 — lien</label>
+          <input type="text" id="editSlideCta1Url" name="cta1_url"
+                 style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;box-sizing:border-box;">
+        </div>
+        <div class="job-form-field">
+          <label>Bouton 2 — texte</label>
+          <input type="text" id="editSlideCta2Text" name="cta2_text"
+                 style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;box-sizing:border-box;">
+        </div>
+        <div class="job-form-field">
+          <label>Bouton 2 — lien</label>
+          <input type="text" id="editSlideCta2Url" name="cta2_url"
+                 style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;box-sizing:border-box;">
+        </div>
+
+        <div style="grid-column:1/-1;">
+          <label style="font-size:13px;font-weight:500;color:var(--dark);display:block;margin-bottom:10px;">Pages cibles</label>
+          <div style="display:flex;flex-wrap:wrap;gap:10px;" id="editSlidePagesContainer">
+            <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:7px 14px;border:1px solid var(--border);border-radius:20px;background:#fff;">
+              <input type="checkbox" name="pages" value="all" style="accent-color:var(--emerald);"> Toutes
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:7px 14px;border:1px solid var(--border);border-radius:20px;background:#fff;">
+              <input type="checkbox" name="pages" value="index" style="accent-color:var(--emerald);"> Accueil
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:7px 14px;border:1px solid var(--border);border-radius:20px;background:#fff;">
+              <input type="checkbox" name="pages" value="talents" style="accent-color:var(--emerald);"> Talents
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:7px 14px;border:1px solid var(--border);border-radius:20px;background:#fff;">
+              <input type="checkbox" name="pages" value="entreprises" style="accent-color:var(--emerald);"> Entreprises
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:7px 14px;border:1px solid var(--border);border-radius:20px;background:#fff;">
+              <input type="checkbox" name="pages" value="carrieres" style="accent-color:var(--emerald);"> Carrières
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:7px 14px;border:1px solid var(--border);border-radius:20px;background:#fff;">
+              <input type="checkbox" name="pages" value="apropos" style="accent-color:var(--emerald);"> À propos
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:7px 14px;border:1px solid var(--border);border-radius:20px;background:#fff;">
+              <input type="checkbox" name="pages" value="notre-approche" style="accent-color:var(--emerald);"> Notre approche
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:7px 14px;border:1px solid var(--border);border-radius:20px;background:#fff;">
+              <input type="checkbox" name="pages" value="ressources" style="accent-color:var(--emerald);"> Ressources
+            </label>
+          </div>
+        </div>
+
+        <div style="grid-column:1/-1; display:flex; justify-content:flex-end; gap:12px; margin-top:16px;">
+          <span id="editCarouselMsg" style="font-size:13px; display:flex; align-items:center; flex:1;"></span>
+          <button type="button" onclick="closeEditCarouselModal()" style="padding:10px 20px; border-radius:6px; border:1px solid var(--border); background:#fff; cursor:pointer;">Annuler</button>
+          <button type="submit" style="padding:10px 24px; border-radius:6px; border:none; background:var(--emerald); color:#fff; font-weight:500; cursor:pointer;">Enregistrer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ MODAL AJOUT ATS ══════════ -->
       <div class="ats-modal-overlay" id="ats-add-modal-overlay" onclick="ATS.closeAddModal(event)">
         <div class="ats-modal" onclick="event.stopPropagation()">
           <div class="ats-modal-header" style="padding: 22px 26px 14px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
