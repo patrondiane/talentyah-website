@@ -2562,6 +2562,11 @@ const ATS = (() => {
 
     setupAddTypeToggles();
     loadCRMFromServer();
+    const smtpForm = document.getElementById('smtpForm');
+    if (smtpForm) {
+      smtpForm.addEventListener('input', updateSmtpSubmitButtonState);
+      smtpForm.addEventListener('change', updateSmtpSubmitButtonState);
+    }
     const modalOverlay = document.getElementById('ats-modal-overlay');
     if (modalOverlay) {
       modalOverlay.addEventListener('input', checkModalDirty);
@@ -2572,6 +2577,38 @@ const ATS = (() => {
   /* ── Expose public API ── */
 
   /* ── SMTP & Settings Configuration ── */
+  let originalSmtpHost = '';
+  let originalSmtpPort = '';
+  let originalSmtpUser = '';
+  let originalSmtpFrom = '';
+  let originalNotifyEmail = '';
+  let originalSmtpPassConfigured = false;
+
+  function updateSmtpSubmitButtonState() {
+    const hostEl = document.getElementById('smtp_host');
+    const portEl = document.getElementById('smtp_port');
+    const userEl = document.getElementById('smtp_user');
+    const fromEl = document.getElementById('smtp_from');
+    const notifyEl = document.getElementById('notify_email');
+    const passEl = document.getElementById('smtp_pass');
+    const btn = document.getElementById('smtpSubmitBtn');
+    if (!hostEl || !portEl || !userEl || !fromEl || !notifyEl || !passEl || !btn) return;
+
+    const isPassChanged = passEl.value !== '********' && passEl.value !== '';
+
+    const isDirty =
+      (hostEl.value.trim() !== originalSmtpHost) ||
+      (portEl.value.trim() !== originalSmtpPort) ||
+      (userEl.value.trim() !== originalSmtpUser) ||
+      (fromEl.value.trim() !== originalSmtpFrom) ||
+      (notifyEl.value.trim() !== originalNotifyEmail) ||
+      isPassChanged;
+
+    btn.disabled = !isDirty;
+    btn.style.opacity = isDirty ? '1' : '0.5';
+    btn.style.cursor = isDirty ? 'pointer' : 'not-allowed';
+  }
+
   async function loadSMTPSettings() {
     const token = sessionStorage.getItem('talentyah_token');
     try {
@@ -2580,17 +2617,26 @@ const ATS = (() => {
       });
       const config = await res.json();
       
-      document.getElementById('smtp_host').value = config.smtp_host || '';
-      document.getElementById('smtp_port').value = config.smtp_port || '587';
-      document.getElementById('smtp_user').value = config.smtp_user || '';
-      document.getElementById('smtp_from').value = config.smtp_from || '';
-      document.getElementById('notify_email').value = config.notify_email || '';
+      originalSmtpHost = config.smtp_host || '';
+      originalSmtpPort = String(config.smtp_port || '587');
+      originalSmtpUser = config.smtp_user || '';
+      originalSmtpFrom = config.smtp_from || '';
+      originalNotifyEmail = config.notify_email || '';
+      originalSmtpPassConfigured = !!config.smtp_pass_configured;
+
+      document.getElementById('smtp_host').value = originalSmtpHost;
+      document.getElementById('smtp_port').value = originalSmtpPort;
+      document.getElementById('smtp_user').value = originalSmtpUser;
+      document.getElementById('smtp_from').value = originalSmtpFrom;
+      document.getElementById('notify_email').value = originalNotifyEmail;
       
       // Handle password placeholder
       const passEl = document.getElementById('smtp_pass');
       if (passEl) {
-        passEl.value = config.smtp_pass_configured ? '********' : '';
+        passEl.value = originalSmtpPassConfigured ? '********' : '';
       }
+      
+      updateSmtpSubmitButtonState();
     } catch (err) {
       console.error('[SMTP SETTINGS LOAD ERROR]', err.message);
       showNotification('Erreur', 'Impossible de charger la configuration SMTP.', false);
