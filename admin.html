@@ -148,6 +148,14 @@
           Carousel
           <span class="nav-badge" id="countCarousel">0</span>
         </button>
+        <!-- Configuration E-mails -->
+        <button type="button" class="admin-nav-btn"
+                data-panel="panelSettings"
+                data-title="Configuration E-mails"
+                data-sub="Gérez les paramètres SMTP et notifications">
+          <i data-lucide="mail"></i>
+          Configuration e-mails
+        </button>
         <!-- Accès & Rôles (superadmin) -->
         <button type="button" class="admin-nav-btn"
                 data-panel="panelAccess"
@@ -977,6 +985,55 @@
               </div>
             </form>
           </div>
+        </div>
+      </div>
+
+      <!-- ══════════ PANEL : CONFIGURATION SMTP ══════════ -->
+      <div class="admin-panel" id="panelSettings" style="display:none;">
+        <div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:32px;box-shadow:0 4px 20px rgba(0,0,0,0.02);">
+          <div style="font-family:'Cormorant Garamond',serif; font-size:24px; margin-bottom:8px; color:var(--forest-dark); font-weight:600;">Configuration E-mails (SMTP)</div>
+          <p style="font-size:14px;color:var(--muted);margin-bottom:24px;">
+            Configurez le serveur d'envoi d'e-mails (SMTP) pour les notifications du site. Le mot de passe de messagerie est chiffré de manière symétrique en base de données.
+          </p>
+
+          <form id="smtpForm" style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+            <div class="job-form-field">
+              <label for="smtp_host" style="font-size:13px;font-weight:600;color:var(--dark);display:block;margin-bottom:6px;">Hôte SMTP *</label>
+              <input type="text" id="smtp_host" name="smtp_host" placeholder="ex: ssl0.ovh.net ou smtp.gmail.com" required style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;box-sizing:border-box;">
+            </div>
+
+            <div class="job-form-field">
+              <label for="smtp_port" style="font-size:13px;font-weight:600;color:var(--dark);display:block;margin-bottom:6px;">Port SMTP *</label>
+              <input type="number" id="smtp_port" name="smtp_port" placeholder="ex: 587 (STARTTLS) ou 465 (SSL)" required style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;box-sizing:border-box;">
+            </div>
+
+            <div class="job-form-field">
+              <label for="smtp_user" style="font-size:13px;font-weight:600;color:var(--dark);display:block;margin-bottom:6px;">Nom d'utilisateur SMTP *</label>
+              <input type="email" id="smtp_user" name="smtp_user" placeholder="ex: contact@talentyah.com" required style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;box-sizing:border-box;">
+            </div>
+
+            <div class="job-form-field">
+              <label for="smtp_pass" style="font-size:13px;font-weight:600;color:var(--dark);display:block;margin-bottom:6px;">Mot de passe SMTP *</label>
+              <input type="password" id="smtp_pass" name="smtp_pass" placeholder="••••••••" style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;box-sizing:border-box;">
+            </div>
+
+            <div class="job-form-field">
+              <label for="smtp_from" style="font-size:13px;font-weight:600;color:var(--dark);display:block;margin-bottom:6px;">E-mail de l'expéditeur *</label>
+              <input type="text" id="smtp_from" name="smtp_from" placeholder="ex: Talentyah &lt;noreply@talentyah.com&gt;" required style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;box-sizing:border-box;">
+            </div>
+
+            <div class="job-form-field">
+              <label for="notify_email" style="font-size:13px;font-weight:600;color:var(--dark);display:block;margin-bottom:6px;">E-mail de réception des alertes *</label>
+              <input type="email" id="notify_email" name="notify_email" placeholder="ex: admin@talentyah.com" required style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;box-sizing:border-box;">
+            </div>
+
+            <div style="grid-column:1/-1; display:flex; justify-content:flex-end; align-items:center; gap:16px; margin-top:12px;">
+              <span id="smtpMsg" style="font-size:13px; font-weight:600;"></span>
+              <button type="submit" id="smtpSubmitBtn" class="btn-publish-gold" style="padding:12px 28px; font-size:13.5px; font-weight:700; border-radius:6px; background:var(--emerald); color:#fff; border:none; cursor:pointer; font-family:'DM Sans', sans-serif;">
+                Enregistrer la configuration
+              </button>
+            </div>
+          </form>
         </div>
       </div>
 
