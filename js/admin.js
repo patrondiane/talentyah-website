@@ -2610,16 +2610,12 @@ const ATS = (() => {
   }
 
   async function loadSMTPSettings() {
-    console.log('[SMTP DEBUG] loadSMTPSettings called.');
     const token = sessionStorage.getItem('talentyah_token');
-    console.log('[SMTP DEBUG] Token:', token);
     try {
       const res = await fetch(API + '/api/settings/smtp', {
         headers: { 'Authorization': 'Bearer ' + token }
       });
-      console.log('[SMTP DEBUG] API response status:', res.status);
       const config = await res.json();
-      console.log('[SMTP DEBUG] Configuration loaded:', config);
       
       originalSmtpHost = config.smtp_host || '';
       originalSmtpPort = String(config.smtp_port || '587');
