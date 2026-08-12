@@ -257,7 +257,7 @@ document.addEventListener('DOMContentLoaded', () => {
         panelPublications: loadPublications,
         panelAccess:       loadAccessList,
         panelCRM:          loadCRM,
-        panelSettings:     loadSMTPSettings,
+        panelSettings:     () => ATS.loadSMTPSettings(),
       };
       if (reloadMap[btn.dataset.panel]) reloadMap[btn.dataset.panel]();
     });
