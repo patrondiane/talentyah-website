@@ -1,25 +1,55 @@
 // mailer.js — Envoi d'emails de notification
 const nodemailer = require('nodemailer');
 
-const transporter = nodemailer.createTransport({
-  host:   process.env.SMTP_HOST || 'smtp.gmail.com',
-  port:   Number(process.env.SMTP_PORT) || 587,
-  secure: false,
-  auth: {
-    user: process.env.SMTP_USER || '',
-    pass: process.env.SMTP_PASS || '',
-  },
-});
+const db         = require('./db');
+const { decrypt } = require('./crypto');
 
-const FROM        = process.env.SMTP_FROM || process.env.SMTP_USER || 'noreply@talentyah.com';
-const NOTIFY_TO   = process.env.NOTIFY_EMAIL || process.env.SMTP_USER || '';
-const ADMIN_URL   = process.env.ADMIN_URL || 'https://talentyah.com/admin.html';  // ← plus de localhost
+const ADMIN_URL   = process.env.ADMIN_URL || 'https://talentyah.com/admin.html';
 
 async function sendNotification(subject, html) {
-  if (!NOTIFY_TO || !process.env.SMTP_USER) return;
+  let host = process.env.SMTP_HOST || 'smtp.gmail.com';
+  let port = Number(process.env.SMTP_PORT) || 587;
+  let user = process.env.SMTP_USER || '';
+  let pass = process.env.SMTP_PASS || '';
+  let from = process.env.SMTP_FROM || process.env.SMTP_USER || 'noreply@talentyah.com';
+  let notifyTo = process.env.NOTIFY_EMAIL || process.env.SMTP_USER || '';
+
   try {
-    await transporter.sendMail({ from: FROM, to: NOTIFY_TO, subject, html });
-    console.log(`[MAIL] Envoyé : ${subject}`);
+    const rows = await db.all(`SELECT * FROM config_settings WHERE key IN ('smtp_host', 'smtp_port', 'smtp_user', 'smtp_pass', 'smtp_from', 'notify_email')`);
+    rows.forEach(r => {
+      if (r.key === 'smtp_host' && r.value) host = r.value;
+      if (r.key === 'smtp_port' && r.value) port = Number(r.value);
+      if (r.key === 'smtp_user' && r.value) user = r.value;
+      if (r.key === 'smtp_pass' && r.value) pass = decrypt(r.value);
+      if (r.key === 'smtp_from' && r.value) from = r.value;
+      if (r.key === 'notify_email' && r.value) notifyTo = r.value;
+    });
+  } catch (err) {
+    console.warn(`[MAIL] Impossible de charger les paramètres SMTP depuis la BDD: ${err.message}`);
+  }
+
+  // Si pas d'expéditeur configuré, fallback sur l'utilisateur SMTP
+  if (!from && user) from = user;
+  if (!notifyTo && user) notifyTo = user;
+
+  if (!notifyTo || !user) {
+    console.warn('[MAIL] Envoi annulé : SMTP_USER ou NOTIFY_EMAIL non configuré.');
+    return;
+  }
+
+  try {
+    const transporter = nodemailer.createTransport({
+      host,
+      port,
+      secure: port === 465,
+      auth: { user, pass },
+      tls: {
+        rejectUnauthorized: false // Empêche les erreurs de certificat autosigné fréquentes avec certains hébergeurs
+      }
+    });
+
+    await transporter.sendMail({ from, to: notifyTo, subject, html });
+    console.log(`[MAIL] Envoyé via ${host} : ${subject}`);
   } catch (err) {
     console.warn(`[MAIL] Échec envoi : ${err.message}`);
   }

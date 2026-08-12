@@ -257,6 +257,7 @@ document.addEventListener('DOMContentLoaded', () => {
         panelPublications: loadPublications,
         panelAccess:       loadAccessList,
         panelCRM:          loadCRM,
+        panelSettings:     loadSMTPSettings,
       };
       if (reloadMap[btn.dataset.panel]) reloadMap[btn.dataset.panel]();
     });
@@ -394,7 +395,7 @@ const jobForm = document.getElementById('jobForm');
         }
       }
 
-      if (msg) { msg.innerHTML = '<i data-lucide="check" style="width:14px; setTimeout(() => { if (typeof lucide !== "undefined") lucide.createIcons(); }, 10);height:14px;vertical-align:middle;margin-right:4px;"></i> Partenaires enregistrés.'; msg.style.color = 'var(--emerald)'; setTimeout(() => { msg.innerHTML = ''; }, 3000); }
+      if (msg) { msg.innerHTML = '<i data-lucide="check" style="width:14px; setTimeout(() => { if (typeof lucide !== "undefined") lucide.createIcons(); }, 10);height:14px;vertical-align:middle;margin-right:4px;"></i> Partenaires enregistrés.'; msg.style.color = 'var(--emerald)'; setTimeout(() => { msg.innerHTML = ''; ATS.closeAddCarouselModal(); }, 1500); }
       loadPartners();
     } catch {
       if (msg) { msg.textContent = 'Erreur lors de l\'enregistrement.'; msg.style.color = '#c0392b'; }
@@ -460,7 +461,7 @@ const jobForm = document.getElementById('jobForm');
       const method = id ? 'PUT' : 'POST';
       const res    = await fetch(url, { method, headers: { 'Authorization': 'Bearer ' + token }, body: fd });
       if (res.ok) {
-        if (msg) { msg.innerHTML = '<i data-lucide="check" style="width:14px; setTimeout(() => { if (typeof lucide !== "undefined") lucide.createIcons(); }, 10);height:14px;vertical-align:middle;margin-right:4px;"></i> Publication enregistrée.'; msg.style.color = 'var(--emerald)'; setTimeout(() => { msg.innerHTML = ''; }, 3000); }
+        if (msg) { msg.innerHTML = '<i data-lucide="check" style="width:14px; setTimeout(() => { if (typeof lucide !== "undefined") lucide.createIcons(); }, 10);height:14px;vertical-align:middle;margin-right:4px;"></i> Publication enregistrée.'; msg.style.color = 'var(--emerald)'; setTimeout(() => { msg.innerHTML = ''; ATS.closeAddCarouselModal(); }, 1500); }
         resetPubForm(); loadPublications(); closePubDrawer();
       } else {
         const d = await res.json();
@@ -471,7 +472,7 @@ const jobForm = document.getElementById('jobForm');
       const pub = { id: id ? parseInt(id) : Date.now(), title: f['title'].value.trim(), category: f['category'].value, status: f['status'].value, excerpt: f['excerpt'].value.trim(), content: contentHtml, image: currentPubImg || null, date: new Date().toISOString().slice(0,10) };
       if (id) { const idx = publications.findIndex(p => p.id === parseInt(id)); if (idx !== -1) publications[idx] = pub; } else { publications.unshift(pub); }
       renderPubList(); resetPubForm();
-      if (msg) { msg.innerHTML = '<i data-lucide="check" style="width:14px; setTimeout(() => { if (typeof lucide !== "undefined") lucide.createIcons(); }, 10);height:14px;vertical-align:middle;margin-right:4px;"></i> Enregistré (mode démo).'; msg.style.color = 'var(--emerald)'; setTimeout(() => { msg.innerHTML = ''; }, 3000); }
+      if (msg) { msg.innerHTML = '<i data-lucide="check" style="width:14px; setTimeout(() => { if (typeof lucide !== "undefined") lucide.createIcons(); }, 10);height:14px;vertical-align:middle;margin-right:4px;"></i> Enregistré (mode démo).'; msg.style.color = 'var(--emerald)'; setTimeout(() => { msg.innerHTML = ''; ATS.closeAddCarouselModal(); }, 1500); }
     }
     btn.disabled = false; btn.textContent = id ? 'Enregistrer les modifications →' : "Publier l'article →";
   });
@@ -1382,13 +1383,13 @@ function renderCarouselList(slides) {
       <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
         <div style="display:flex; gap:6px; align-items:center;">
           <span style="font-size:11px;padding:3px 8px;border-radius:12px;background:${s.active?'#e8f5e9':'#f5f5f5'};color:${s.active?'var(--emerald)':'var(--muted)'};">${s.active?'Actif':'Masqué'}</span>
-          <button class="btn-ghost" onclick="moveSlide(${s.id}, -1)" title="Monter" style="padding:4px 8px;font-size:14px;border:1px solid var(--border);border-radius:4px;cursor:pointer;" ${idx === 0 ? 'disabled' : ''}>↑</button>
-          <button class="btn-ghost" onclick="moveSlide(${s.id}, 1)" title="Descendre" style="padding:4px 8px;font-size:14px;border:1px solid var(--border);border-radius:4px;cursor:pointer;" ${idx === slides.length-1 ? 'disabled' : ''}>↓</button>
+          <button class="btn-ghost" onclick="ATS.moveSlide(${s.id}, -1)" title="Monter" style="padding:4px 8px;font-size:14px;border:1px solid var(--border);border-radius:4px;cursor:pointer;" ${idx === 0 ? 'disabled' : ''}>↑</button>
+          <button class="btn-ghost" onclick="ATS.moveSlide(${s.id}, 1)" title="Descendre" style="padding:4px 8px;font-size:14px;border:1px solid var(--border);border-radius:4px;cursor:pointer;" ${idx === slides.length-1 ? 'disabled' : ''}>↓</button>
         </div>
         <div style="display:flex; gap:6px;">
-          <button class="btn-gold" onclick="openEditCarouselModal(${s.id})" style="font-size:12px;padding:5px 12px;cursor:pointer;">Modifier</button>
-          <button class="btn-ghost" onclick="toggleCarouselSlide(${s.id}, ${s.active ? 0 : 1})" style="font-size:12px;padding:5px 12px;border:1px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;">${s.active ? 'Masquer' : 'Afficher'}</button>
-          <button class="btn-delete" onclick="deleteSlide(${s.id})" style="font-size:12px;padding:5px 12px;cursor:pointer;">Supprimer</button>
+          <button class="btn-gold" onclick="ATS.openEditCarouselModal(${s.id})" style="font-size:12px;padding:5px 12px;cursor:pointer;">Modifier</button>
+          <button class="btn-ghost" onclick="ATS.toggleCarouselSlide(${s.id}, ${s.active ? 0 : 1})" style="font-size:12px;padding:5px 12px;border:1px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;">${s.active ? 'Masquer' : 'Afficher'}</button>
+          <button class="btn-delete" onclick="ATS.deleteSlide(${s.id})" style="font-size:12px;padding:5px 12px;cursor:pointer;">Supprimer</button>
         </div>
       </div>
     </div>`;
@@ -2483,6 +2484,82 @@ const ATS = (() => {
 
   /* ── Entry point (appelé par loadCRM) ── */
   function init() {
+
+    // Formulaire d'édition de slide
+    document.getElementById('editCarouselForm')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = e.target.querySelector('button[type="submit"]');
+      const msg = document.getElementById('editCarouselMsg');
+      const id = document.getElementById('editSlideId').value;
+      btn.disabled = true; btn.textContent = 'Enregistrement…';
+      
+      const fd = new FormData(e.target);
+      const checkedPages = [...e.target.querySelectorAll('#editSlidePagesContainer input[name="pages"]:checked')].map(cb => cb.value);
+      fd.delete('pages');
+      fd.append('pages', checkedPages.length ? checkedPages.join(',') : 'all');
+      
+      const token = sessionStorage.getItem('talentyah_token');
+      try {
+        const res = await fetch(API + '/api/carousel/' + id, {
+          method: 'PUT', headers: { 'Authorization': 'Bearer ' + token }, body: fd
+        });
+        if (res.ok) {
+          if (msg) { msg.textContent = 'Slide mis à jour !'; msg.style.color = 'var(--emerald)'; setTimeout(() => { msg.textContent = ''; closeEditCarouselModal(); }, 1500); }
+          loadCarousel();
+        } else {
+          const d = await res.json();
+          if (msg) { msg.textContent = d.error || 'Erreur.'; msg.style.color = '#c0392b'; }
+        }
+      } catch {
+        if (msg) { msg.textContent = 'Erreur réseau.'; msg.style.color = '#c0392b'; }
+      }
+      btn.disabled = false; btn.textContent = 'Enregistrer';
+    });
+
+    // Formulaire de configuration SMTP
+    document.getElementById('smtpForm')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('smtpSubmitBtn');
+      const msg = document.getElementById('smtpMsg');
+      btn.disabled = true; btn.textContent = 'Enregistrement…';
+      
+      const fd = {
+        smtp_host: document.getElementById('smtp_host').value.trim(),
+        smtp_port: Number(document.getElementById('smtp_port').value),
+        smtp_user: document.getElementById('smtp_user').value.trim(),
+        smtp_from: document.getElementById('smtp_from').value.trim(),
+        notify_email: document.getElementById('notify_email').value.trim(),
+      };
+      
+      const passVal = document.getElementById('smtp_pass').value;
+      if (passVal !== '********' && passVal !== '') {
+        fd.smtp_pass = passVal;
+      }
+      
+      const token = sessionStorage.getItem('talentyah_token');
+      try {
+        const res = await fetch(API + '/api/settings/smtp', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify(fd)
+        });
+        
+        if (res.ok) {
+          if (msg) { msg.textContent = 'Configuration enregistrée !'; msg.style.color = 'var(--emerald)'; setTimeout(() => { msg.textContent = ''; }, 3000); }
+          loadSMTPSettings();
+        } else {
+          const d = await res.json();
+          if (msg) { msg.textContent = d.error || 'Erreur.'; msg.style.color = '#c0392b'; }
+        }
+      } catch {
+        if (msg) { msg.textContent = 'Erreur réseau.'; msg.style.color = '#c0392b'; }
+      }
+      btn.disabled = false; btn.textContent = 'Enregistrer la configuration';
+    });
+
     setupAddTypeToggles();
     loadCRMFromServer();
     const modalOverlay = document.getElementById('ats-modal-overlay');
@@ -2493,7 +2570,122 @@ const ATS = (() => {
   }
 
   /* ── Expose public API ── */
-  return { init, openModal, openPartModal, closeModal, openAddModal, closeAddModal, updateStadeBadge, saveModal, addEntry, filterByStade, showAtsPage, renderClients, resetPageAndRender, goToPage, goToRelancesPage, renderPartenariats, renderRelances, badge, exportClientsCSV, addHistoryNote, onCardDragStart, onCardDragEnd, onColDragOver, onColDragLeave, onColDrop };
+
+  /* ── SMTP & Settings Configuration ── */
+  async function loadSMTPSettings() {
+    const token = sessionStorage.getItem('talentyah_token');
+    try {
+      const res = await fetch(API + '/api/settings/smtp', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      const config = await res.json();
+      
+      document.getElementById('smtp_host').value = config.smtp_host || '';
+      document.getElementById('smtp_port').value = config.smtp_port || '587';
+      document.getElementById('smtp_user').value = config.smtp_user || '';
+      document.getElementById('smtp_from').value = config.smtp_from || '';
+      document.getElementById('notify_email').value = config.notify_email || '';
+      
+      // Handle password placeholder
+      const passEl = document.getElementById('smtp_pass');
+      if (passEl) {
+        passEl.value = config.smtp_pass_configured ? '********' : '';
+      }
+    } catch (err) {
+      console.error('[SMTP SETTINGS LOAD ERROR]', err.message);
+      showNotification('Erreur', 'Impossible de charger la configuration SMTP.', false);
+    }
+  }
+
+  /* ── Carousel Logic & Modals ── */
+  let currentCarouselSlides = [];
+
+  function openAddCarouselModal() {
+    document.getElementById('carouselForm').reset();
+    const allCb = document.querySelector('#carouselForm input[name="pages"][value="all"]');
+    if (allCb) allCb.checked = true;
+    const overlay = document.getElementById('add-carousel-modal-overlay');
+    if (overlay) overlay.classList.add('open');
+  }
+
+  function closeAddCarouselModal(ev) {
+    if (ev && ev.target !== document.getElementById('add-carousel-modal-overlay')) return;
+    const overlay = document.getElementById('add-carousel-modal-overlay');
+    if (overlay) overlay.classList.remove('open');
+  }
+
+  function openEditCarouselModal(id) {
+    const slide = currentCarouselSlides.find(s => s.id === id);
+    if (!slide) return;
+    document.getElementById('editSlideId').value = slide.id;
+    document.getElementById('editSlideEyebrow').value = slide.eyebrow || '';
+    document.getElementById('editSlideTitle').value = slide.title || '';
+    document.getElementById('editSlideSubtitle').value = slide.subtitle || '';
+    document.getElementById('editSlideCta1Text').value = slide.cta1_text || '';
+    document.getElementById('editSlideCta1Url').value = slide.cta1_url || '';
+    document.getElementById('editSlideCta2Text').value = slide.cta2_text || '';
+    document.getElementById('editSlideCta2Url').value = slide.cta2_url || '';
+
+    const pages = (slide.pages || 'all').split(',').map(p => p.trim());
+    document.querySelectorAll('#editSlidePagesContainer input[type="checkbox"]').forEach(cb => {
+      cb.checked = pages.includes(cb.value);
+    });
+    
+    const overlay = document.getElementById('edit-carousel-modal-overlay');
+    if (overlay) overlay.classList.add('open');
+  }
+
+  function closeEditCarouselModal(ev) {
+    if (ev && ev.target !== document.getElementById('edit-carousel-modal-overlay')) return;
+    const overlay = document.getElementById('edit-carousel-modal-overlay');
+    if (overlay) overlay.classList.remove('open');
+  }
+
+  async function toggleCarouselSlide(id, activeStatus) {
+    const token = sessionStorage.getItem('talentyah_token');
+    const fd = new FormData();
+    fd.append('active', activeStatus);
+    try {
+      await fetch(API + '/api/carousel/' + id, {
+        method: 'PUT', headers: { 'Authorization': 'Bearer ' + token }, body: fd
+      });
+      loadCarousel();
+    } catch (err) { console.error(err); }
+  }
+
+  async function moveSlide(id, direction) {
+    const idx = currentCarouselSlides.findIndex(s => s.id === id);
+    if (idx < 0) return;
+    const slide = currentCarouselSlides[idx];
+    const targetIdx = idx + direction;
+    if (targetIdx < 0 || targetIdx >= currentCarouselSlides.length) return;
+    const swapSlide = currentCarouselSlides[targetIdx];
+    
+    const token = sessionStorage.getItem('talentyah_token');
+    
+    try {
+      const fd1 = new FormData(); fd1.append('sort_order', swapSlide.sort_order || targetIdx);
+      const fd2 = new FormData(); fd2.append('sort_order', slide.sort_order || idx);
+      
+      await fetch(API + '/api/carousel/' + slide.id, { method: 'PUT', headers: { 'Authorization': 'Bearer ' + token }, body: fd1 });
+      await fetch(API + '/api/carousel/' + swapSlide.id, { method: 'PUT', headers: { 'Authorization': 'Bearer ' + token }, body: fd2 });
+      
+      loadCarousel();
+    } catch (err) { console.error(err); }
+  }
+
+  async function deleteSlide(id) {
+    showConfirm('Supprimer ce slide ?', async () => {
+      const token = sessionStorage.getItem('talentyah_token');
+      try {
+        await fetch(API + '/api/carousel/' + id, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token } });
+        loadCarousel();
+      } catch { showNotification('Erreur', 'Erreur lors de la suppression.', false); }
+    });
+  }
+
+  return { init, openAddCarouselModal, closeAddCarouselModal, openEditCarouselModal, closeEditCarouselModal, toggleCarouselSlide, moveSlide, deleteSlide, loadSMTPSettings, openModal, openPartModal, closeModal, openAddModal, closeAddModal, updateStadeBadge, saveModal, addEntry, filterByStade, showAtsPage, renderClients, resetPageAndRender, goToPage, goToRelancesPage, renderPartenariats, renderRelances, badge, exportClientsCSV, addHistoryNote, onCardDragStart, onCardDragEnd, onColDragOver, onColDragLeave, onColDrop };
+
 })();
 
 /* Override loadCRM pour pointer vers ATS.init */
@@ -2857,113 +3049,3 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
-
-
-function openAddCarouselModal() {
-  document.getElementById('carouselForm').reset();
-  const allCb = document.querySelector('#carouselForm input[name="pages"][value="all"]');
-  if (allCb) allCb.checked = true;
-  document.getElementById('add-carousel-modal-overlay').style.display = 'flex';
-}
-
-function closeAddCarouselModal() {
-  const modal = document.getElementById('add-carousel-modal-overlay');
-  if (modal) modal.style.display = 'none';
-}
-
-function openEditCarouselModal(id) {
-  const slide = currentCarouselSlides.find(s => s.id === id);
-  if (!slide) return;
-  document.getElementById('editSlideId').value = slide.id;
-  document.getElementById('editSlideEyebrow').value = slide.eyebrow || '';
-  document.getElementById('editSlideTitle').value = slide.title || '';
-  document.getElementById('editSlideSubtitle').value = slide.subtitle || '';
-  document.getElementById('editSlideCta1Text').value = slide.cta1_text || '';
-  document.getElementById('editSlideCta1Url').value = slide.cta1_url || '';
-  document.getElementById('editSlideCta2Text').value = slide.cta2_text || '';
-  document.getElementById('editSlideCta2Url').value = slide.cta2_url || '';
-
-  const pages = (slide.pages || 'all').split(',').map(p => p.trim());
-  document.querySelectorAll('#editSlidePagesContainer input[type="checkbox"]').forEach(cb => {
-    cb.checked = pages.includes(cb.value);
-  });
-  
-  document.getElementById('edit-carousel-modal-overlay').style.display = 'flex';
-}
-
-function closeEditCarouselModal() {
-  const modal = document.getElementById('edit-carousel-modal-overlay');
-  if (modal) modal.style.display = 'none';
-}
-
-document.getElementById('editCarouselForm')?.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const btn = e.target.querySelector('button[type="submit"]');
-  const msg = document.getElementById('editCarouselMsg');
-  const id = document.getElementById('editSlideId').value;
-  btn.disabled = true; btn.textContent = 'Enregistrement…';
-  
-  const fd = new FormData(e.target);
-  const checkedPages = [...e.target.querySelectorAll('#editSlidePagesContainer input[name="pages"]:checked')].map(cb => cb.value);
-  fd.delete('pages');
-  fd.append('pages', checkedPages.length ? checkedPages.join(',') : 'all');
-  
-  const token = sessionStorage.getItem('talentyah_token');
-  try {
-    const res = await fetch(API + '/api/carousel/' + id, {
-      method: 'PUT', headers: { 'Authorization': 'Bearer ' + token }, body: fd
-    });
-    if (res.ok) {
-      if (msg) { msg.textContent = 'Slide mis à jour !'; msg.style.color = 'var(--emerald)'; setTimeout(() => { msg.textContent = ''; closeEditCarouselModal(); }, 1500); }
-      loadCarousel();
-    } else {
-      const d = await res.json();
-      if (msg) { msg.textContent = d.error || 'Erreur.'; msg.style.color = '#c0392b'; }
-    }
-  } catch {
-    if (msg) { msg.textContent = 'Erreur réseau.'; msg.style.color = '#c0392b'; }
-  }
-  btn.disabled = false; btn.textContent = 'Enregistrer';
-});
-
-async function toggleCarouselSlide(id, activeStatus) {
-  const token = sessionStorage.getItem('talentyah_token');
-  const fd = new FormData();
-  fd.append('active', activeStatus);
-  try {
-    await fetch(API + '/api/carousel/' + id, {
-      method: 'PUT', headers: { 'Authorization': 'Bearer ' + token }, body: fd
-    });
-    loadCarousel();
-  } catch (err) { console.error(err); }
-}
-
-async function moveSlide(id, direction) {
-  const idx = currentCarouselSlides.findIndex(s => s.id === id);
-  if (idx < 0) return;
-  const slide = currentCarouselSlides[idx];
-  const targetIdx = idx + direction;
-  if (targetIdx < 0 || targetIdx >= currentCarouselSlides.length) return;
-  const swapSlide = currentCarouselSlides[targetIdx];
-  
-  const token = sessionStorage.getItem('talentyah_token');
-  
-  try {
-    // We send two PUT requests to swap sort_order
-    const fd1 = new FormData(); fd1.append('sort_order', swapSlide.sort_order || targetIdx);
-    const fd2 = new FormData(); fd2.append('sort_order', slide.sort_order || idx);
-    
-    await fetch(API + '/api/carousel/' + slide.id, { method: 'PUT', headers: { 'Authorization': 'Bearer ' + token }, body: fd1 });
-    await fetch(API + '/api/carousel/' + swapSlide.id, { method: 'PUT', headers: { 'Authorization': 'Bearer ' + token }, body: fd2 });
-    
-    loadCarousel();
-  } catch (err) { console.error(err); }
-}
-
-
-window.closeEditCarouselModal = closeEditCarouselModal;
-window.openEditCarouselModal = openEditCarouselModal;
-window.toggleCarouselSlide = toggleCarouselSlide;
-window.moveSlide = moveSlide;
-window.openAddCarouselModal = openAddCarouselModal;
-window.closeAddCarouselModal = closeAddCarouselModal;

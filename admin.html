@@ -385,7 +385,7 @@
           <p style="font-size:14px;color:var(--muted);margin:0;">
             Ajoutez, modifiez ou supprimez les slides du carousel principal de la page d'accueil.
           </p>
-          <button class="btn-publish-gold" onclick="openAddCarouselModal()" style="display:flex;align-items:center;gap:6px;">
+          <button class="btn-publish-gold" onclick="ATS.openAddCarouselModal()" style="display:flex;align-items:center;gap:6px;">
             <i data-lucide="plus" style="width:16px;height:16px;"></i> Ajouter un slide
           </button>
         </div>
@@ -708,11 +708,11 @@
 
       
 <!-- ══════════ MODAL ADD CAROUSEL ══════════ -->
-<div class="ats-modal-overlay" id="add-carousel-modal-overlay" onclick="closeAddCarouselModal(event)" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:9999; justify-content:center; align-items:center;">
-  <div class="ats-modal" onclick="event.stopPropagation()" style="background:#fff; border-radius:12px; width:90%; max-width:600px; max-height:90vh; overflow-y:auto; box-shadow:0 10px 30px rgba(0,0,0,0.2);">
-    <div class="ats-modal-header" style="padding: 22px 26px 14px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position:sticky; top:0; background:#fff; z-index:10;">
+<div class="ats-modal-overlay" id="add-carousel-modal-overlay" onclick="ATS.closeAddCarouselModal(event)">
+  <div class="ats-modal" onclick="event.stopPropagation()">
+    <div class="ats-modal-header" style="padding: 22px 26px 14px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; ">
       <h3 style="margin:0; font-size:16px; color:var(--dark);">Ajouter un nouveau slide</h3>
-      <button class="ats-modal-close" onclick="closeAddCarouselModal()" style="background:transparent; border:none; cursor:pointer; color:var(--muted); font-size:18px;"><i data-lucide="x"></i></button>
+      <button class="ats-modal-close" onclick="ATS.closeAddCarouselModal()" style="background:transparent; border:none; cursor:pointer; color:var(--muted); font-size:18px;"><i data-lucide="x"></i></button>
     </div>
     <div class="ats-modal-body" style="padding: 26px;">
       ${modalForm}
@@ -721,11 +721,11 @@
 </div>
 
 <!-- ══════════ MODAL EDIT CAROUSEL ══════════ -->
-<div class="ats-modal-overlay" id="edit-carousel-modal-overlay" onclick="closeEditCarouselModal(event)" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); z-index:9999; justify-content:center; align-items:center;">
-  <div class="ats-modal" onclick="event.stopPropagation()" style="background:#fff; border-radius:12px; width:90%; max-width:600px; max-height:90vh; overflow-y:auto; box-shadow:0 10px 30px rgba(0,0,0,0.2);">
-    <div class="ats-modal-header" style="padding: 22px 26px 14px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position:sticky; top:0; background:#fff; z-index:10;">
+<div class="ats-modal-overlay" id="edit-carousel-modal-overlay" onclick="ATS.closeEditCarouselModal(event)">
+  <div class="ats-modal" onclick="event.stopPropagation()">
+    <div class="ats-modal-header" style="padding: 22px 26px 14px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; ">
       <h3 style="margin:0; font-size:16px; color:var(--dark);">Modifier le slide</h3>
-      <button class="ats-modal-close" onclick="closeEditCarouselModal()" style="background:transparent; border:none; cursor:pointer; color:var(--muted); font-size:18px;"><i data-lucide="x"></i></button>
+      <button class="ats-modal-close" onclick="ATS.closeEditCarouselModal()" style="background:transparent; border:none; cursor:pointer; color:var(--muted); font-size:18px;"><i data-lucide="x"></i></button>
     </div>
     <div class="ats-modal-body" style="padding: 26px;">
       <form id="editCarouselForm" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
@@ -803,7 +803,7 @@
 
         <div style="grid-column:1/-1; display:flex; justify-content:flex-end; gap:12px; margin-top:16px;">
           <span id="editCarouselMsg" style="font-size:13px; display:flex; align-items:center; flex:1;"></span>
-          <button type="button" onclick="closeEditCarouselModal()" style="padding:10px 20px; border-radius:6px; border:1px solid var(--border); background:#fff; cursor:pointer;">Annuler</button>
+          <button type="button" onclick="ATS.closeEditCarouselModal()" style="padding:10px 20px; border-radius:6px; border:1px solid var(--border); background:#fff; cursor:pointer;">Annuler</button>
           <button type="submit" style="padding:10px 24px; border-radius:6px; border:none; background:var(--emerald); color:#fff; font-weight:500; cursor:pointer;">Enregistrer</button>
         </div>
       </form>
