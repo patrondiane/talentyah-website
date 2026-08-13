@@ -145,9 +145,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!contactSuccess) {
       contactSuccess = document.createElement('div');
       contactSuccess.id = 'contactSuccess';
-      contactSuccess.style.cssText = 'display:none;background:#f0fdf4;border:1px solid #86efac;border-radius:8px;padding:16px 20px;margin-top:16px;color:#166534;font-weight:500;';
-      contactSuccess.textContent = 'Message envoyé ! Nous vous répondrons sous 48h.';
-      contactForm.after(contactSuccess);
+      contactSuccess.className = 'form-success';
+      contactForm.appendChild(contactSuccess);
     }
 
     contactForm.addEventListener('submit', async (e) => {
@@ -199,12 +198,20 @@ function _btnReset(btn, text) {
 }
 
 function _showSuccess(form, btn, successEl, message) {
-  if (form)      { form.reset(); form.style.opacity = '0.4'; form.style.pointerEvents = 'none'; }
-  if (btn)       { btn.innerHTML = '<i data-lucide="check" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"></i> Envoyé !'; setTimeout(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); }, 10); btn.style.background = 'var(--emerald, #1a5233)'; }
+  if (form) {
+    form.reset();
+    form.classList.add('is-submitted');
+  }
+  if (btn) {
+    btn.innerHTML = '<i data-lucide="check" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"></i> Envoyé !';
+    setTimeout(() => { if (typeof lucide !== 'undefined') lucide.createIcons(); }, 10);
+    btn.style.background = 'var(--emerald, #1a5233)';
+    btn.disabled = true;
+  }
   if (successEl) {
-    successEl.textContent = message;
-    successEl.style.display = 'block';
+    successEl.innerHTML = '<p>' + message + '</p>';
     successEl.classList.add('show');
+    successEl.style.display = 'flex';
     successEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 }
