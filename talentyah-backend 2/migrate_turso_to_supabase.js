@@ -57,8 +57,7 @@ async function main() {
         console.warn(`Attention (non bloquant) lors du nettoyage :`, deleteErr.message);
       }
 
-      // 3. Insérer les lignes une par une (ou par batch) dans Supabase via SQL RPC
-      // Nous insérons directement en SQL brut pour préserver exactement les IDs et les types
+      // 3. Insérer les lignes dans Supabase via le SDK client (évite le bug des placeholders "?" dans les textes)
       let insertedCount = 0;
       for (const row of rows) {
         // Nettoyer les objets lignes retournés par LibSQL
@@ -67,18 +66,7 @@ async function main() {
           cleanRow[key] = row[key];
         }
 
-        // Préparer la requête SQL d'insertion
-        const columns = Object.keys(cleanRow).join(', ');
-        const placeholders = Object.keys(cleanRow).map(() => '?').join(', ');
-        const values = Object.values(cleanRow);
-
-        const sql = `INSERT INTO ${table} (${columns}) VALUES (${placeholders})`;
-
-        const stringParams = values.map(v => v === null || v === undefined ? null : String(v));
-        const { error: insertErr } = await supabase.rpc('run_sql', {
-          sql_query: sql,
-          params: stringParams
-        });
+        const { error: insertErr } = await supabase.from(table).insert(cleanRow);
 
         if (insertErr) {
           console.error(`Échec d'insertion pour l'id ${cleanRow.id}:`, insertErr.message);
