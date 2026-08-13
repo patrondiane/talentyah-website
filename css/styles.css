@@ -186,11 +186,10 @@ img { max-width: 100%; height: auto; display: block; }
 nav {
   display: flex;
   align-items: center;
-  gap: 36px;
+  gap: 32px;
 }
 
 nav a {
-  margin-left: 24px;
   text-decoration: none;
   color: var(--mid);
   font-size: 14px;
@@ -213,6 +212,27 @@ nav a:hover         { color: var(--emerald); }
 nav a:hover::after  { width: 100%; }
 nav a.active        { color: var(--emerald); }
 nav a.active::after { width: 100%; }
+
+.btn-nav-cta {
+  padding: 8px 20px;
+  background: var(--emerald);
+  color: var(--white) !important;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 13.5px;
+  transition: var(--transition);
+  border: 1px solid var(--emerald);
+}
+
+.btn-nav-cta:hover {
+  background: var(--emerald-mid);
+  border-color: var(--emerald-mid);
+  color: var(--white) !important;
+}
+
+.btn-nav-cta::after {
+  display: none !important;
+}
 
 .admin-link {
   margin-left: 8px;
@@ -1068,6 +1088,17 @@ form.is-submitted > *:not(.form-success) {
   .container { padding: 0 20px; }
 
   nav { display: none; gap: 16px; flex-direction: column; align-items: flex-start; }
+  nav a {
+    margin-left: 0 !important;
+    width: 100%;
+    padding: 8px 0;
+  }
+  .btn-nav-cta {
+    margin-top: 8px;
+    width: 100%;
+    text-align: center;
+    box-sizing: border-box;
+  }
   nav.open {
     display: flex; position: absolute;
     top: 72px; left: 0; right: 0;
