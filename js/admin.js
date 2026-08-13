@@ -258,6 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
         panelAccess:       loadAccessList,
         panelCRM:          loadCRM,
         panelSettings:     () => ATS.loadSMTPSettings(),
+        panelContacts:     () => ATS.loadContactMessages(),
       };
       if (reloadMap[btn.dataset.panel]) reloadMap[btn.dataset.panel]();
     });
@@ -586,6 +587,9 @@ function showDashboard() {
   loadCRM();
   loadProfile();
   applyPermissions();
+  if (typeof ATS !== 'undefined' && ATS.loadContactMessages) {
+    ATS.loadContactMessages();
+  }
   initNotifications(); // démarrer les notifications
 }
 
@@ -2643,6 +2647,52 @@ const ATS = (() => {
     }
   }
 
+  /* ── Contact Messages Logic ── */
+  async function loadContactMessages() {
+    const token = sessionStorage.getItem('talentyah_token');
+    try {
+      const res = await fetch(API + '/api/contact', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      const data = await res.json();
+      const messages = Array.isArray(data.contacts) ? data.contacts : [];
+      
+      // Update badge
+      const badgeEl = document.getElementById('countContacts');
+      if (badgeEl) badgeEl.textContent = messages.length;
+      
+      renderContactMessages(messages);
+    } catch (err) {
+      console.error('[LOAD CONTACTS ERROR]', err.message);
+      const list = document.getElementById('contactsListBody');
+      if (list) list.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--muted); padding:24px;">Erreur lors du chargement des messages.</td></tr>';
+    }
+  }
+
+  function renderContactMessages(messages) {
+    const list = document.getElementById('contactsListBody');
+    if (!list) return;
+    if (!messages.length) {
+      list.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--muted); padding:24px;">Aucun message reçu.</td></tr>';
+      return;
+    }
+
+    list.innerHTML = messages.map(m => {
+      const dateStr = new Date(m.created_at).toLocaleDateString('fr-FR', {
+        day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+      });
+      return `
+        <tr>
+          <td><span style="font-size:12px; color:var(--muted);">${dateStr}</span></td>
+          <td><span style="font-weight:600; color:var(--dark);">${_esc(m.fullname || m.name || '—')}</span></td>
+          <td><a href="mailto:${_esc(m.email)}" style="color:var(--emerald); text-decoration:none; font-size:13px;">${_esc(m.email)}</a></td>
+          <td><span style="font-size:13px; font-weight:500; color:var(--dark);">${_esc(m.subject || m.type || '—')}</span></td>
+          <td style="max-width: 400px; white-space: pre-wrap; word-break: break-word;"><span style="font-size:13px; color:var(--muted);">${_esc(m.message || '—')}</span></td>
+        </tr>
+      `;
+    }).join('');
+  }
+
   /* ── Carousel Logic & Modals ── */
   let currentCarouselSlides = [];
 
@@ -2730,7 +2780,7 @@ const ATS = (() => {
     });
   }
 
-  return { init, openAddCarouselModal, closeAddCarouselModal, openEditCarouselModal, closeEditCarouselModal, toggleCarouselSlide, moveSlide, deleteSlide, loadSMTPSettings, openModal, openPartModal, closeModal, openAddModal, closeAddModal, updateStadeBadge, saveModal, addEntry, filterByStade, showAtsPage, renderClients, resetPageAndRender, goToPage, goToRelancesPage, renderPartenariats, renderRelances, badge, exportClientsCSV, addHistoryNote, onCardDragStart, onCardDragEnd, onColDragOver, onColDragLeave, onColDrop };
+  return { init, openAddCarouselModal, closeAddCarouselModal, openEditCarouselModal, closeEditCarouselModal, toggleCarouselSlide, moveSlide, deleteSlide, loadSMTPSettings, loadContactMessages, openModal, openPartModal, closeModal, openAddModal, closeAddModal, updateStadeBadge, saveModal, addEntry, filterByStade, showAtsPage, renderClients, resetPageAndRender, goToPage, goToRelancesPage, renderPartenariats, renderRelances, badge, exportClientsCSV, addHistoryNote, onCardDragStart, onCardDragEnd, onColDragOver, onColDragLeave, onColDrop };
 
 })();
 

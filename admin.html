@@ -148,6 +148,15 @@
           Carousel
           <span class="nav-badge" id="countCarousel">0</span>
         </button>
+        <!-- Messages -->
+        <button type="button" class="admin-nav-btn"
+                data-panel="panelContacts"
+                data-title="Messages de Contact"
+                data-sub="Consultez les messages du formulaire de contact">
+          <i data-lucide="inbox"></i>
+          Messages reçus
+          <span class="nav-badge" id="countContacts">0</span>
+        </button>
         <!-- Configuration E-mails -->
         <button type="button" class="admin-nav-btn"
                 data-panel="panelSettings"
@@ -984,6 +993,35 @@
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════ PANEL : MESSAGES DE CONTACT ══════════ -->
+      <div class="admin-panel" id="panelContacts" style="display:none;">
+        <div style="background:#fff;border:1px solid var(--border);border-radius:10px;padding:32px;box-shadow:0 4px 20px rgba(0,0,0,0.02); margin-bottom:24px;">
+          <div style="font-family:'Cormorant Garamond',serif; font-size:24px; margin-bottom:8px; color:var(--forest-dark); font-weight:600;">Messages de Contact</div>
+          <p style="font-size:14px;color:var(--muted);margin-bottom:24px;">
+            Consultez les messages envoyés par les visiteurs du site via le formulaire de contact.
+          </p>
+
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th style="width:140px;">Date</th>
+                  <th style="width:180px;">Nom</th>
+                  <th style="width:180px;">Email</th>
+                  <th style="width:180px;">Sujet / Type</th>
+                  <th>Message</th>
+                </tr>
+              </thead>
+              <tbody id="contactsListBody">
+                <tr>
+                  <td colspan="5" style="text-align:center; color:var(--muted); padding:24px;">Chargement des messages...</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
