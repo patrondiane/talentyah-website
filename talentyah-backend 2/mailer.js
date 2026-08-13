@@ -109,4 +109,26 @@ async function notifyNewCompany(company) {
   return sendNotification(subject, html);
 }
 
-module.exports = { notifyNewCandidate, notifyNewCompany };
+async function notifyNewContactMessage(contact) {
+  const subject = `✉️ Nouveau message de contact — ${contact.fullname || contact.name}`;
+  const html = `
+    <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;">
+      <div style="background:#1a5233;padding:24px;border-radius:8px 8px 0 0;">
+        <h2 style="color:#fff;margin:0;">Nouveau message de contact</h2>
+      </div>
+      <div style="background:#f9f9f9;padding:24px;border-radius:0 0 8px 8px;border:1px solid #eee;">
+        <table style="width:100%;border-collapse:collapse;">
+          <tr><td style="padding:8px 0;color:#666;width:140px;">Nom</td><td style="padding:8px 0;font-weight:600;">${contact.fullname || contact.name}</td></tr>
+          <tr><td style="padding:8px 0;color:#666;">Email</td><td style="padding:8px 0;"><a href="mailto:${contact.email}">${contact.email}</a></td></tr>
+          <tr><td style="padding:8px 0;color:#666;">Sujet / Type</td><td style="padding:8px 0;">${contact.subject || contact.type || '—'}</td></tr>
+          ${contact.message ? `<tr><td style="padding:8px 0;color:#666;vertical-align:top;">Message</td><td style="padding:8px 0;">${contact.message}</td></tr>` : ''}
+        </table>
+        <div style="margin-top:20px;">
+          <a href="${ADMIN_URL}" style="background:#1a5233;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:600;">Voir dans l'admin →</a>
+        </div>
+      </div>
+    </div>`;
+  return sendNotification(subject, html);
+}
+
+module.exports = { notifyNewCandidate, notifyNewCompany, notifyNewContactMessage };
