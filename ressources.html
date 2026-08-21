@@ -121,19 +121,19 @@
     <div class="container">
       <div class="filters-inner">
         <button class="filter-btn active" data-filter="all">
-          Tous <span class="filter-count">6</span>
+          Tous <span class="filter-count" id="count-all">0</span>
         </button>
         <button class="filter-btn" data-filter="recrutement">
-          Recrutement <span class="filter-count">2</span>
+          Actualités <span class="filter-count" id="count-recrutement">0</span>
         </button>
         <button class="filter-btn" data-filter="carriere">
-          Carrière <span class="filter-count">2</span>
+          Conseil carrière <span class="filter-count" id="count-carriere">0</span>
         </button>
         <button class="filter-btn" data-filter="marche">
-          Marché &amp; tendances <span class="filter-count">1</span>
+          Marché de l'emploi <span class="filter-count" id="count-marche">0</span>
         </button>
         <button class="filter-btn" data-filter="rh">
-          Ressources humaines <span class="filter-count">1</span>
+          International <span class="filter-count" id="count-rh">0</span>
         </button>
       </div>
     </div>
@@ -143,112 +143,13 @@
   <section class="ressources-content" id="articles">
     <div class="container">
       <div class="articles-header">
-        <p class="articles-count"><span id="articlesCountNum">6</span> articles disponibles</p>
+        <p class="articles-count"><span id="articlesCountNum">…</span> articles disponibles</p>
       </div>
       <div class="articles-grid" id="articlesGrid">
-
-        <article class="article-card reveal" data-category="recrutement">
-          <div class="article-card-thumb thumb-recrutement">
-            <div class="article-card-thumb-placeholder">
-              <i data-lucide="image"></i>
-            </div>
-          </div>
-          <div class="article-card-body">
-            <div class="article-card-tag">Recrutement</div>
-            <h3 class="article-card-title">Les défis du recrutement de cadres en Afrique de l'Ouest</h3>
-            <p class="article-card-desc">Pourquoi certaines entreprises peinent à attirer les bons profils malgré un fort vivier de talents, et comment y remédier.</p>
-            <div class="article-card-footer">
-              <span class="article-card-date">Talentyah Editorial</span>
-              <a href="#" class="article-card-link">Lire <i data-lucide="arrow-right" style="width:18px;height:18px;vertical-align:middle;margin-left:6px;"></i></a>
-            </div>
-          </div>
-        </article>
-
-        <article class="article-card reveal" data-category="carriere">
-          <div class="article-card-thumb thumb-carriere">
-            <div class="article-card-thumb-placeholder">
-              <i data-lucide="image"></i>
-            </div>
-          </div>
-          <div class="article-card-body">
-            <div class="article-card-tag">Carrière</div>
-            <h3 class="article-card-title">Construire une trajectoire professionnelle non linéaire</h3>
-            <p class="article-card-desc">Mobilité, reconversion, expatriation : repenser les parcours professionnels africains et comment en faire une force.</p>
-            <div class="article-card-footer">
-              <span class="article-card-date">Talentyah Editorial</span>
-              <a href="#" class="article-card-link">Lire <i data-lucide="arrow-right" style="width:18px;height:18px;vertical-align:middle;margin-left:6px;"></i></a>
-            </div>
-          </div>
-        </article>
-
-        <article class="article-card reveal" data-category="marche">
-          <div class="article-card-thumb thumb-marche">
-            <div class="article-card-thumb-placeholder">
-              <i data-lucide="image"></i>
-            </div>
-          </div>
-          <div class="article-card-body">
-            <div class="article-card-tag">Marché</div>
-            <h3 class="article-card-title">Pourquoi les soft skills deviennent stratégiques</h3>
-            <p class="article-card-desc">Leadership, adaptabilité et intelligence culturelle au cœur des recrutements africains. Ce que les DRH regardent vraiment.</p>
-            <div class="article-card-footer">
-              <span class="article-card-date">Talentyah Editorial</span>
-              <a href="#" class="article-card-link">Lire <i data-lucide="arrow-right" style="width:18px;height:18px;vertical-align:middle;margin-left:6px;"></i></a>
-            </div>
-          </div>
-        </article>
-
-        <article class="article-card reveal" data-category="rh">
-          <div class="article-card-thumb thumb-rh">
-            <div class="article-card-thumb-placeholder">
-              <i data-lucide="image"></i>
-            </div>
-          </div>
-          <div class="article-card-body">
-            <div class="article-card-tag">Ressources humaines</div>
-            <h3 class="article-card-title">Marque employeur en Afrique : comment devenir un employeur attractif</h3>
-            <p class="article-card-desc">Les leviers concrets pour renforcer votre attractivité et vous positionner comme un employeur de référence sur le continent.</p>
-            <div class="article-card-footer">
-              <span class="article-card-date">Talentyah Editorial</span>
-              <a href="#" class="article-card-link">Lire <i data-lucide="arrow-right" style="width:18px;height:18px;vertical-align:middle;margin-left:6px;"></i></a>
-            </div>
-          </div>
-        </article>
-
-        <article class="article-card reveal" data-category="recrutement">
-          <div class="article-card-thumb thumb-diaspora">
-            <div class="article-card-thumb-placeholder">
-              <i data-lucide="image"></i>
-            </div>
-          </div>
-          <div class="article-card-body">
-            <div class="article-card-tag">Recrutement</div>
-            <h3 class="article-card-title">Recruter dans la diaspora : mythes et réalités</h3>
-            <p class="article-card-desc">Déconstruire les idées reçues sur le recrutement diasporique et identifier les bons canaux pour trouver les profils d'excellence.</p>
-            <div class="article-card-footer">
-              <span class="article-card-date">Talentyah Editorial</span>
-              <a href="#" class="article-card-link">Lire <i data-lucide="arrow-right" style="width:18px;height:18px;vertical-align:middle;margin-left:6px;"></i></a>
-            </div>
-          </div>
-        </article>
-
-        <article class="article-card reveal" data-category="carriere">
-          <div class="article-card-thumb thumb-interview">
-            <div class="article-card-thumb-placeholder">
-              <i data-lucide="image"></i>
-            </div>
-          </div>
-          <div class="article-card-body">
-            <div class="article-card-tag">Carrière</div>
-            <h3 class="article-card-title">Réussir son retour en Afrique après la diaspora</h3>
-            <p class="article-card-desc">Préparation, négociation salariale, intégration : le guide complet pour une réinstallation professionnelle réussie sur le continent.</p>
-            <div class="article-card-footer">
-              <span class="article-card-date">Talentyah Editorial</span>
-              <a href="#" class="article-card-link">Lire <i data-lucide="arrow-right" style="width:18px;height:18px;vertical-align:middle;margin-left:6px;"></i></a>
-            </div>
-          </div>
-        </article>
-
+        <div style="grid-column:1/-1; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:220px; gap:12px; width:100%;">
+          <div class="admin-spinner" style="border:3px solid #eee; border-top:3px solid var(--emerald); border-radius:50%; width:32px; height:32px; animation:spin 0.8s linear infinite;"></div>
+          <span style="font-size:13px; color:var(--muted); font-weight:500;">Chargement des articles…</span>
+        </div>
       </div>
     </div>
   </section>

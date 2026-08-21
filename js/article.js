@@ -2,7 +2,8 @@
    TALENTYAH — article.js
 ===================================================== */
 
-const API_BASE = window.API_BASE;
+const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const API_BASE = window.API_BASE || (isLocal ? "http://localhost:4001" : "https://talentyah-website.onrender.com");
 
 function _esc(str) {
   return String(str || '')

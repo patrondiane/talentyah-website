@@ -2,6 +2,9 @@
    TALENTYAH — ressources.js
 ===================================================== */
 
+const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const API_BASE = window.API_BASE || (isLocal ? "http://localhost:4001" : "https://talentyah-website.onrender.com");
+
 const catMap = {
   'Conseil carrière':      'carriere',
   "Marché de l'emploi":   'marche',
@@ -10,8 +13,10 @@ const catMap = {
 };
 
 const pageLabels = {
-  carriere: 'Conseil carrière', marche: "Marché de l'emploi",
-  recrutement: 'Actualités', rh: 'International',
+  carriere: 'Conseil carrière', 
+  marche: "Marché de l'emploi",
+  recrutement: 'Actualités', 
+  rh: 'International',
 };
 
 let allCards = [];
@@ -25,7 +30,11 @@ function applyFilter(cat) {
     if (match) visible++;
   });
   const numEl = document.getElementById('articlesCountNum');
-  if (numEl) numEl.textContent = visible;
+  if (numEl) {
+    numEl.textContent = visible;
+    const parentP = numEl.closest('.articles-count');
+    if (parentP) parentP.innerHTML = `<span id="articlesCountNum">${visible}</span> ${visible > 1 ? 'articles disponibles' : 'article disponible'}`;
+  }
 }
 
 function _esc(str) {
@@ -47,11 +56,11 @@ function renderArticles(pubs) {
       <article class="article-card reveal visible" data-category="${cat}">
         <div class="article-card-thumb thumb-${cat}">
           ${p.image_url 
-            ? `<img src="${p.image_url.startsWith('http') ? p.image_url : window.API_BASE + p.image_url}" 
+            ? `<img src="${p.image_url.startsWith('http') ? p.image_url : API_BASE + p.image_url}" 
                     alt="${_esc(p.title)}" 
                     style="width:100%;height:100%;object-fit:cover;"
                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">`
-            : `<div class="article-card-thumb-placeholder">...</div>`
+            : `<div class="article-card-thumb-placeholder"><i data-lucide="file-text" style="width:28px;height:28px;"></i></div>`
           }
         </div>
         <div class="article-card-body">
@@ -67,17 +76,22 @@ function renderArticles(pubs) {
   }).join('');
 
   const numEl = document.getElementById('articlesCountNum');
-  if (numEl) numEl.textContent = pubs.length;
+  if (numEl) {
+    numEl.textContent = pubs.length;
+    const parentP = numEl.closest('.articles-count');
+    if (parentP) parentP.innerHTML = `<span id="articlesCountNum">${pubs.length}</span> ${pubs.length > 1 ? 'articles disponibles' : 'article disponible'}`;
+  }
 
   // Mise à jour dynamique des compteurs de filtres
   updateFilterCounts(pubs);
 
   const activeBtn = document.querySelector('.filter-btn.active');
   if (activeBtn) applyFilter(activeBtn.dataset.filter || 'all');
+  if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
 function updateFilterCounts(pubs) {
-  const counts = { all: pubs.length };
+  const counts = { all: pubs.length, carriere: 0, marche: 0, recrutement: 0, rh: 0 };
   pubs.forEach(p => {
     const cat = catMap[p.category] || 'recrutement';
     counts[cat] = (counts[cat] || 0) + 1;
@@ -89,8 +103,7 @@ function updateFilterCounts(pubs) {
     if (countSpan) {
       countSpan.textContent = counts[filterVal] || 0;
     }
-    // Masquer ou estomper le bouton de filtre si aucun article correspondant
-    btn.style.opacity = (filterVal !== 'all' && !counts[filterVal]) ? '0.4' : '1';
+    btn.style.opacity = (filterVal !== 'all' && !counts[filterVal]) ? '0.5' : '1';
   });
 }
 
@@ -98,11 +111,8 @@ async function loadArticles() {
   const grid = document.getElementById('articlesGrid');
   if (!grid) return;
 
-  // Vider immédiatement les articles statiques
-  grid.innerHTML = '<p style="color:var(--muted);font-size:14px;padding:20px 0;">Chargement des articles…</p>';
-
   try {
-    const res  = await fetch(window.API_BASE + '/api/publications');
+    const res  = await fetch(API_BASE + '/api/publications');
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
     const pubs = data.publications || [];
@@ -110,12 +120,12 @@ async function loadArticles() {
     if (pubs.length) {
       renderArticles(pubs);
     } else {
-      grid.innerHTML = '<p style="color:var(--muted);font-size:14px;padding:20px 0;">Aucun article publié pour le moment.</p>';
+      grid.innerHTML = '<p style="color:var(--muted);font-size:14px;padding:30px 0;grid-column:1/-1;text-align:center;">Aucun article publié pour le moment.</p>';
+      updateFilterCounts([]);
     }
   } catch (err) {
     console.warn('[Talentyah] Publications:', err.message);
-    // Fallback : remettre les articles statiques HTML
-    grid.innerHTML = _staticArticles();
+    grid.innerHTML = '<p style="color:var(--muted);font-size:14px;padding:30px 0;grid-column:1/-1;text-align:center;">Impossible de charger les articles.</p>';
   }
 }
 
