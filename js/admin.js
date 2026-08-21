@@ -369,89 +369,80 @@ const jobForm = document.getElementById('jobForm');
     });
   }
 
-  /* ── Partenaires ── */
-  document.getElementById('addPartnerSlotBtn')?.addEventListener('click', () => {
-    partners.push({ name: '', desc: '', img: null, file: null });
-    const countEl = document.getElementById('countPartners');
-    if (countEl) countEl.textContent = partners.length;
-    renderPartners();
-  });
+  /* ── Formulaire Partenaire (Action isolée en Modal) ── */
+  const partnerForm = document.getElementById('partnerForm');
+  if (partnerForm) {
+    partnerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('partnerSubmitBtn');
+      const msg = document.getElementById('partnerModalMsg');
+      const idVal = document.getElementById('partner-id')?.value;
+      const fileInput = document.getElementById('partnerImageInput');
+      const existingImg = document.getElementById('partner-existing-img')?.value;
+      const file = fileInput?.files?.[0];
 
-  document.getElementById('savePartnersBtn')?.addEventListener('click', async () => {
-    const msg = document.getElementById('partnersMsg');
-    const token = sessionStorage.getItem('talentyah_token');
-    
-    // Validation stricte : Nom et Image obligatoires pour tous les partenaires
-    for (let i = 0; i < partners.length; i++) {
-      const p = partners[i];
-      if (!p.name || !p.name.trim()) {
-        if (msg) { msg.textContent = `Nom requis pour le partenaire #${i + 1}.`; msg.style.color = '#c0392b'; }
-        showToast(`Veuillez renseigner le nom du partenaire #${i + 1}.`, 'error');
+      const nameVal = (partnerForm.name?.value || '').trim();
+      const descVal = (partnerForm.description?.value || '').trim();
+
+      if (!nameVal) {
+        if (msg) { msg.textContent = 'Le nom du partenaire est obligatoire.'; msg.style.color = '#c0392b'; }
         return;
       }
-      const hasImg = p.file || (p.img && !p.img.startsWith('data:'));
-      if (!hasImg) {
-        if (msg) { msg.textContent = `Le logo est obligatoire pour "${p.name}".`; msg.style.color = '#c0392b'; }
-        showToast(`Le logo est obligatoire pour le partenaire "${p.name}".`, 'error');
+
+      if (!file && !existingImg) {
+        if (msg) { msg.textContent = "L'image du logo est obligatoire."; msg.style.color = '#c0392b'; }
         return;
       }
-    }
 
-    if (msg) { msg.textContent = 'Enregistrement…'; msg.style.color = 'var(--muted)'; }
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = idVal ? 'Enregistrement…' : 'Ajout…';
+      }
+      if (msg) { msg.textContent = 'Traitement en cours…'; msg.style.color = 'var(--muted)'; }
 
-    try {
-      // Pour chaque partenaire : PUT si id existant, POST si nouveau
-      for (let i = 0; i < partners.length; i++) {
-        const p = partners[i];
-        const fd = new FormData();
-        fd.append('name', p.name.trim());
-        fd.append('description', p.desc ? p.desc.trim() : '');
-        fd.append('sort_order', i);
-        
-        if (p.file) {
-          fd.append('image', p.file);
-        } else if (p.img && !p.img.startsWith('data:')) {
-          fd.append('existing_image_url', p.img);
-        }
+      const fd = new FormData();
+      fd.append('name', nameVal);
+      fd.append('description', descVal);
+      if (file) {
+        fd.append('image', file);
+      } else if (existingImg) {
+        fd.append('existing_image_url', existingImg);
+      }
 
-        if (p.id) {
-          const res = await fetch(API + '/api/partners/' + p.id, {
-            method: 'PUT',
-            headers: { 'Authorization': 'Bearer ' + token },
-            body: fd
-          });
-          if (!res.ok) {
-            const d = await res.json();
-            throw new Error(d.error || 'Erreur mise à jour');
+      try {
+        const token = sessionStorage.getItem('talentyah_token');
+        const url = idVal ? `${API}/api/partners/${idVal}` : `${API}/api/partners`;
+        const method = idVal ? 'PUT' : 'POST';
+
+        const res = await fetch(url, {
+          method: method,
+          headers: { 'Authorization': 'Bearer ' + token },
+          body: fd
+        });
+
+        if (res.ok) {
+          const successMsg = idVal ? 'Partenaire mis à jour avec succès !' : 'Partenaire ajouté avec succès !';
+          if (msg) {
+            msg.innerHTML = `<i data-lucide="check" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> ${successMsg}`;
+            msg.style.color = 'var(--emerald)';
+            if (typeof lucide !== 'undefined') lucide.createIcons();
           }
+          setTimeout(() => {
+            closePartnerModal();
+            showToast(successMsg, 'success');
+            loadPartners();
+          }, 600);
         } else {
-          const res = await fetch(API + '/api/partners', {
-            method: 'POST',
-            headers: { 'Authorization': 'Bearer ' + token },
-            body: fd
-          });
-          if (!res.ok) {
-            const d = await res.json();
-            throw new Error(d.error || 'Erreur création');
-          }
-          const data = await res.json();
-          partners[i].id = data.id;
+          const d = await res.json();
+          if (msg) { msg.textContent = d.error || "Erreur lors de l'enregistrement."; msg.style.color = '#c0392b'; }
         }
+      } catch (err) {
+        if (msg) { msg.textContent = 'Erreur réseau : ' + err.message; msg.style.color = '#c0392b'; }
       }
 
-      if (msg) { 
-        msg.innerHTML = '<i data-lucide="check" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Partenaires enregistrés.'; 
-        msg.style.color = 'var(--emerald)'; 
-        if (typeof lucide !== 'undefined') lucide.createIcons();
-        setTimeout(() => { msg.innerHTML = ''; }, 2500); 
-      }
-      showToast('Partenaires enregistrés avec succès !', 'success');
-      loadPartners();
-    } catch (err) {
-      if (msg) { msg.textContent = 'Erreur : ' + err.message; msg.style.color = '#c0392b'; }
-      showToast('Erreur : ' + err.message, 'error');
-    }
-  });
+      if (btn) btn.disabled = false;
+    });
+  }
 
   /* ── Carousel upload ── */
   document.getElementById('carouselUploadForm')?.addEventListener('submit', async (e) => {
@@ -1398,14 +1389,6 @@ async function deleteJob(index, id) {
 /* ══════════════════════════════
    CAROUSEL
 ══════════════════════════════ */
-/* ══════════════════════════════
-   PARTENAIRES
-══════════════════════════════ */
-let partners = [];
-
-/* ══════════════════════════════
-   CAROUSEL
-══════════════════════════════ */
 
 let currentCarouselSlides = [];
 
@@ -1482,20 +1465,28 @@ async function deleteSlide(id) {
   });
 }
 
+/* ══════════════════════════════
+   PARTENAIRES (CRUD Modal Isolé)
+══════════════════════════════ */
+let partners = [];
+
 async function loadPartners() {
+  const container = document.getElementById('partnersContainer');
   try {
     const token = sessionStorage.getItem('talentyah_token');
     const res   = await fetch(API + '/api/partners/all', { headers: { 'Authorization': 'Bearer ' + token } });
     const data  = await res.json();
-    partners = (data.partners || []).map(p => ({ id: p.id, name: p.name, desc: p.description || '', img: p.image_url || null }));
+    partners = (data.partners || []).map(p => ({
+      id: p.id,
+      name: p.name,
+      desc: p.description || '',
+      img: p.image_url || null
+    }));
   } catch (err) {
-    publications = [];
-    cachedPublications = [];
-    const container = document.getElementById('pubList');
     if (container) {
-      container.innerHTML = '<div style="color: #c0392b; font-weight: 600; text-align: center; padding: 30px; background: #fff; border: 1px solid var(--border); border-radius: 8px;">⚠️ Erreur : Impossible de contacter la base de données / le serveur backend.</div>';
+      container.innerHTML = '<div style="color: #c0392b; font-weight: 600; text-align: center; padding: 24px; background: #fff; border: 1px solid var(--border); border-radius: 8px;">⚠️ Impossible de charger les partenaires depuis le serveur.</div>';
     }
-    const badge = document.getElementById('countPublications');
+    const badge = document.getElementById('countPartners');
     if (badge) badge.textContent = 'Err';
     return;
   }
@@ -1510,106 +1501,230 @@ function renderPartners() {
   const container = document.getElementById('partnersContainer');
   if (!container) return;
 
-  container.innerHTML = partners.map((p, i) => {
+  if (!partners.length) {
+    container.innerHTML = `
+      <div style="background:#fff; border:1px dashed var(--border); border-radius:8px; padding:40px 20px; text-align:center;">
+        <div style="width:48px; height:48px; border-radius:50%; background:rgba(26,82,51,0.08); display:flex; align-items:center; justify-content:center; margin:0 auto 12px; color:var(--emerald);">
+          <i data-lucide="image" style="width:24px; height:24px;"></i>
+        </div>
+        <p style="color:var(--dark); font-size:15px; font-weight:600; margin:0 0 6px;">Aucun partenaire enregistré</p>
+        <p style="color:var(--muted); font-size:13px; margin:0 0 16px;">Ajoutez des logos d'entreprises et partenaires pour le carrousel du site.</p>
+        <button type="button" class="btn-publish-gold" onclick="openAddPartnerModal()" style="font-size:13px; padding:8px 18px;">+ Ajouter un premier partenaire</button>
+      </div>`;
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+    return;
+  }
+
+  container.innerHTML = partners.map((p) => {
     let imgSrc = null;
     if (p.img) {
-      if (p.img.startsWith('data:') || p.img.startsWith('http')) {
-        imgSrc = p.img;
-      } else {
-        imgSrc = p.img.startsWith('http') ? p.img : 'https://talentyah-website.onrender.com' + p.img;
-      }
+      imgSrc = p.img.startsWith('http') ? p.img : (API + p.img);
     }
 
     return `
-    <div class="partner-row-item" style="display: flex; gap: 16px; align-items: center; background: #fff; padding: 14px 18px; border: 1px solid var(--border); border-radius: var(--radius); width: 100%;">
-      <!-- Mini Upload Logo avec indication obligatoire -->
-      <div class="partner-mini-upload" style="position: relative; width: 60px; height: 60px; border: 1.5px dashed ${imgSrc ? 'var(--border)' : '#e74c3c'}; border-radius: var(--radius); display: flex; align-items: center; justify-content: center; background: ${imgSrc ? 'var(--bg-off)' : '#fdf2f2'}; overflow: hidden; flex-shrink: 0; cursor: pointer;" title="${imgSrc ? 'Changer de logo' : 'Logo obligatoire (cliquez pour sélectionner une image)'}">
-        <input type="file" accept="image/*" onchange="handlePartnerImg(this, ${i})" style="position: absolute; top:0; left:0; width:100%; height:100%; opacity:0; cursor:pointer; z-index:2;">
+    <div class="partner-card-row" style="display:grid; grid-template-columns:90px 1fr auto; gap:20px; align-items:center; background:#fff; padding:16px 20px; border:1px solid var(--border); border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,0.02); transition:border-color 0.2s;">
+      <!-- Vignette Logo -->
+      <div style="width:90px; height:54px; background:var(--bg-off); border-radius:6px; border:1px solid var(--border); display:flex; align-items:center; justify-content:center; overflow:hidden; padding:4px;">
         ${imgSrc
-          ? `<img src="${imgSrc}" style="width: 100%; height: 100%; object-fit: contain; padding: 4px;">
-             <button onclick="removePartnerImg(event, ${i})" style="position: absolute; top: 2px; right: 2px; width: 16px; height: 16px; border-radius: 50%; background: #c0392b; color: #fff; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 3; padding: 0;">
-               <i data-lucide="x" style="width:10px;height:10px;"></i>
-             </button>`
-          : `<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; color: #c0392b; font-size: 10px; text-align: center; padding: 4px;">
-               <i data-lucide="upload" style="width: 16px; height: 16px; color: #c0392b; margin-bottom: 2px;"></i>
-               <span style="font-weight:600;">Logo *</span>
-             </div>`
+          ? `<img src="${imgSrc}" alt="${_esc(p.name)}" style="max-width:100%; max-height:100%; object-fit:contain;">`
+          : `<i data-lucide="image" style="width:20px; height:20px; color:var(--muted);"></i>`
         }
       </div>
-      <!-- Nom & Description Inputs -->
-      <div style="flex: 1; display: grid; grid-template-columns: 1fr 2fr; gap: 12px;">
-        <input type="text" class="admin-filter-input" placeholder="Nom du partenaire *" value="${_esc(p.name)}" style="margin: 0; width: 100%;" oninput="partners[${i}].name=this.value">
-        <input type="text" class="admin-filter-input" placeholder="Description / Secteur d'activité" value="${_esc(p.desc)}" style="margin: 0; width: 100%;" oninput="partners[${i}].desc=this.value">
+
+      <!-- Informations -->
+      <div>
+        <div style="font-weight:600; color:var(--dark); font-size:15px; margin-bottom:2px;">${_esc(p.name)}</div>
+        <div style="font-size:13px; color:var(--muted);">${_esc(p.desc) || '<span style="color:#aaa; font-style:italic;">Aucune description</span>'}</div>
       </div>
-      <!-- Retirer -->
-      <button class="btn-delete" onclick="removePartner(${i})" style="padding: 8px 16px; flex-shrink: 0;">Retirer</button>
+
+      <!-- Actions isolées -->
+      <div style="display:flex; gap:8px; align-items:center;">
+        <button type="button" class="btn-gold" onclick="openEditPartnerModal(${p.id})" style="font-size:12px; padding:6px 14px; cursor:pointer;">Modifier</button>
+        <button type="button" class="btn-delete" onclick="deletePartner(${p.id})" style="font-size:12px; padding:6px 14px; cursor:pointer;">Supprimer</button>
+      </div>
     </div>`;
   }).join('');
 
   if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
-async function handlePartnerImg(input, i) {
-  const file = input.files[0];
-  if (!file) return;
+function setupPartnerDropzone() {
+  const dropzone = document.getElementById('partnerDropzone');
+  const input = document.getElementById('partnerImageInput');
+  if (!dropzone || !input || dropzone._hasDropzoneEvents) return;
+  dropzone._hasDropzoneEvents = true;
 
-  partners[i].file = file;
+  ['dragenter', 'dragover'].forEach(name => {
+    dropzone.addEventListener(name, (e) => {
+      e.preventDefault(); e.stopPropagation();
+      dropzone.style.borderColor = 'var(--emerald)';
+      dropzone.style.background = 'rgba(26,82,51,0.05)';
+    });
+  });
 
-  // Aperçu local immédiat
-  const reader = new FileReader();
-  reader.onload = (e) => { 
-    partners[i].img = e.target.result; 
-    renderPartners(); 
-  };
-  reader.readAsDataURL(file);
+  ['dragleave', 'drop'].forEach(name => {
+    dropzone.addEventListener(name, (e) => {
+      e.preventDefault(); e.stopPropagation();
+      dropzone.style.borderColor = 'var(--border)';
+      dropzone.style.background = 'var(--bg-off)';
+    });
+  });
 
-  // Upload immédiat au backend si le partenaire a déjà un id enregistré
-  if (partners[i].id) {
-    try {
-      const token = sessionStorage.getItem('talentyah_token');
-      const fd = new FormData();
-      fd.append('image', file);
-      fd.append('name', partners[i].name || 'Partenaire');
-      const res = await fetch(API + '/api/partners/' + partners[i].id, {
-        method: 'PUT',
-        headers: { 'Authorization': 'Bearer ' + token },
-        body: fd
-      });
-      if (res.ok) {
-        const data = await res.json();
-        partners[i].img = data.image_url;
-        partners[i].file = null; // déjà uploadé
-      }
-    } catch { /* garde l'aperçu local */ }
+  dropzone.addEventListener('drop', (e) => {
+    const dt = e.dataTransfer;
+    const file = dt?.files?.[0];
+    if (file && file.type.startsWith('image/')) {
+      input.files = dt.files;
+      handlePartnerModalImg(input);
+    }
+  });
+}
+
+function openAddPartnerModal() {
+  const form = document.getElementById('partnerForm');
+  if (form) form.reset();
+
+  const idEl = document.getElementById('partner-id');
+  if (idEl) idEl.value = '';
+
+  const existingImgEl = document.getElementById('partner-existing-img');
+  if (existingImgEl) existingImgEl.value = '';
+
+  const sub = document.getElementById('partnerModalSubtitle');
+  const title = document.getElementById('partnerModalTitle');
+  const submitBtn = document.getElementById('partnerSubmitBtn');
+  const msg = document.getElementById('partnerModalMsg');
+  const previewWrap = document.getElementById('partnerPreviewWrap');
+  const dropPrompt = document.getElementById('partnerDropPrompt');
+
+  if (sub) sub.textContent = 'NOUVEAU PARTENAIRE';
+  if (title) title.textContent = 'Ajouter un partenaire';
+  if (submitBtn) submitBtn.textContent = 'Ajouter le partenaire';
+  if (msg) msg.innerHTML = '';
+  if (previewWrap) previewWrap.style.display = 'none';
+  if (dropPrompt) dropPrompt.style.display = 'flex';
+
+  setupPartnerDropzone();
+
+  const overlay = document.getElementById('partner-modal-overlay');
+  if (overlay) {
+    overlay.classList.add('open');
+    overlay.style.display = 'flex';
+  }
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+function openEditPartnerModal(id) {
+  const p = partners.find(item => item.id === id);
+  if (!p) return;
+
+  const form = document.getElementById('partnerForm');
+  if (form) form.reset();
+
+  const idEl = document.getElementById('partner-id');
+  if (idEl) idEl.value = p.id;
+
+  const nameEl = document.getElementById('partner-name');
+  if (nameEl) nameEl.value = p.name || '';
+
+  const descEl = document.getElementById('partner-desc');
+  if (descEl) descEl.value = p.desc || '';
+
+  const existingImgEl = document.getElementById('partner-existing-img');
+  if (existingImgEl) existingImgEl.value = p.img || '';
+
+  const sub = document.getElementById('partnerModalSubtitle');
+  const title = document.getElementById('partnerModalTitle');
+  const submitBtn = document.getElementById('partnerSubmitBtn');
+  const msg = document.getElementById('partnerModalMsg');
+  const previewWrap = document.getElementById('partnerPreviewWrap');
+  const previewImg = document.getElementById('partnerPreviewImg');
+  const dropPrompt = document.getElementById('partnerDropPrompt');
+
+  if (sub) sub.textContent = 'MODIFICATION';
+  if (title) title.textContent = 'Modifier le partenaire';
+  if (submitBtn) submitBtn.textContent = 'Enregistrer les modifications';
+  if (msg) msg.innerHTML = '';
+
+  if (p.img) {
+    if (previewImg) previewImg.src = p.img.startsWith('http') ? p.img : (API + p.img);
+    if (previewWrap) previewWrap.style.display = 'flex';
+    if (dropPrompt) dropPrompt.style.display = 'none';
+  } else {
+    if (previewWrap) previewWrap.style.display = 'none';
+    if (dropPrompt) dropPrompt.style.display = 'flex';
+  }
+
+  setupPartnerDropzone();
+
+  const overlay = document.getElementById('partner-modal-overlay');
+  if (overlay) {
+    overlay.classList.add('open');
+    overlay.style.display = 'flex';
+  }
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+function closePartnerModal(e) {
+  if (e && e.target && e.target !== document.getElementById('partner-modal-overlay') && !e.target.closest('.ats-modal-close')) {
+    return;
+  }
+  const overlay = document.getElementById('partner-modal-overlay');
+  if (overlay) {
+    overlay.classList.remove('open');
+    overlay.style.display = 'none';
+    const form = document.getElementById('partnerForm');
+    if (form) form.reset();
+    const msg = document.getElementById('partnerModalMsg');
+    if (msg) msg.innerHTML = '';
   }
 }
 
-function removePartnerImg(e, i) {
-  e.preventDefault(); 
-  e.stopPropagation();
-  partners[i].img = null; 
-  partners[i].file = null; 
-  renderPartners();
+function handlePartnerModalImg(input) {
+  const file = input.files?.[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const previewImg = document.getElementById('partnerPreviewImg');
+    const previewWrap = document.getElementById('partnerPreviewWrap');
+    const dropPrompt = document.getElementById('partnerDropPrompt');
+    if (previewImg) previewImg.src = e.target.result;
+    if (previewWrap) previewWrap.style.display = 'flex';
+    if (dropPrompt) dropPrompt.style.display = 'none';
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+  };
+  reader.readAsDataURL(file);
 }
 
-async function removePartner(i) {
-  showConfirm('Supprimer ce partenaire ?', async () => {
-    const p = partners[i];
-    if (p.id) {
-      try {
-        const token = sessionStorage.getItem('talentyah_token');
-        await fetch(API + '/api/partners/' + p.id, {
-          method: 'DELETE',
-          headers: { 'Authorization': 'Bearer ' + token }
-        });
-      } catch { /* silencieux */ }
+async function deletePartner(id) {
+  const p = partners.find(item => item.id === id);
+  const name = p ? p.name : 'ce partenaire';
+  showConfirm(`Supprimer définitivement ${name} ?`, async () => {
+    try {
+      const token = sessionStorage.getItem('talentyah_token');
+      const res = await fetch(API + '/api/partners/' + id, {
+        method: 'DELETE',
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      if (!res.ok) {
+        const d = await res.json();
+        throw new Error(d.error || 'Erreur suppression');
+      }
+      showToast('Partenaire supprimé avec succès !', 'success');
+      loadPartners();
+    } catch (err) {
+      showToast('Erreur lors de la suppression : ' + err.message, 'error');
     }
-    partners.splice(i, 1);
-    const badge = document.getElementById('countPartners');
-    if (badge) badge.textContent = partners.length;
-    renderPartners();
   });
 }
+
+// Export global pour les handlers HTML onclick
+window.openAddPartnerModal = openAddPartnerModal;
+window.openEditPartnerModal = openEditPartnerModal;
+window.closePartnerModal = closePartnerModal;
+window.handlePartnerModalImg = handlePartnerModalImg;
+window.deletePartner = deletePartner;
 
 /* ══════════════════════════════
    PUBLICATIONS
@@ -2981,9 +3096,14 @@ const ATS = (() => {
     });
   }
 
-  return { init, openAddCarouselModal, closeAddCarouselModal, openEditCarouselModal, closeEditCarouselModal, revertEditSlideImage, toggleCarouselSlide, moveSlide, deleteSlide, loadSMTPSettings, loadContactMessages, openModal, openPartModal, closeModal, openAddModal, closeAddModal, updateStadeBadge, saveModal, addEntry, filterByStade, showAtsPage, renderClients, resetPageAndRender, goToPage, goToRelancesPage, renderPartenariats, renderRelances, badge, exportClientsCSV, addHistoryNote, onCardDragStart, onCardDragEnd, onColDragOver, onColDragLeave, onColDrop };
+  return { init, openAddCarouselModal, closeAddCarouselModal, openEditCarouselModal, closeEditCarouselModal, revertEditSlideImage, toggleCarouselSlide, moveSlide, deleteSlide, loadSMTPSettings, loadContactMessages, openModal, openPartModal, closeModal, openAddModal, closeAddModal, updateStadeBadge, saveModal, addEntry, filterByStade, showAtsPage, renderClients, resetPageAndRender, goToPage, goToRelancesPage, renderPartenariats, renderRelances, badge, exportClientsCSV, addHistoryNote, onCardDragStart, onCardDragEnd, onColDragOver, onColDragLeave, onColDrop, openAddPartnerModal, openEditPartnerModal, closePartnerModal, deletePartner };
 
 })();
+
+ATS.openAddPartnerModal = openAddPartnerModal;
+ATS.openEditPartnerModal = openEditPartnerModal;
+ATS.closePartnerModal = closePartnerModal;
+ATS.deletePartner = deletePartner;
 
 /* Override loadCRM pour pointer vers ATS.init */
 function loadCRM() {

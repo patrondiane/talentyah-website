@@ -416,18 +416,22 @@
       <!-- ══════════ PANEL : PARTENAIRES ══════════ -->
       <div class="admin-panel" id="panelPartners" style="display:none;">
 
-        <p style="font-size:14px;color:var(--muted);margin-bottom:24px;">
-          Gérez les logos affichés sur le site. Cliquez sur un emplacement pour uploader une image.
-        </p>
-
-        <div id="partnersContainer" style="display:flex; flex-direction:column; gap:12px; margin-bottom: 20px;">
-          <!-- Généré par JS (Mise en page unifiée logo + texte) -->
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+          <div>
+            <h2 style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;color:var(--dark);margin:0;">Partenaires &amp; Réseau</h2>
+            <p style="font-size:13px;color:var(--muted);margin:4px 0 0;">
+              Gérez les logos et marques des partenaires affichés dans le carrousel du site.
+            </p>
+          </div>
+          <button type="button" class="btn-publish-gold" onclick="openAddPartnerModal()" style="display:flex;align-items:center;gap:6px;padding:10px 20px;font-size:13px;font-weight:700;">
+            <i data-lucide="plus" style="width:16px;height:16px;"></i> Ajouter un partenaire
+          </button>
         </div>
 
-        <div style="display:flex;align-items:center;gap:16px;margin-top:24px;">
-          <button type="button" class="btn-publish-gold" id="addPartnerSlotBtn" style="font-size:13px;padding:10px 20px;">+ Ajouter un partenaire</button>
-          <button type="button" class="btn-publish-gold" id="savePartnersBtn" style="font-size:13px;padding:10px 20px;background:var(--emerald);">Enregistrer les modifications</button>
-          <span id="partnersMsg" style="font-size:13px;color:var(--emerald);font-weight:500;"></span>
+        <!-- Liste des partenaires -->
+        <h3 style="font-size:15px;font-weight:600;color:var(--dark);margin-bottom:16px;">Partenaires enregistrés</h3>
+        <div id="partnersContainer" style="display:flex; flex-direction:column; gap:12px;">
+          <p style="color:var(--muted);font-size:14px;">Chargement des partenaires…</p>
         </div>
       </div>
 
@@ -944,6 +948,72 @@
           <span id="editCarouselMsg" style="font-size:13px; display:flex; align-items:center; flex:1;"></span>
           <button type="button" onclick="ATS.closeEditCarouselModal()" style="padding:10px 20px; border-radius:6px; border:1px solid var(--border); background:#fff; cursor:pointer;">Annuler</button>
           <button type="submit" style="padding:10px 24px; border-radius:6px; border:none; background:var(--emerald); color:#fff; font-weight:500; cursor:pointer;">Enregistrer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ MODAL PARTENAIRE ══════════ -->
+<div class="ats-modal-overlay" id="partner-modal-overlay" onclick="closePartnerModal(event)">
+  <div class="ats-modal" onclick="event.stopPropagation()" style="max-width:540px; width:100%;">
+    <div class="ats-modal-header" style="padding: 20px 24px 14px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <div id="partnerModalSubtitle" style="font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--gold); margin-bottom:2px;">NOUVEAU PARTENAIRE</div>
+        <h3 id="partnerModalTitle" style="margin:0; font-size:18px; color:var(--dark); font-family:'Cormorant Garamond',serif; font-weight:600;">Ajouter un partenaire</h3>
+      </div>
+      <button class="ats-modal-close" onclick="closePartnerModal()" style="background:transparent; border:none; cursor:pointer; color:var(--muted); font-size:18px;"><i data-lucide="x"></i></button>
+    </div>
+    <div class="ats-modal-body" style="padding: 24px;">
+      <form id="partnerForm" style="display:flex; flex-direction:column; gap:16px;">
+        <input type="hidden" id="partner-id" name="id">
+        <input type="hidden" id="partner-existing-img" name="existing_image_url">
+
+        <!-- Zone Upload Logo -->
+        <div class="job-form-field">
+          <label style="display:block; font-size:13px; font-weight:600; color:var(--dark); margin-bottom:6px;">Logo du partenaire * <span style="font-size:11px; font-weight:400; color:var(--muted);">(PNG, JPG, SVG, WebP, max 2Mo)</span></label>
+          <div class="carousel-image-upload-zone" id="partnerDropzone" onclick="document.getElementById('partnerImageInput').click()" style="min-height:130px; cursor:pointer; border:1.5px dashed var(--border); border-radius:8px; display:flex; align-items:center; justify-content:center; background:var(--bg-off); position:relative; overflow:hidden; transition:all 0.2s;">
+            <input type="file" id="partnerImageInput" name="image" accept="image/*" style="display:none;" onchange="handlePartnerModalImg(this)">
+            
+            <div class="carousel-preview-wrap" id="partnerPreviewWrap" style="display:none; width:100%; height:100%; min-height:130px; position:relative; align-items:center; justify-content:center; background:#fff;">
+              <img id="partnerPreviewImg" src="" alt="Aperçu Logo" style="max-height:90px; max-width:80%; object-fit:contain;">
+              <div class="carousel-preview-overlay" style="position:absolute; inset:0; background:rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity 0.2s;">
+                <button type="button" class="btn-change-img" onclick="event.stopPropagation(); document.getElementById('partnerImageInput').click()" style="padding:6px 12px; background:#fff; border:none; border-radius:4px; font-size:12px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:6px;">
+                  <i data-lucide="refresh-cw" style="width:13px;height:13px;"></i> Changer le logo
+                </button>
+              </div>
+            </div>
+
+            <div class="carousel-drop-prompt" id="partnerDropPrompt" style="display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:18px;">
+              <div class="drop-icon-circle" style="width:40px; height:40px; border-radius:50%; background:rgba(26,82,51,0.08); display:flex; align-items:center; justify-content:center; margin-bottom:8px; color:var(--emerald);">
+                <i data-lucide="upload-cloud" style="width:20px; height:20px;"></i>
+              </div>
+              <div class="drop-text-main" style="font-size:13px; font-weight:500; color:var(--dark);">Glissez le logo ici ou <span style="color:var(--emerald); text-decoration:underline;">parcourez</span></div>
+              <div class="drop-text-sub" style="font-size:11px; color:var(--muted); margin-top:4px;">Format transparent PNG ou SVG recommandé</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Nom du partenaire -->
+        <div class="job-form-field">
+          <label style="display:block; font-size:13px; font-weight:600; color:var(--dark); margin-bottom:6px;">Nom du partenaire *</label>
+          <input type="text" id="partner-name" name="name" placeholder="Ex: African Business Club" required
+                 style="border:1px solid var(--border); border-radius:6px; padding:10px 14px; font-size:14px; width:100%; box-sizing:border-box; font-family:'DM Sans',sans-serif;">
+        </div>
+
+        <!-- Description / Secteur -->
+        <div class="job-form-field">
+          <label style="display:block; font-size:13px; font-weight:600; color:var(--dark); margin-bottom:6px;">Description / Secteur d'activité <span style="font-size:11px; font-weight:400; color:var(--muted);">(optionnel)</span></label>
+          <input type="text" id="partner-desc" name="description" placeholder="Ex: Réseau d'affaires &amp; recrutement panafricain"
+                 style="border:1px solid var(--border); border-radius:6px; padding:10px 14px; font-size:14px; width:100%; box-sizing:border-box; font-family:'DM Sans',sans-serif;">
+        </div>
+
+        <div id="partnerModalMsg" style="font-size:13px; min-height:18px;"></div>
+
+        <!-- Actions -->
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:8px; border-top:1px solid var(--border); padding-top:16px;">
+          <button type="button" onclick="closePartnerModal()" style="padding:10px 18px; border:1px solid var(--border); border-radius:6px; background:#fff; font-size:13px; font-weight:600; color:var(--muted); cursor:pointer;">Annuler</button>
+          <button type="submit" id="partnerSubmitBtn" class="btn-publish-gold" style="padding:10px 22px; font-size:13px; font-weight:700;">Enregistrer le partenaire</button>
         </div>
       </form>
     </div>
