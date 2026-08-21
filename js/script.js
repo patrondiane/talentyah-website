@@ -229,27 +229,37 @@ function _showError(btn, errorEl, message) {
 // Résout une URL d'image (Cloudinary = déjà absolue, sinon préfixer avec le backend)
 function _imgUrl(url) {
   if (!url) return '';
-  return url.startsWith('http') ? url : window.API_BASE + url;
+  const base = window.API_BASE || (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:4001' : 'https://talentyah-website.onrender.com');
+  return url.startsWith('http') ? url : base + url;
 }
 
 (async function loadClientLogos() {
   const track = document.getElementById('clientsTrack');
   if (!track) return;
 
+  const base = window.API_BASE || (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? 'http://localhost:4001' : 'https://talentyah-website.onrender.com');
+
   try {
-    const res  = await fetch(window.API_BASE + '/api/partners');
+    const res  = await fetch(base + '/api/partners');
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const data     = await res.json();
-    const partners = data.partners || [];
+    const partners = (data.partners || []).filter(p => p.image_url && p.image_url.trim() !== '');
     if (!partners.length) return;
 
-    track.innerHTML = [...partners, ...partners].map(p => `
-      <div class="client-logo">
+    // Duplique la liste des logos pour garantir un défilement infini fluide
+    // sans trou ni vide visuel sur tous les écrans, même avec 1 ou 2 partenaires.
+    let baseList = [...partners];
+    while (baseList.length < 8) {
+      baseList = [...baseList, ...partners];
+    }
+    const finalSet = [...baseList, ...baseList];
+
+    track.innerHTML = finalSet.map(p => `
+      <div class="client-logo" title="${(p.name || '').replace(/"/g, '&quot;')}">
         <img src="${_imgUrl(p.image_url)}"
-             alt="${p.name}"
+             alt="${(p.name || 'Partenaire').replace(/"/g, '&quot;')}"
              class="client-logo-img"
-             onerror="this.parentElement.style.display='none'">
-        <span class="client-logo-text">${p.name}</span>
+             onerror="this.parentElement.remove()">
       </div>`).join('');
 
   } catch (err) {

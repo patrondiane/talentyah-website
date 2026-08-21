@@ -44,15 +44,17 @@ router.get('/all', auth, async (req, res) => {
 router.post('/', auth, upload.single('image'), async (req, res) => {
   try {
     const { name, description, sort_order } = req.body;
-    if (!name) return res.status(400).json({ error: 'Nom requis' });
-    const image_url = req.file ? await uploadBuffer(req.file.buffer, 'talentyah/partners', { resource_type: 'image' }) : null;
+    if (!name || !name.trim()) return res.status(400).json({ error: 'Le nom du partenaire est obligatoire.' });
+    if (!req.file) return res.status(400).json({ error: "L'image du logo est obligatoire pour ajouter un partenaire." });
+
+    const image_url = await uploadBuffer(req.file.buffer, 'talentyah/partners', { resource_type: 'image' });
 
     const { data: partner, error } = await db.client
       .from('partners')
       .insert([{
         name: name.trim(),
-        description: description || null,
-        image_url: image_url || null,
+        description: description?.trim() || null,
+        image_url,
         sort_order: sort_order !== undefined ? Number(sort_order) : 0
       }])
       .select()
@@ -82,15 +84,19 @@ router.put('/:id', auth, upload.single('image'), async (req, res) => {
 
     let image_url = existing_image_url || existing.image_url;
     if (req.file) {
-      await deleteByUrl(existing.image_url);
+      if (existing.image_url) await deleteByUrl(existing.image_url);
       image_url = await uploadBuffer(req.file.buffer, 'talentyah/partners', { resource_type: 'image' });
+    }
+
+    if (!image_url) {
+      return res.status(400).json({ error: "L'image du logo est obligatoire." });
     }
 
     const { data: partner, error } = await db.client
       .from('partners')
       .update({
         name: name?.trim() || existing.name,
-        description: description !== undefined ? description : existing.description,
+        description: description !== undefined ? (description?.trim() || null) : existing.description,
         image_url,
         sort_order: sort_order !== undefined ? Number(sort_order) : existing.sort_order
       })

@@ -371,13 +371,32 @@ const jobForm = document.getElementById('jobForm');
 
   /* ── Partenaires ── */
   document.getElementById('addPartnerSlotBtn')?.addEventListener('click', () => {
-    partners.push({ name: 'Partenaire ' + (partners.length + 1), desc: '', img: null });
-    document.getElementById('countPartners').textContent = partners.length;
+    partners.push({ name: '', desc: '', img: null, file: null });
+    const countEl = document.getElementById('countPartners');
+    if (countEl) countEl.textContent = partners.length;
     renderPartners();
   });
+
   document.getElementById('savePartnersBtn')?.addEventListener('click', async () => {
     const msg = document.getElementById('partnersMsg');
     const token = sessionStorage.getItem('talentyah_token');
+    
+    // Validation stricte : Nom et Image obligatoires pour tous les partenaires
+    for (let i = 0; i < partners.length; i++) {
+      const p = partners[i];
+      if (!p.name || !p.name.trim()) {
+        if (msg) { msg.textContent = `Nom requis pour le partenaire #${i + 1}.`; msg.style.color = '#c0392b'; }
+        showToast(`Veuillez renseigner le nom du partenaire #${i + 1}.`, 'error');
+        return;
+      }
+      const hasImg = p.file || (p.img && !p.img.startsWith('data:'));
+      if (!hasImg) {
+        if (msg) { msg.textContent = `Le logo est obligatoire pour "${p.name}".`; msg.style.color = '#c0392b'; }
+        showToast(`Le logo est obligatoire pour le partenaire "${p.name}".`, 'error');
+        return;
+      }
+    }
+
     if (msg) { msg.textContent = 'Enregistrement…'; msg.style.color = 'var(--muted)'; }
 
     try {
@@ -385,38 +404,52 @@ const jobForm = document.getElementById('jobForm');
       for (let i = 0; i < partners.length; i++) {
         const p = partners[i];
         const fd = new FormData();
-        fd.append('name', p.name);
-        fd.append('description', p.desc || '');
+        fd.append('name', p.name.trim());
+        fd.append('description', p.desc ? p.desc.trim() : '');
         fd.append('sort_order', i);
-        // Ne pas renvoyer les base64 — l'image est déjà uploadée via handlePartnerImg
-        // Si p.img est une URL serveur (/uploads/...), on la passe en texte
-        if (p.img && !p.img.startsWith('data:')) {
+        
+        if (p.file) {
+          fd.append('image', p.file);
+        } else if (p.img && !p.img.startsWith('data:')) {
           fd.append('existing_image_url', p.img);
         }
 
         if (p.id) {
-          await fetch(API + '/api/partners/' + p.id, {
+          const res = await fetch(API + '/api/partners/' + p.id, {
             method: 'PUT',
             headers: { 'Authorization': 'Bearer ' + token },
             body: fd
           });
+          if (!res.ok) {
+            const d = await res.json();
+            throw new Error(d.error || 'Erreur mise à jour');
+          }
         } else {
           const res = await fetch(API + '/api/partners', {
             method: 'POST',
             headers: { 'Authorization': 'Bearer ' + token },
             body: fd
           });
-          if (res.ok) {
-            const data = await res.json();
-            partners[i].id = data.id; // assigner l'id reçu
+          if (!res.ok) {
+            const d = await res.json();
+            throw new Error(d.error || 'Erreur création');
           }
+          const data = await res.json();
+          partners[i].id = data.id;
         }
       }
 
-      if (msg) { msg.innerHTML = '<i data-lucide="check" style="width:14px; setTimeout(() => { if (typeof lucide !== "undefined") lucide.createIcons(); }, 10);height:14px;vertical-align:middle;margin-right:4px;"></i> Partenaires enregistrés.'; msg.style.color = 'var(--emerald)'; setTimeout(() => { msg.innerHTML = ''; ATS.closeAddCarouselModal(); }, 1500); }
+      if (msg) { 
+        msg.innerHTML = '<i data-lucide="check" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Partenaires enregistrés.'; 
+        msg.style.color = 'var(--emerald)'; 
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+        setTimeout(() => { msg.innerHTML = ''; }, 2500); 
+      }
+      showToast('Partenaires enregistrés avec succès !', 'success');
       loadPartners();
-    } catch {
-      if (msg) { msg.textContent = 'Erreur lors de l\'enregistrement.'; msg.style.color = '#c0392b'; }
+    } catch (err) {
+      if (msg) { msg.textContent = 'Erreur : ' + err.message; msg.style.color = '#c0392b'; }
+      showToast('Erreur : ' + err.message, 'error');
     }
   });
 
@@ -1489,23 +1522,23 @@ function renderPartners() {
 
     return `
     <div class="partner-row-item" style="display: flex; gap: 16px; align-items: center; background: #fff; padding: 14px 18px; border: 1px solid var(--border); border-radius: var(--radius); width: 100%;">
-      <!-- Mini Upload Logo -->
-      <div class="partner-mini-upload" style="position: relative; width: 56px; height: 56px; border: 1.5px dashed var(--border); border-radius: var(--radius); display: flex; align-items: center; justify-content: center; background: var(--bg-off); overflow: hidden; flex-shrink: 0; cursor: pointer;">
+      <!-- Mini Upload Logo avec indication obligatoire -->
+      <div class="partner-mini-upload" style="position: relative; width: 60px; height: 60px; border: 1.5px dashed ${imgSrc ? 'var(--border)' : '#e74c3c'}; border-radius: var(--radius); display: flex; align-items: center; justify-content: center; background: ${imgSrc ? 'var(--bg-off)' : '#fdf2f2'}; overflow: hidden; flex-shrink: 0; cursor: pointer;" title="${imgSrc ? 'Changer de logo' : 'Logo obligatoire (cliquez pour sélectionner une image)'}">
         <input type="file" accept="image/*" onchange="handlePartnerImg(this, ${i})" style="position: absolute; top:0; left:0; width:100%; height:100%; opacity:0; cursor:pointer; z-index:2;">
         ${imgSrc
           ? `<img src="${imgSrc}" style="width: 100%; height: 100%; object-fit: contain; padding: 4px;">
              <button onclick="removePartnerImg(event, ${i})" style="position: absolute; top: 2px; right: 2px; width: 16px; height: 16px; border-radius: 50%; background: #c0392b; color: #fff; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 3; padding: 0;">
                <i data-lucide="x" style="width:10px;height:10px;"></i>
              </button>`
-          : `<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; color: var(--muted); font-size: 10px; text-align: center; padding: 4px;">
-               <i data-lucide="image" style="width: 16px; height: 16px; color: var(--muted); margin-bottom: 2px;"></i>
-               <span>Logo</span>
+          : `<div style="display:flex; flex-direction:column; align-items:center; justify-content:center; color: #c0392b; font-size: 10px; text-align: center; padding: 4px;">
+               <i data-lucide="upload" style="width: 16px; height: 16px; color: #c0392b; margin-bottom: 2px;"></i>
+               <span style="font-weight:600;">Logo *</span>
              </div>`
         }
       </div>
       <!-- Nom & Description Inputs -->
       <div style="flex: 1; display: grid; grid-template-columns: 1fr 2fr; gap: 12px;">
-        <input type="text" class="admin-filter-input" placeholder="Nom du partenaire" value="${_esc(p.name)}" style="margin: 0; width: 100%;" oninput="partners[${i}].name=this.value">
+        <input type="text" class="admin-filter-input" placeholder="Nom du partenaire *" value="${_esc(p.name)}" style="margin: 0; width: 100%;" oninput="partners[${i}].name=this.value">
         <input type="text" class="admin-filter-input" placeholder="Description / Secteur d'activité" value="${_esc(p.desc)}" style="margin: 0; width: 100%;" oninput="partners[${i}].desc=this.value">
       </div>
       <!-- Retirer -->
@@ -1520,18 +1553,23 @@ async function handlePartnerImg(input, i) {
   const file = input.files[0];
   if (!file) return;
 
+  partners[i].file = file;
+
   // Aperçu local immédiat
   const reader = new FileReader();
-  reader.onload = (e) => { partners[i].img = e.target.result; renderPartners(); };
+  reader.onload = (e) => { 
+    partners[i].img = e.target.result; 
+    renderPartners(); 
+  };
   reader.readAsDataURL(file);
 
-  // Upload réel au backend si le partenaire a un id
+  // Upload immédiat au backend si le partenaire a déjà un id enregistré
   if (partners[i].id) {
     try {
       const token = sessionStorage.getItem('talentyah_token');
       const fd = new FormData();
       fd.append('image', file);
-      fd.append('name', partners[i].name);
+      fd.append('name', partners[i].name || 'Partenaire');
       const res = await fetch(API + '/api/partners/' + partners[i].id, {
         method: 'PUT',
         headers: { 'Authorization': 'Bearer ' + token },
@@ -1539,15 +1577,19 @@ async function handlePartnerImg(input, i) {
       });
       if (res.ok) {
         const data = await res.json();
-        partners[i].img = data.image_url; // URL serveur
+        partners[i].img = data.image_url;
+        partners[i].file = null; // déjà uploadé
       }
     } catch { /* garde l'aperçu local */ }
   }
 }
 
 function removePartnerImg(e, i) {
-  e.preventDefault(); e.stopPropagation();
-  partners[i].img = null; renderPartners();
+  e.preventDefault(); 
+  e.stopPropagation();
+  partners[i].img = null; 
+  partners[i].file = null; 
+  renderPartners();
 }
 
 async function removePartner(i) {
