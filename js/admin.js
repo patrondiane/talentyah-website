@@ -285,16 +285,18 @@ const jobForm = document.getElementById('jobForm');
   if (jobForm) {
     jobForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const btn = jobForm.querySelector('.btn-publish-gold');
+      const btn = jobForm.querySelector('.btn-publish-gold') || document.getElementById('jobSubmitBtn');
       const msg = document.getElementById('jobMsg');
-      const idVal = document.getElementById('job-id').value;
+      const idVal = document.getElementById('job-id')?.value;
       
-      btn.textContent = idVal ? 'Mise à jour…' : 'Publication…'; 
-      btn.disabled = true;
+      if (btn) {
+        btn.textContent = idVal ? 'Mise à jour…' : 'Publication…'; 
+        btn.disabled = true;
+      }
 
       // Récupère le contenu formaté (gras, italique, listes…) des éditeurs riches
-      const descHtml = jobDescQuill ? jobDescQuill.root.innerHTML.trim() : jobForm.description.value.trim();
-      const reqsHtml = jobReqsQuill ? jobReqsQuill.root.innerHTML.trim() : jobForm.requirements.value.trim();
+      const descHtml = jobDescQuill ? jobDescQuill.root.innerHTML.trim() : (jobForm.description?.value || '').trim();
+      const reqsHtml = jobReqsQuill ? jobReqsQuill.root.innerHTML.trim() : (jobForm.requirements?.value || '').trim();
       const descEmpty = jobDescQuill ? jobDescQuill.getText().trim() === '' : descHtml === '';
       const reqsEmpty = jobReqsQuill ? jobReqsQuill.getText().trim() === '' : reqsHtml === '';
 
@@ -313,7 +315,6 @@ const jobForm = document.getElementById('jobForm');
 
       try {
         const token = sessionStorage.getItem('talentyah_token');
-        // Si idVal existe, on fait un PUT sur /api/jobs/:id, sinon un POST classique
         const url = idVal ? `${API}/api/jobs/${idVal}` : `${API}/api/jobs`;
         const method = idVal ? 'PUT' : 'POST';
 
@@ -323,33 +324,48 @@ const jobForm = document.getElementById('jobForm');
           body: JSON.stringify(payload)
         });
         if (res.ok) {
+          const successMsg = idVal ? 'Offre mise à jour avec succès !' : 'Offre publiée avec succès !';
           if (msg) { 
-            msg.innerHTML = idVal ? '<i data-lucide="check" style="width:14px; setTimeout(() => { if (typeof lucide !== "undefined") lucide.createIcons(); }, 10);height:14px;vertical-align:middle;margin-right:4px;"></i> Offre mise à jour avec succès !' : '<i data-lucide="check" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Offre publiée avec succès !'; 
+            msg.innerHTML = `<i data-lucide="check" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> ${successMsg}`; 
             msg.style.color = 'var(--emerald)'; 
+            if (typeof lucide !== 'undefined') lucide.createIcons();
           }
-          resetJobForm(); loadJobs();
+          loadJobs();
+          setTimeout(() => {
+            closeJobDrawer();
+            resetJobForm();
+            if (msg) msg.innerHTML = '';
+            showToast(successMsg, 'success');
+          }, 800);
         } else {
           const d = await res.json();
           if (msg) { msg.textContent = d.error || 'Erreur lors de l\'opération.'; msg.style.color = '#c0392b'; }
         }
       } catch {
         // Fallback Mode Démo local
+        const successMsg = idVal ? 'Offre modifiée (mode démo).' : 'Offre ajoutée (mode démo).';
         if (idVal) {
-          // Mode modification en démo
           const idx = adminJobsDemo.findIndex(j => j.id == idVal || adminJobsDemo.indexOf(j) == idVal);
           if (idx !== -1) {
             adminJobsDemo[idx] = { ...adminJobsDemo[idx], ...payload };
           }
-          if (msg) { msg.innerHTML = '<i data-lucide="check" style="width:14px; setTimeout(() => { if (typeof lucide !== "undefined") lucide.createIcons(); }, 10);height:14px;vertical-align:middle;margin-right:4px;"></i> Offre modifiée (mode démo).'; msg.style.color = 'var(--emerald)'; }
         } else {
-          // Mode ajout en démo
           adminJobsDemo.unshift({ ...payload, id: Date.now(), created_at: new Date().toISOString() });
-          if (msg) { msg.innerHTML = '<i data-lucide="check" style="width:14px; setTimeout(() => { if (typeof lucide !== "undefined") lucide.createIcons(); }, 10);height:14px;vertical-align:middle;margin-right:4px;"></i> Offre ajoutée (mode démo).'; msg.style.color = 'var(--emerald)'; }
         }
-        renderAdminJobs(adminJobsDemo);
-        resetJobForm();
+        renderAdminJobsPage();
+        if (msg) {
+          msg.innerHTML = `<i data-lucide="check" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> ${successMsg}`;
+          msg.style.color = 'var(--emerald)';
+          if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+        setTimeout(() => {
+          closeJobDrawer();
+          resetJobForm();
+          if (msg) msg.innerHTML = '';
+          showToast(successMsg, 'success');
+        }, 800);
       }
-      btn.disabled = false;
+      if (btn) btn.disabled = false;
     });
   }
 
@@ -1225,6 +1241,13 @@ window.changeAdminJobsPage = changeAdminJobsPage;
 // Fonctions pour ouvrir et fermer la modal centrée des offres d'emploi
 function openJobDrawer() {
   resetJobForm();
+  const subTitle = document.getElementById('drawerSubtitle');
+  const mainTitle = document.getElementById('drawerTitle');
+  const submitBtn = document.getElementById('jobSubmitBtn') || document.querySelector('#jobForm .btn-publish-gold');
+  if (subTitle) subTitle.textContent = 'Nouvelle opportunité';
+  if (mainTitle) mainTitle.textContent = 'Créer une offre d\'emploi';
+  if (submitBtn) submitBtn.textContent = 'Publier l\'offre';
+
   const overlay = document.getElementById('jobDrawerOverlay');
   const drawer = document.getElementById('jobDrawer');
   if (overlay && drawer) {
@@ -1256,7 +1279,15 @@ window.closeJobDrawer = closeJobDrawer;
 function editJob(index) {
   const j = adminJobsDemo[index];
   const form = document.getElementById('jobForm');
-  if (!form) return;
+  if (!form || !j) return;
+
+  // Header modal en mode modification
+  const subTitle = document.getElementById('drawerSubtitle');
+  const mainTitle = document.getElementById('drawerTitle');
+  const submitBtn = document.getElementById('jobSubmitBtn') || form.querySelector('.btn-publish-gold');
+  if (subTitle) subTitle.textContent = 'MODIFICATION';
+  if (mainTitle) mainTitle.textContent = 'Modifier l\'offre d\'emploi';
+  if (submitBtn) submitBtn.textContent = 'Enregistrer les modifications';
 
   // Remplissage des champs du formulaire
   document.getElementById('job-id').value = j.id || index;
@@ -1276,9 +1307,8 @@ function editJob(index) {
     jobReqsQuill.clipboard.dangerouslyPasteHTML(j.requirements || '');
   }
 
-  // Adapter les textes des boutons
-  const submitBtn = form.querySelector('.btn-publish-gold');
-  if (submitBtn) submitBtn.textContent = "Enregistrer les modifications";
+  const msg = document.getElementById('jobMsg');
+  if (msg) msg.innerHTML = '';
   
   if (typeof syncCustomSelects !== 'undefined') syncCustomSelects();
 
@@ -1289,7 +1319,8 @@ function editJob(index) {
     overlay.style.display = 'flex';
     setTimeout(() => {
       overlay.style.opacity = '1';
-      drawer.style.transform = 'scale(1)'; drawer.style.opacity = '1';
+      drawer.style.transform = 'scale(1)'; 
+      drawer.style.opacity = '1';
     }, 50);
   }
 }
@@ -1299,17 +1330,23 @@ function resetJobForm() {
   const form = document.getElementById('jobForm');
   if (!form) return;
   form.reset();
-  document.getElementById('job-id').value = '';
+  const idEl = document.getElementById('job-id');
+  if (idEl) idEl.value = '';
+
+  const subTitle = document.getElementById('drawerSubtitle');
+  const mainTitle = document.getElementById('drawerTitle');
+  if (subTitle) subTitle.textContent = 'Nouvelle opportunité';
+  if (mainTitle) mainTitle.textContent = 'Créer une offre d\'emploi';
   
   if (typeof syncCustomSelects !== 'undefined') syncCustomSelects();
   if (jobDescQuill) jobDescQuill.setContents([]);
   if (jobReqsQuill) jobReqsQuill.setContents([]);
   
-  const submitBtn = form.querySelector('.btn-publish-gold');
+  const submitBtn = document.getElementById('jobSubmitBtn') || form.querySelector('.btn-publish-gold');
   if (submitBtn) submitBtn.textContent = "Publier l'offre";
 
-  const cancelBtn = document.getElementById('jobCancelBtn');
-  if (cancelBtn) cancelBtn.remove();
+  const msg = document.getElementById('jobMsg');
+  if (msg) msg.innerHTML = '';
 }
 
 async function deleteJob(index, id) {
