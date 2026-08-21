@@ -116,21 +116,36 @@
 .articles-count span { font-weight: 700; color: var(--dark); }
 
 .articles-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr);
-  gap: 2px; background: var(--border);
+  display: grid; 
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px; 
+  background: transparent;
 }
 
 .article-card {
   background: var(--white);
-  display: flex; flex-direction: column;
-  transition: var(--transition); position: relative; overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: flex; 
+  flex-direction: column;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease; 
+  position: relative; 
+  overflow: hidden;
   cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
 }
-.article-card:hover { background: var(--bg-off); }
+.article-card:hover { 
+  background: var(--white);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.07);
+  border-color: rgba(200, 168, 75, 0.5);
+}
 
 .article-card-thumb {
   aspect-ratio: 16/9;
-  background: var(--dark); overflow: hidden; position: relative;
+  background: var(--dark); 
+  overflow: hidden; 
+  position: relative;
 }
 .article-card-thumb-placeholder {
   position: absolute; inset: 0;
@@ -156,7 +171,11 @@
   line-height: 1.3; margin-bottom: 12px;
   transition: var(--transition);
 }
-.article-card:hover .article-card-title { color: var(--emerald); }
+.article-card:hover .article-card-title { 
+  color: var(--emerald);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
 
 .article-card-desc {
   font-size: 13px; color: var(--muted); line-height: 1.65;
@@ -238,15 +257,27 @@
 }
 
 .videos-grid {
-  display: grid; grid-template-columns: repeat(3, 1fr);
-  gap: 2px; background: var(--border);
+  display: grid; 
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px; 
+  background: transparent;
 }
 
 .video-card {
-  background: var(--bg-off);
-  display: flex; flex-direction: column; transition: var(--transition);
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: flex; 
+  flex-direction: column; 
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
 }
-.video-card:hover { background: var(--white); }
+.video-card:hover { 
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.07);
+  border-color: rgba(200, 168, 75, 0.5);
+}
 
 .video-thumb {
   aspect-ratio: 16/9; background: var(--dark);
