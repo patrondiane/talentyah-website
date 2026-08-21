@@ -2695,10 +2695,8 @@ const ATS = (() => {
   }
 
   /* ── Carousel Logic & Modals ── */
-  let currentCarouselSlides = [];
-
   function openAddCarouselModal() {
-    document.getElementById('carouselForm').reset();
+    document.getElementById('carouselForm')?.reset();
     const allCb = document.querySelector('#carouselForm input[name="pages"][value="all"]');
     if (allCb) allCb.checked = true;
     const overlay = document.getElementById('add-carousel-modal-overlay');
@@ -2712,8 +2710,14 @@ const ATS = (() => {
   }
 
   function openEditCarouselModal(id) {
-    const slide = currentCarouselSlides.find(s => s.id === id);
-    if (!slide) return;
+    const slidesList = (typeof currentCarouselSlides !== 'undefined' && currentCarouselSlides.length)
+      ? currentCarouselSlides
+      : (window.currentCarouselSlides || []);
+    const slide = slidesList.find(s => Number(s.id) === Number(id));
+    if (!slide) {
+      console.warn('Slide introuvable pour ID:', id);
+      return;
+    }
     document.getElementById('editSlideId').value = slide.id;
     document.getElementById('editSlideEyebrow').value = slide.eyebrow || '';
     document.getElementById('editSlideTitle').value = slide.title || '';
@@ -2751,12 +2755,15 @@ const ATS = (() => {
   }
 
   async function moveSlide(id, direction) {
-    const idx = currentCarouselSlides.findIndex(s => s.id === id);
+    const slidesList = (typeof currentCarouselSlides !== 'undefined' && currentCarouselSlides.length)
+      ? currentCarouselSlides
+      : (window.currentCarouselSlides || []);
+    const idx = slidesList.findIndex(s => Number(s.id) === Number(id));
     if (idx < 0) return;
-    const slide = currentCarouselSlides[idx];
+    const slide = slidesList[idx];
     const targetIdx = idx + direction;
-    if (targetIdx < 0 || targetIdx >= currentCarouselSlides.length) return;
-    const swapSlide = currentCarouselSlides[targetIdx];
+    if (targetIdx < 0 || targetIdx >= slidesList.length) return;
+    const swapSlide = slidesList[targetIdx];
     
     const token = sessionStorage.getItem('talentyah_token');
     

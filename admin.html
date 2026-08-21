@@ -732,7 +732,88 @@
       <button class="ats-modal-close" onclick="ATS.closeAddCarouselModal()" style="background:transparent; border:none; cursor:pointer; color:var(--muted); font-size:18px;"><i data-lucide="x"></i></button>
     </div>
     <div class="ats-modal-body" style="padding: 26px;">
-      ${modalForm}
+      <form id="carouselForm" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div class="job-form-field full" style="grid-column:1/-1;">
+          <label>Image de fond * <span style="font-size:11px;color:var(--muted);">(recommandé 1920×1080, max 10Mo)</span></label>
+          <input type="file" id="slideImageInput" name="image" accept="image/*" required
+                 style="border:1px solid var(--border);border-radius:6px;padding:8px 12px;font-size:13px;width:100%;box-sizing:border-box;cursor:pointer;">
+        </div>
+        <div class="job-form-field">
+          <label>Sous-titre (eyebrow)</label>
+          <input type="text" name="eyebrow" placeholder="Cabinet de recrutement et accompagnement"
+                 style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;box-sizing:border-box;">
+        </div>
+        <div class="job-form-field">
+          <label>Titre principal *</label>
+          <input type="text" name="title" placeholder="Des talents d'exception pour des entreprises ambitieuses." required
+                 style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;box-sizing:border-box;">
+        </div>
+        <div class="job-form-field full" style="grid-column:1/-1;">
+          <label>Description</label>
+          <textarea name="subtitle" rows="2" placeholder="Texte descriptif sous le titre…"
+                    style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;resize:vertical;width:100%;box-sizing:border-box;"></textarea>
+        </div>
+        <div class="job-form-field">
+          <label>Bouton 1 — texte</label>
+          <input type="text" name="cta1_text" placeholder="Je recrute →"
+                 style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;box-sizing:border-box;">
+        </div>
+        <div class="job-form-field">
+          <label>Bouton 1 — lien</label>
+          <input type="text" name="cta1_url" placeholder="entreprises.html"
+                 style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;box-sizing:border-box;">
+        </div>
+        <div class="job-form-field">
+          <label>Bouton 2 — texte <span style="font-size:11px;color:var(--muted);">(optionnel)</span></label>
+          <input type="text" name="cta2_text" placeholder="Je cherche une opportunité →"
+                 style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;box-sizing:border-box;">
+        </div>
+        <div class="job-form-field">
+          <label>Bouton 2 — lien</label>
+          <input type="text" name="cta2_url" placeholder="talents.html"
+                 style="border:1px solid var(--border);border-radius:6px;padding:10px 14px;font-size:14px;width:100%;box-sizing:border-box;">
+        </div>
+
+        <!-- Pages cibles -->
+        <div style="grid-column:1/-1;">
+          <label style="font-size:13px;font-weight:500;color:var(--dark);display:block;margin-bottom:10px;">
+            Pages où afficher ce slide
+            <span style="font-size:11px;color:var(--muted);font-weight:400;margin-left:6px;">— cocher les pages cibles, ou laisser "Toutes les pages"</span>
+          </label>
+          <div style="display:flex;flex-wrap:wrap;gap:10px;">
+            <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:7px 14px;border:1px solid var(--border);border-radius:20px;background:#fff;">
+              <input type="checkbox" name="pages" value="all" checked style="accent-color:var(--emerald);"> Toutes les pages
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:7px 14px;border:1px solid var(--border);border-radius:20px;background:#fff;">
+              <input type="checkbox" name="pages" value="index" style="accent-color:var(--emerald);"> Accueil
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:7px 14px;border:1px solid var(--border);border-radius:20px;background:#fff;">
+              <input type="checkbox" name="pages" value="talents" style="accent-color:var(--emerald);"> Talents
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:7px 14px;border:1px solid var(--border);border-radius:20px;background:#fff;">
+              <input type="checkbox" name="pages" value="entreprises" style="accent-color:var(--emerald);"> Entreprises
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:7px 14px;border:1px solid var(--border);border-radius:20px;background:#fff;">
+              <input type="checkbox" name="pages" value="carrieres" style="accent-color:var(--emerald);"> Carrières
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:7px 14px;border:1px solid var(--border);border-radius:20px;background:#fff;">
+              <input type="checkbox" name="pages" value="apropos" style="accent-color:var(--emerald);"> À propos
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:7px 14px;border:1px solid var(--border);border-radius:20px;background:#fff;">
+              <input type="checkbox" name="pages" value="notre-approche" style="accent-color:var(--emerald);"> Notre approche
+            </label>
+            <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;padding:7px 14px;border:1px solid var(--border);border-radius:20px;background:#fff;">
+              <input type="checkbox" name="pages" value="ressources" style="accent-color:var(--emerald);"> Ressources
+            </label>
+          </div>
+        </div>
+
+        <div style="grid-column:1/-1; display:flex; justify-content:flex-end; gap:12px; margin-top:16px;">
+          <span id="carouselMsg" style="font-size:13px; display:flex; align-items:center; flex:1;"></span>
+          <button type="button" onclick="ATS.closeAddCarouselModal()" style="padding:10px 20px; border-radius:6px; border:1px solid var(--border); background:#fff; cursor:pointer;">Annuler</button>
+          <button type="submit" style="padding:10px 24px; border-radius:6px; border:none; background:var(--emerald); color:#fff; font-weight:500; cursor:pointer;">Ajouter le slide</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
