@@ -735,8 +735,27 @@
       <form id="carouselForm" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
         <div class="job-form-field full" style="grid-column:1/-1;">
           <label>Image de fond * <span style="font-size:11px;color:var(--muted);">(recommandé 1920×1080, max 10Mo)</span></label>
-          <input type="file" id="slideImageInput" name="image" accept="image/*" required
-                 style="border:1px solid var(--border);border-radius:6px;padding:8px 12px;font-size:13px;width:100%;box-sizing:border-box;cursor:pointer;">
+          <div class="carousel-image-upload-zone" id="addSlideDropzone" onclick="document.getElementById('slideImageInput').click()">
+            <input type="file" id="slideImageInput" name="image" accept="image/*" required style="display:none;">
+            
+            <div class="carousel-preview-wrap" id="addSlidePreviewWrap" style="display:none;">
+              <img id="addSlidePreviewImg" src="" alt="Aperçu">
+              <div class="carousel-preview-overlay">
+                <button type="button" class="btn-change-img" onclick="event.stopPropagation(); document.getElementById('slideImageInput').click()">
+                  <i data-lucide="refresh-cw" style="width:14px;height:14px;"></i> Changer l'image
+                </button>
+              </div>
+              <div class="carousel-preview-badge">Image sélectionnée</div>
+            </div>
+
+            <div class="carousel-drop-prompt" id="addSlideDropPrompt">
+              <div class="drop-icon-circle">
+                <i data-lucide="upload-cloud"></i>
+              </div>
+              <div class="drop-text-main">Glissez-déposez votre image ici, ou <span>parcourez</span></div>
+              <div class="drop-text-sub">PNG, JPG, WebP jusqu'à 10 Mo (format paysage recommandé)</div>
+            </div>
+          </div>
         </div>
         <div class="job-form-field">
           <label>Sous-titre (eyebrow)</label>
@@ -829,9 +848,31 @@
       <form id="editCarouselForm" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
         <input type="hidden" id="editSlideId" name="id">
         <div class="job-form-field full" style="grid-column:1/-1;">
-          <label>Image de fond <span style="font-size:11px;color:var(--muted);">(Laisser vide pour conserver l'actuelle)</span></label>
-          <input type="file" id="editSlideImageInput" name="image" accept="image/*"
-                 style="border:1px solid var(--border);border-radius:6px;padding:8px 12px;font-size:13px;width:100%;box-sizing:border-box;cursor:pointer;">
+          <label>Image de fond <span style="font-size:11px;color:var(--muted);">(Glissez ou cliquez pour remplacer l'image actuelle)</span></label>
+          <div class="carousel-image-upload-zone" id="editSlideDropzone" onclick="document.getElementById('editSlideImageInput').click()">
+            <input type="file" id="editSlideImageInput" name="image" accept="image/*" style="display:none;">
+            
+            <div class="carousel-preview-wrap" id="editSlidePreviewWrap" style="display:none;">
+              <img id="editSlidePreviewImg" src="" alt="Aperçu du slide">
+              <div class="carousel-preview-overlay">
+                <button type="button" class="btn-change-img" onclick="event.stopPropagation(); document.getElementById('editSlideImageInput').click()">
+                  <i data-lucide="refresh-cw" style="width:14px;height:14px;"></i> Remplacer l'image
+                </button>
+                <button type="button" class="btn-remove-img" id="editSlideRevertBtn" title="Annuler et remettre l'image d'origine" style="display:none;" onclick="event.stopPropagation(); ATS.revertEditSlideImage()">
+                  <i data-lucide="rotate-ccw" style="width:16px;height:16px;"></i>
+                </button>
+              </div>
+              <div class="carousel-preview-badge" id="editSlideBadge">Image actuelle</div>
+            </div>
+
+            <div class="carousel-drop-prompt" id="editSlideDropPrompt">
+              <div class="drop-icon-circle">
+                <i data-lucide="upload-cloud"></i>
+              </div>
+              <div class="drop-text-main">Glissez-déposez votre image ici, ou <span>parcourez</span></div>
+              <div class="drop-text-sub">PNG, JPG, WebP (Laisser vide pour conserver l'image actuelle)</div>
+            </div>
+          </div>
         </div>
         <div class="job-form-field">
           <label>Sous-titre (eyebrow)</label>

@@ -2695,12 +2695,78 @@ const ATS = (() => {
   }
 
   /* ── Carousel Logic & Modals ── */
+  let currentEditingSlideOriginalImage = '';
+
+  function setupCarouselDropzone(zoneId, inputId, previewWrapId, previewImgId, promptId, badgeId, revertBtnId) {
+    const zone = document.getElementById(zoneId);
+    const input = document.getElementById(inputId);
+    const wrap = document.getElementById(previewWrapId);
+    const img = document.getElementById(previewImgId);
+    const prompt = document.getElementById(promptId);
+    const badge = badgeId ? document.getElementById(badgeId) : null;
+    const revertBtn = revertBtnId ? document.getElementById(revertBtnId) : null;
+    if (!zone || !input || zone.dataset.dropzoneInit === 'true') return;
+    zone.dataset.dropzoneInit = 'true';
+
+    const handleFile = (file) => {
+      if (!file || !file.type.startsWith('image/')) return;
+      const url = URL.createObjectURL(file);
+      if (img) img.src = url;
+      if (wrap) wrap.style.display = 'block';
+      if (prompt) prompt.style.display = 'none';
+      if (badge) badge.textContent = 'Nouvelle image sélectionnée';
+      if (revertBtn) revertBtn.style.display = 'flex';
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    };
+
+    input.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files[0]) {
+        handleFile(e.target.files[0]);
+      }
+    });
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+      zone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        zone.classList.add('dragover');
+      }, false);
+    });
+
+    ['dragleave', 'dragend', 'drop'].forEach(eventName => {
+      zone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        zone.classList.remove('dragover');
+      }, false);
+    });
+
+    zone.addEventListener('drop', (e) => {
+      if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) {
+        const file = e.dataTransfer.files[0];
+        input.files = e.dataTransfer.files;
+        handleFile(file);
+      }
+    }, false);
+  }
+
   function openAddCarouselModal() {
     document.getElementById('carouselForm')?.reset();
     const allCb = document.querySelector('#carouselForm input[name="pages"][value="all"]');
     if (allCb) allCb.checked = true;
+
+    const input = document.getElementById('slideImageInput');
+    const wrap = document.getElementById('addSlidePreviewWrap');
+    const prompt = document.getElementById('addSlideDropPrompt');
+    if (input) input.value = '';
+    if (wrap) wrap.style.display = 'none';
+    if (prompt) prompt.style.display = 'flex';
+
+    setupCarouselDropzone('addSlideDropzone', 'slideImageInput', 'addSlidePreviewWrap', 'addSlidePreviewImg', 'addSlideDropPrompt');
+
     const overlay = document.getElementById('add-carousel-modal-overlay');
     if (overlay) overlay.classList.add('open');
+    if (typeof lucide !== 'undefined') lucide.createIcons();
   }
 
   function closeAddCarouselModal(ev) {
@@ -2732,8 +2798,52 @@ const ATS = (() => {
       cb.checked = pages.includes(cb.value);
     });
     
+    currentEditingSlideOriginalImage = slide.image_url || '';
+    const input = document.getElementById('editSlideImageInput');
+    const wrap = document.getElementById('editSlidePreviewWrap');
+    const img = document.getElementById('editSlidePreviewImg');
+    const prompt = document.getElementById('editSlideDropPrompt');
+    const badge = document.getElementById('editSlideBadge');
+    const revertBtn = document.getElementById('editSlideRevertBtn');
+
+    if (input) input.value = '';
+    if (slide.image_url) {
+      if (img) img.src = slide.image_url;
+      if (wrap) wrap.style.display = 'block';
+      if (prompt) prompt.style.display = 'none';
+      if (badge) badge.textContent = 'Image actuelle';
+      if (revertBtn) revertBtn.style.display = 'none';
+    } else {
+      if (wrap) wrap.style.display = 'none';
+      if (prompt) prompt.style.display = 'flex';
+    }
+
+    setupCarouselDropzone('editSlideDropzone', 'editSlideImageInput', 'editSlidePreviewWrap', 'editSlidePreviewImg', 'editSlideDropPrompt', 'editSlideBadge', 'editSlideRevertBtn');
+
     const overlay = document.getElementById('edit-carousel-modal-overlay');
     if (overlay) overlay.classList.add('open');
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+  }
+
+  function revertEditSlideImage() {
+    const input = document.getElementById('editSlideImageInput');
+    const wrap = document.getElementById('editSlidePreviewWrap');
+    const img = document.getElementById('editSlidePreviewImg');
+    const prompt = document.getElementById('editSlideDropPrompt');
+    const badge = document.getElementById('editSlideBadge');
+    const revertBtn = document.getElementById('editSlideRevertBtn');
+
+    if (input) input.value = '';
+    if (currentEditingSlideOriginalImage) {
+      if (img) img.src = currentEditingSlideOriginalImage;
+      if (wrap) wrap.style.display = 'block';
+      if (prompt) prompt.style.display = 'none';
+      if (badge) badge.textContent = 'Image actuelle';
+      if (revertBtn) revertBtn.style.display = 'none';
+    } else {
+      if (wrap) wrap.style.display = 'none';
+      if (prompt) prompt.style.display = 'flex';
+    }
   }
 
   function closeEditCarouselModal(ev) {
@@ -2788,7 +2898,7 @@ const ATS = (() => {
     });
   }
 
-  return { init, openAddCarouselModal, closeAddCarouselModal, openEditCarouselModal, closeEditCarouselModal, toggleCarouselSlide, moveSlide, deleteSlide, loadSMTPSettings, loadContactMessages, openModal, openPartModal, closeModal, openAddModal, closeAddModal, updateStadeBadge, saveModal, addEntry, filterByStade, showAtsPage, renderClients, resetPageAndRender, goToPage, goToRelancesPage, renderPartenariats, renderRelances, badge, exportClientsCSV, addHistoryNote, onCardDragStart, onCardDragEnd, onColDragOver, onColDragLeave, onColDrop };
+  return { init, openAddCarouselModal, closeAddCarouselModal, openEditCarouselModal, closeEditCarouselModal, revertEditSlideImage, toggleCarouselSlide, moveSlide, deleteSlide, loadSMTPSettings, loadContactMessages, openModal, openPartModal, closeModal, openAddModal, closeAddModal, updateStadeBadge, saveModal, addEntry, filterByStade, showAtsPage, renderClients, resetPageAndRender, goToPage, goToRelancesPage, renderPartenariats, renderRelances, badge, exportClientsCSV, addHistoryNote, onCardDragStart, onCardDragEnd, onColDragOver, onColDragLeave, onColDrop };
 
 })();
 
