@@ -3,7 +3,8 @@
    Rôles : superadmin | admin | editor
 ===================================================== */
 
-const API = 'http://localhost:4001';
+const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const API = window.API_BASE || (isLocalhost ? 'http://localhost:4001' : 'https://talentyah-website.onrender.com');
 
 let currentAdminJobsPage = 1;
 const adminJobsPerPage = 8;

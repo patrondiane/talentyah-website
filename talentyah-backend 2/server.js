@@ -27,9 +27,10 @@ app.use(cors({
   origin: (origin, callback) => {
     if (!origin) return callback(null, true);
     
-    // Pour la production, on peut restreindre strictement :
-    const isLocal = origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:');
-    if (allowedOrigins.includes(origin) || isLocal) {
+    // Pour la production, on autorise les domaines officiels, render et le local :
+    const isLocal  = origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:');
+    const isRender = origin.endsWith('.onrender.com');
+    if (allowedOrigins.includes(origin) || isLocal || isRender) {
       return callback(null, true);
     }
     callback(new Error('Origine non autorisée par CORS'));
