@@ -6,21 +6,31 @@ const { auth } = require('../middleware/auth');
 // GET /api/jobs — public
 router.get('/', async (req, res) => {
   const { sector, country, contract_type } = req.query;
-  let sql = `SELECT * FROM jobs WHERE status='active'`;
-  const params = [];
-  if (sector)        { sql += ` AND sector = ?`;        params.push(sector); }
-  if (country)       { sql += ` AND country = ?`;       params.push(country); }
-  if (contract_type) { sql += ` AND contract_type = ?`; params.push(contract_type); }
-  sql += ` ORDER BY created_at DESC`;
-  const jobs = await db.all(sql, params);
-  res.json({ jobs, total: jobs.length });
+  try {
+    let query = db.client.from('jobs').select('*').eq('status', 'active');
+    if (sector)        query = query.eq('sector', sector);
+    if (country)       query = query.eq('country', country);
+    if (contract_type) query = query.eq('contract_type', contract_type);
+    query = query.order('created_at', { ascending: false });
+
+    const { data: jobs, error } = await query;
+    if (error) throw error;
+    res.json({ jobs: jobs || [], total: (jobs || []).length });
+  } catch (err) {
+    console.error('[GET /api/jobs]', err.message);
+    res.status(500).json({ error: 'Erreur lors du chargement des offres.' });
+  }
 });
 
 // GET /api/jobs/all — admin only
 router.get('/all', auth, async (req, res) => {
   try {
-    const jobs = await db.all(`SELECT * FROM jobs ORDER BY created_at DESC`);
-    res.json({ jobs, total: jobs.length });
+    const { data: jobs, error } = await db.client
+      .from('jobs')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    res.json({ jobs: jobs || [], total: (jobs || []).length });
   } catch (err) {
     console.error('[GET /api/jobs/all]', err.message);
     res.status(500).json({ error: 'Erreur lors du chargement des offres.' });
@@ -29,10 +39,15 @@ router.get('/all', auth, async (req, res) => {
 
 // GET /api/jobs/:id — public
 router.get('/:id', async (req, res) => {
-  if (isNaN(req.params.id)) return res.status(400).json({ error: 'ID invalide' });
+  const idNum = Number(req.params.id);
+  if (isNaN(idNum)) return res.status(400).json({ error: 'ID invalide' });
   try {
-    const job = await db.get(`SELECT * FROM jobs WHERE id = ? AND status='active'`, [req.params.id]);
-    if (!job) return res.status(404).json({ error: 'Offre introuvable' });
+    const { data: job, error } = await db.client
+      .from('jobs')
+      .select('*')
+      .eq('id', idNum)
+      .single();
+    if (error || !job) return res.status(404).json({ error: 'Offre introuvable' });
     res.json(job);
   } catch (err) {
     console.error('[GET /api/jobs/:id]', err.message);
@@ -42,17 +57,29 @@ router.get('/:id', async (req, res) => {
 
 // POST /api/jobs — admin only
 router.post('/', auth, async (req, res) => {
-  const { title, city, country, contract_type, sector, salary, description, requirements } = req.body;
+  const { title, city, country, contract_type, sector, salary, description, requirements, tags, is_new } = req.body;
   if (!title) return res.status(400).json({ error: 'Titre requis' });
 
   try {
-    const result = await db.run(
-      `INSERT INTO jobs (title, city, country, contract_type, sector, salary, description, requirements)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [title, city||null, country||null, contract_type||null, sector||null, salary||null, description||null, requirements||null]
-    );
-    const id  = db.lastInsertRowId(result);
-    const job = await db.get(`SELECT * FROM jobs WHERE id = ?`, [id]);
+    const { data: job, error } = await db.client
+      .from('jobs')
+      .insert([{
+        title: title.trim(),
+        city: city?.trim() || null,
+        country: country?.trim() || null,
+        contract_type: contract_type || null,
+        sector: sector?.trim() || null,
+        salary: salary?.trim() || null,
+        tags: Array.isArray(tags) ? tags.join(',') : (tags || null),
+        description: description || null,
+        requirements: requirements || null,
+        status: 'active',
+        is_new: is_new !== undefined ? (is_new ? 1 : 0) : 1
+      }])
+      .select()
+      .single();
+
+    if (error) throw error;
     res.status(201).json(job);
   } catch (err) {
     console.error('[POST /api/jobs]', err.message);
@@ -62,14 +89,32 @@ router.post('/', auth, async (req, res) => {
 
 // PUT /api/jobs/:id — admin only
 router.put('/:id', auth, async (req, res) => {
-  const { title, city, country, contract_type, sector, salary, description, requirements, status } = req.body;
+  const idNum = Number(req.params.id);
+  if (isNaN(idNum)) return res.status(400).json({ error: 'ID invalide' });
+  const { title, city, country, contract_type, sector, salary, description, requirements, status, tags, is_new } = req.body;
+
   try {
-    await db.run(
-      `UPDATE jobs SET title=?, city=?, country=?, contract_type=?, sector=?, salary=?, description=?, requirements=?, status=?
-       WHERE id=?`,
-      [title, city||null, country||null, contract_type||null, sector||null, salary||null, description||null, requirements||null, status||'active', req.params.id]
-    );
-    const job = await db.get(`SELECT * FROM jobs WHERE id = ?`, [req.params.id]);
+    const updateData = {};
+    if (title !== undefined) updateData.title = title.trim();
+    if (city !== undefined) updateData.city = city?.trim() || null;
+    if (country !== undefined) updateData.country = country?.trim() || null;
+    if (contract_type !== undefined) updateData.contract_type = contract_type || null;
+    if (sector !== undefined) updateData.sector = sector?.trim() || null;
+    if (salary !== undefined) updateData.salary = salary?.trim() || null;
+    if (tags !== undefined) updateData.tags = Array.isArray(tags) ? tags.join(',') : (tags || null);
+    if (description !== undefined) updateData.description = description || null;
+    if (requirements !== undefined) updateData.requirements = requirements || null;
+    if (status !== undefined) updateData.status = status;
+    if (is_new !== undefined) updateData.is_new = is_new ? 1 : 0;
+
+    const { data: job, error } = await db.client
+      .from('jobs')
+      .update(updateData)
+      .eq('id', idNum)
+      .select()
+      .single();
+
+    if (error) throw error;
     res.json(job);
   } catch (err) {
     console.error('[PUT /api/jobs/:id]', err.message);
@@ -79,8 +124,14 @@ router.put('/:id', auth, async (req, res) => {
 
 // DELETE /api/jobs/:id — admin only
 router.delete('/:id', auth, async (req, res) => {
+  const idNum = Number(req.params.id);
+  if (isNaN(idNum)) return res.status(400).json({ error: 'ID invalide' });
   try {
-    await db.run(`DELETE FROM jobs WHERE id = ?`, [req.params.id]);
+    const { error } = await db.client
+      .from('jobs')
+      .delete()
+      .eq('id', idNum);
+    if (error) throw error;
     res.json({ ok: true });
   } catch (err) {
     console.error('[DELETE /api/jobs/:id]', err.message);

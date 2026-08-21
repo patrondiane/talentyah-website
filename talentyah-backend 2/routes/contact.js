@@ -16,24 +16,46 @@ const contactLimiter = rateLimiter({
 router.post('/', contactLimiter, async (req, res) => {
   const { fullname, name, email, subject, type, message } = req.body;
   if (!email) return res.status(400).json({ error: 'Email requis' });
-  const now = new Date().toISOString();
-  await db.run(
-    `INSERT INTO contacts (fullname, email, subject, type, message, created_at) VALUES (?,?,?,?,?,?)`,
-    [fullname || name || null, email, subject || type || null, type || subject || null, message || null, now]
-  );
-  
-  // Notification email asynchrone (n'attend pas le SMTP pour répondre au visiteur)
-  notifyNewContactMessage({ fullname: fullname || name, email, subject, type, message }).catch(err => {
-    console.error('[CONTACT MAIL ERROR]', err.message);
-  });
 
-  res.json({ ok: true, message: 'Message reçu' });
+  try {
+    const { error } = await db.client
+      .from('contacts')
+      .insert([{
+        fullname: fullname || name || null,
+        email,
+        subject: subject || type || null,
+        type: type || subject || null,
+        message: message || null
+      }]);
+
+    if (error) throw error;
+    
+    // Notification email asynchrone (n'attend pas le SMTP pour répondre au visiteur)
+    notifyNewContactMessage({ fullname: fullname || name, email, subject, type, message }).catch(err => {
+      console.error('[CONTACT MAIL ERROR]', err.message);
+    });
+
+    res.json({ ok: true, message: 'Message reçu' });
+  } catch (err) {
+    console.error('[POST /api/contact]', err.message);
+    res.status(500).json({ error: 'Erreur lors de l\'envoi du message.' });
+  }
 });
 
 // GET /api/contact — admin
 router.get('/', auth, async (req, res) => {
-  const contacts = await db.all(`SELECT * FROM contacts ORDER BY created_at DESC`);
-  res.json({ contacts, total: contacts.length });
+  try {
+    const { data: contacts, error } = await db.client
+      .from('contacts')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    res.json({ contacts: contacts || [], total: (contacts || []).length });
+  } catch (err) {
+    console.error('[GET /api/contact]', err.message);
+    res.status(500).json({ error: 'Erreur lors de la récupération des messages.' });
+  }
 });
 
 module.exports = router;

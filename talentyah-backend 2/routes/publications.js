@@ -11,27 +11,53 @@ const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 *
 // GET /api/publications — public
 router.get('/', async (req, res) => {
   const { status, category } = req.query;
-  let sql = `SELECT * FROM publications WHERE 1=1`;
-  const params = [];
-  if (status)   { sql += ` AND status = ?`;   params.push(status); }
-  else          { sql += ` AND status = 'published'`; }
-  if (category) { sql += ` AND category = ?`; params.push(category); }
-  sql += ` ORDER BY created_at DESC`;
-  const publications = await db.all(sql, params);
-  res.json({ publications, total: publications.length });
+  try {
+    let query = db.client.from('publications').select('*');
+    if (status) query = query.eq('status', status);
+    else query = query.eq('status', 'published');
+    if (category) query = query.eq('category', category);
+    query = query.order('created_at', { ascending: false });
+
+    const { data: publications, error } = await query;
+    if (error) throw error;
+    res.json({ publications: publications || [], total: (publications || []).length });
+  } catch (err) {
+    console.error('[GET /api/publications]', err.message);
+    res.status(500).json({ error: 'Erreur lors du chargement des articles.' });
+  }
 });
 
 // GET /api/publications/all — admin
 router.get('/all', auth, async (req, res) => {
-  const publications = await db.all(`SELECT * FROM publications ORDER BY created_at DESC`);
-  res.json({ publications, total: publications.length });
+  try {
+    const { data: publications, error } = await db.client
+      .from('publications')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    res.json({ publications: publications || [], total: (publications || []).length });
+  } catch (err) {
+    console.error('[GET /api/publications/all]', err.message);
+    res.status(500).json({ error: 'Erreur lors du chargement des articles.' });
+  }
 });
 
 // GET /api/publications/:id — public
 router.get('/:id', async (req, res) => {
-  const pub = await db.get(`SELECT * FROM publications WHERE id = ?`, [req.params.id]);
-  if (!pub) return res.status(404).json({ error: 'Article introuvable' });
-  res.json(pub);
+  const idNum = Number(req.params.id);
+  if (isNaN(idNum)) return res.status(400).json({ error: 'ID invalide' });
+  try {
+    const { data: pub, error } = await db.client
+      .from('publications')
+      .select('*')
+      .eq('id', idNum)
+      .single();
+    if (error || !pub) return res.status(404).json({ error: 'Article introuvable' });
+    res.json(pub);
+  } catch (err) {
+    console.error('[GET /api/publications/:id]', err.message);
+    res.status(500).json({ error: 'Erreur lors du chargement de l\'article.' });
+  }
 });
 
 // POST /api/publications — admin
@@ -45,10 +71,8 @@ router.post('/', auth, upload.single('image'), async (req, res) => {
       if (process.env.R2_ACCESS_KEY_ID) {
         const uniqueKey = `blog/img_${Date.now()}_${req.file.originalname.replace(/\s+/g, '_')}`;
         image_url = await uploadToR2(req.file.buffer, uniqueKey, req.file.mimetype);
-        console.log('[R2 Blog Image] Upload réussi:', image_url);
       } else {
         image_url = await uploadBuffer(req.file.buffer, 'talentyah/publications', { resource_type: 'image' });
-        console.log('[Cloudinary Blog Image] Upload réussi:', image_url);
       }
     } catch (uploadErr) {
       console.error('[PUBLICATIONS] Erreur upload image:', uploadErr.message);
@@ -56,21 +80,42 @@ router.post('/', auth, upload.single('image'), async (req, res) => {
   }
   const published_at = status === 'published' ? new Date().toISOString().slice(0,10) : null;
 
-  const result = await db.run(
-    `INSERT INTO publications (title, category, status, excerpt, content, image_url, published_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?)`,
-    [title, category || 'Conseil carrière', status || 'draft', excerpt || null, content || null, image_url, published_at]
-  );
-  const id  = db.lastInsertRowId(result);
-  res.status(201).json(await db.get(`SELECT * FROM publications WHERE id = ?`, [id]));
+  try {
+    const { data: pub, error } = await db.client
+      .from('publications')
+      .insert([{
+        title: title.trim(),
+        category: category || 'Conseil carrière',
+        status: status || 'draft',
+        excerpt: excerpt || null,
+        content: content || null,
+        image_url: image_url || null,
+        published_at
+      }])
+      .select()
+      .single();
+
+    if (error) throw error;
+    res.status(201).json(pub);
+  } catch (err) {
+    console.error('[POST /api/publications]', err.message);
+    res.status(500).json({ error: 'Erreur lors de la création de la publication.' });
+  }
 });
 
 // PUT /api/publications/:id — admin
 router.put('/:id', auth, upload.single('image'), async (req, res) => {
+  const idNum = Number(req.params.id);
+  if (isNaN(idNum)) return res.status(400).json({ error: 'ID invalide' });
+  const { title, category, status, excerpt, content } = req.body;
+
   try {
-    const { title, category, status, excerpt, content } = req.body;
-    const existing = await db.get(`SELECT * FROM publications WHERE id = ?`, [req.params.id]);
-    if (!existing) return res.status(404).json({ error: 'Article introuvable' });
+    const { data: existing, error: exErr } = await db.client
+      .from('publications')
+      .select('*')
+      .eq('id', idNum)
+      .single();
+    if (exErr || !existing) return res.status(404).json({ error: 'Article introuvable' });
 
     let image_url = existing.image_url;
     if (req.file) {
@@ -79,12 +124,24 @@ router.put('/:id', auth, upload.single('image'), async (req, res) => {
     }
     const published_at = status === 'published' ? (existing.published_at || new Date().toISOString().slice(0,10)) : null;
 
-    await db.run(
-      `UPDATE publications SET title=?, category=?, status=?, excerpt=?, content=?, image_url=?, published_at=?, updated_at=CURRENT_TIMESTAMP WHERE id=?`,
-      [title || existing.title, category || existing.category, status || existing.status,
-       excerpt || null, content || null, image_url, published_at, req.params.id]
-    );
-    res.json(await db.get(`SELECT * FROM publications WHERE id = ?`, [req.params.id]));
+    const { data: pub, error } = await db.client
+      .from('publications')
+      .update({
+        title: title?.trim() || existing.title,
+        category: category || existing.category,
+        status: status || existing.status,
+        excerpt: excerpt !== undefined ? excerpt : existing.excerpt,
+        content: content !== undefined ? content : existing.content,
+        image_url,
+        published_at,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', idNum)
+      .select()
+      .single();
+
+    if (error) throw error;
+    res.json(pub);
   } catch (err) {
     console.error('[PUT /api/publications/:id]', err.message);
     res.status(500).json({ error: 'Erreur lors de la mise à jour de la publication.' });
@@ -93,15 +150,28 @@ router.put('/:id', auth, upload.single('image'), async (req, res) => {
 
 // PATCH /api/publications/:id/status
 router.patch('/:id/status', auth, async (req, res) => {
+  const idNum = Number(req.params.id);
+  if (isNaN(idNum)) return res.status(400).json({ error: 'ID invalide' });
   try {
-    const pub = await db.get(`SELECT * FROM publications WHERE id = ?`, [req.params.id]);
-    if (!pub) return res.status(404).json({ error: 'Article introuvable' });
+    const { data: pub, error: getErr } = await db.client
+      .from('publications')
+      .select('*')
+      .eq('id', idNum)
+      .single();
+    if (getErr || !pub) return res.status(404).json({ error: 'Article introuvable' });
     const newStatus    = pub.status === 'published' ? 'draft' : 'published';
     const published_at = newStatus === 'published' ? (pub.published_at || new Date().toISOString().slice(0,10)) : null;
-    await db.run(
-      `UPDATE publications SET status=?, published_at=?, updated_at=CURRENT_TIMESTAMP WHERE id=?`,
-      [newStatus, published_at, req.params.id]
-    );
+
+    const { error: updErr } = await db.client
+      .from('publications')
+      .update({
+        status: newStatus,
+        published_at,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', idNum);
+
+    if (updErr) throw updErr;
     res.json({ id: pub.id, status: newStatus });
   } catch (err) {
     console.error('[PATCH /api/publications/:id/status]', err.message);
@@ -111,10 +181,13 @@ router.patch('/:id/status', auth, async (req, res) => {
 
 // DELETE /api/publications/:id
 router.delete('/:id', auth, async (req, res) => {
+  const idNum = Number(req.params.id);
+  if (isNaN(idNum)) return res.status(400).json({ error: 'ID invalide' });
   try {
-    const pub = await db.get(`SELECT image_url FROM publications WHERE id = ?`, [req.params.id]);
+    const { data: pub } = await db.client.from('publications').select('image_url').eq('id', idNum).single();
     await deleteByUrl(pub?.image_url);
-    await db.run(`DELETE FROM publications WHERE id = ?`, [req.params.id]);
+    const { error } = await db.client.from('publications').delete().eq('id', idNum);
+    if (error) throw error;
     res.json({ ok: true });
   } catch (err) {
     console.error('[DELETE /api/publications/:id]', err.message);

@@ -17,28 +17,60 @@ router.post('/', companyLimiter, async (req, res) => {
   const { company_name, email, phone, region, role_needed, urgency, message } = req.body;
   if (!company_name || !email) return res.status(400).json({ error: 'Nom de société et email requis' });
 
-  const result = await db.run(
-    `INSERT INTO companies (company_name, email, phone, region, role_needed, urgency, message)
-     VALUES (?, ?, ?, ?, ?, ?, ?)`,
-    [company_name, email, phone||null, region||null, role_needed||null, urgency||'moyenne', message||null]
-  );
-  const id = db.lastInsertRowId(result);
+  try {
+    const { data: company, error } = await db.client
+      .from('companies')
+      .insert([{
+        company_name: company_name.trim(),
+        email: email.trim(),
+        phone: phone?.trim() || null,
+        region: region?.trim() || null,
+        role_needed: role_needed?.trim() || null,
+        urgency: urgency || 'moyenne',
+        message: message || null
+      }])
+      .select()
+      .single();
 
-  notifyNewCompany({ company_name, email, phone, region, role_needed, urgency, message }).catch(() => {});
+    if (error) throw error;
 
-  res.status(201).json({ id, message: 'Demande enregistrée avec succès' });
+    notifyNewCompany({ company_name, email, phone, region, role_needed, urgency, message }).catch(() => {});
+
+    res.status(201).json({ id: company?.id, message: 'Demande enregistrée avec succès' });
+  } catch (err) {
+    console.error('[POST /api/companies]', err.message);
+    res.status(500).json({ error: 'Erreur lors de l\'enregistrement de la demande.' });
+  }
 });
 
 // GET /api/companies — admin only
 router.get('/', auth, async (req, res) => {
-  const companies = await db.all(`SELECT * FROM companies ORDER BY created_at DESC`);
-  res.json({ companies, total: companies.length });
+  try {
+    const { data: companies, error } = await db.client
+      .from('companies')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    res.json({ companies: companies || [], total: (companies || []).length });
+  } catch (err) {
+    console.error('[GET /api/companies]', err.message);
+    res.status(500).json({ error: 'Erreur lors de la récupération des entreprises.' });
+  }
 });
 
 // DELETE /api/companies/:id — admin only
 router.delete('/:id', auth, async (req, res) => {
-  await db.run(`DELETE FROM companies WHERE id = ?`, [req.params.id]);
-  res.json({ ok: true });
+  const idNum = Number(req.params.id);
+  if (isNaN(idNum)) return res.status(400).json({ error: 'ID invalide' });
+  try {
+    const { error } = await db.client.from('companies').delete().eq('id', idNum);
+    if (error) throw error;
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('[DELETE /api/companies/:id]', err.message);
+    res.status(500).json({ error: 'Erreur lors de la suppression.' });
+  }
 });
 
 module.exports = router;

@@ -7,7 +7,7 @@ const { notifyNewCandidate } = require('../mailer');
 const { uploadCV, deleteCV } = require('../supabase-storage');
 const { uploadToR2 } = require('../cloudflare-r2');
 
-// Multer en mémoire (pas de disque — on envoie direct à Cloudinary)
+// Multer en mémoire (pas de disque — on envoie direct vers R2 ou Supabase)
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 5 * 1024 * 1024 },
@@ -42,26 +42,39 @@ router.post('/', candidateLimiter, upload.single('cv'), async (req, res) => {
         if (process.env.R2_ACCESS_KEY_ID) {
           const uniqueKey = `cvs/cv_${Date.now()}_${cv_filename.replace(/\s+/g, '_')}`;
           cv_url = await uploadToR2(req.file.buffer, uniqueKey, req.file.mimetype);
-          console.log('[R2 CV] Upload réussi:', cv_url);
         } else {
           cv_url = await uploadCV(req.file.buffer, cv_filename, req.file.mimetype);
-          console.log('[Supabase CV] Upload réussi:', cv_url);
         }
       } catch (uploadErr) {
         console.error('[CV] Upload échoué:', uploadErr.message);
       }
     }
 
-    const result = await db.run(
-      `INSERT INTO candidates (first_name, last_name, email, phone, role_target, sector, country, experience_level, message, cv_url, cv_filename, job_id, source)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [first_name, last_name, email, phone||null, role_target||null, sector||null, country||null, experience_level||null, message||null, cv_url, cv_filename, job_id||null, source||null]
-    );
-    const id = db.lastInsertRowId(result);
+    const { data: candidate, error } = await db.client
+      .from('candidates')
+      .insert([{
+        first_name: first_name.trim(),
+        last_name: last_name.trim(),
+        email: email.trim(),
+        phone: phone?.trim() || null,
+        role_target: role_target?.trim() || null,
+        sector: sector?.trim() || null,
+        country: country?.trim() || null,
+        experience_level: experience_level || null,
+        message: message || null,
+        cv_url: cv_url || null,
+        cv_filename: cv_filename || null,
+        job_id: job_id ? Number(job_id) : null,
+        source: source || null
+      }])
+      .select()
+      .single();
+
+    if (error) throw error;
 
     notifyNewCandidate({ first_name, last_name, email, phone, role_target, sector, country, experience_level, message, cv_url, source }).catch(() => {});
 
-    res.status(201).json({ id, message: 'Candidature enregistrée avec succès' });
+    res.status(201).json({ id: candidate?.id, message: 'Candidature enregistrée avec succès' });
   } catch (err) {
     console.error('[POST /candidates]', err.message);
     res.status(500).json({ error: 'Erreur lors de l\'enregistrement de la candidature.' });
@@ -71,33 +84,57 @@ router.post('/', candidateLimiter, upload.single('cv'), async (req, res) => {
 // GET /api/candidates — admin only
 router.get('/', auth, async (req, res) => {
   const { sector, country, search } = req.query;
-  let sql = `SELECT * FROM candidates WHERE 1=1`;
-  const params = [];
-  if (sector)  { sql += ` AND sector = ?`;  params.push(sector); }
-  if (country) { sql += ` AND country = ?`; params.push(country); }
-  if (search)  {
-    sql += ` AND (first_name LIKE ? OR last_name LIKE ? OR email LIKE ? OR role_target LIKE ?)`;
-    const q = `%${search}%`;
-    params.push(q, q, q, q);
+  try {
+    let query = db.client.from('candidates').select('*');
+    if (sector)  query = query.eq('sector', sector);
+    if (country) query = query.eq('country', country);
+    if (search) {
+      const q = `%${search}%`;
+      query = query.or(`first_name.ilike.${q},last_name.ilike.${q},email.ilike.${q},role_target.ilike.${q}`);
+    }
+    query = query.order('created_at', { ascending: false });
+
+    const { data: candidates, error } = await query;
+    if (error) throw error;
+    res.json({ candidates: candidates || [], total: (candidates || []).length });
+  } catch (err) {
+    console.error('[GET /api/candidates]', err.message);
+    res.status(500).json({ error: 'Erreur lors du chargement des candidats.' });
   }
-  sql += ` ORDER BY created_at DESC`;
-  const candidates = await db.all(sql, params);
-  res.json({ candidates, total: candidates.length });
 });
 
 // GET /api/candidates/:id — admin only
 router.get('/:id', auth, async (req, res) => {
-  const c = await db.get(`SELECT * FROM candidates WHERE id = ?`, [req.params.id]);
-  if (!c) return res.status(404).json({ error: 'Candidat introuvable' });
-  res.json(c);
+  const idNum = Number(req.params.id);
+  if (isNaN(idNum)) return res.status(400).json({ error: 'ID invalide' });
+  try {
+    const { data: c, error } = await db.client
+      .from('candidates')
+      .select('*')
+      .eq('id', idNum)
+      .single();
+    if (error || !c) return res.status(404).json({ error: 'Candidat introuvable' });
+    res.json(c);
+  } catch (err) {
+    console.error('[GET /api/candidates/:id]', err.message);
+    res.status(500).json({ error: 'Erreur lors du chargement du candidat.' });
+  }
 });
 
 // DELETE /api/candidates/:id — admin only
 router.delete('/:id', auth, async (req, res) => {
-  const c = await db.get(`SELECT cv_url FROM candidates WHERE id = ?`, [req.params.id]);
-  await deleteCV(c?.cv_url);   // supprime le CV de Supabase
-  await db.run(`DELETE FROM candidates WHERE id = ?`, [req.params.id]);
-  res.json({ ok: true });
+  const idNum = Number(req.params.id);
+  if (isNaN(idNum)) return res.status(400).json({ error: 'ID invalide' });
+  try {
+    const { data: c } = await db.client.from('candidates').select('cv_url').eq('id', idNum).single();
+    await deleteCV(c?.cv_url);
+    const { error } = await db.client.from('candidates').delete().eq('id', idNum);
+    if (error) throw error;
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('[DELETE /api/candidates/:id]', err.message);
+    res.status(500).json({ error: 'Erreur lors de la suppression.' });
+  }
 });
 
 module.exports = router;

@@ -76,4 +76,12 @@ async function seedAdmins() {
 
 function save() {}
 
-module.exports = { init, all, get, run, lastInsertRowId, save };
+module.exports = { 
+  init, 
+  all, 
+  get, 
+  run, 
+  lastInsertRowId, 
+  save,
+  get client() { return supabase; }
+};
