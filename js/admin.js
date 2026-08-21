@@ -2552,15 +2552,19 @@ const ATS = (() => {
           body: JSON.stringify(fd)
         });
         
+        const d = await res.json();
         if (res.ok) {
-          if (msg) { msg.textContent = 'Configuration enregistrée !'; msg.style.color = 'var(--emerald)'; setTimeout(() => { msg.textContent = ''; }, 3000); }
+          if (msg) {
+            msg.textContent = d.message || 'Configuration enregistrée !';
+            msg.style.color = d.warning ? '#d97706' : 'var(--emerald)';
+            setTimeout(() => { if (msg) msg.textContent = ''; }, 6000);
+          }
           loadSMTPSettings();
         } else {
-          const d = await res.json();
-          if (msg) { msg.textContent = d.error || 'Erreur.'; msg.style.color = '#c0392b'; }
+          if (msg) { msg.textContent = d.error || 'Erreur lors de l\'enregistrement.'; msg.style.color = '#c0392b'; }
         }
-      } catch {
-        if (msg) { msg.textContent = 'Erreur réseau.'; msg.style.color = '#c0392b'; }
+      } catch (err) {
+        if (msg) { msg.textContent = 'Erreur réseau : ' + err.message; msg.style.color = '#c0392b'; }
       }
       btn.disabled = false; btn.textContent = 'Enregistrer la configuration';
     });

@@ -23,55 +23,75 @@ router.get('/all', auth, async (req, res) => {
 
 // POST /api/partners — admin
 router.post('/', auth, upload.single('image'), async (req, res) => {
-  const { name, description, sort_order } = req.body;
-  if (!name) return res.status(400).json({ error: 'Nom requis' });
-  const image_url = req.file ? await uploadBuffer(req.file.buffer, 'talentyah/partners', { resource_type: 'image' }) : null;
-  const result = await db.run(
-    `INSERT INTO partners (name, description, image_url, sort_order) VALUES (?,?,?,?)`,
-    [name, description || null, image_url, Number(sort_order) || 0]
-  );
-  const id = db.lastInsertRowId(result);
-  res.status(201).json(await db.get(`SELECT * FROM partners WHERE id = ?`, [id]));
+  try {
+    const { name, description, sort_order } = req.body;
+    if (!name) return res.status(400).json({ error: 'Nom requis' });
+    const image_url = req.file ? await uploadBuffer(req.file.buffer, 'talentyah/partners', { resource_type: 'image' }) : null;
+    const result = await db.run(
+      `INSERT INTO partners (name, description, image_url, sort_order) VALUES (?,?,?,?)`,
+      [name, description || null, image_url, sort_order !== undefined ? Number(sort_order) : 0]
+    );
+    const id = db.lastInsertRowId(result);
+    res.status(201).json(await db.get(`SELECT * FROM partners WHERE id = ?`, [id]));
+  } catch (err) {
+    console.error('[POST /api/partners]', err.message);
+    res.status(500).json({ error: 'Erreur lors de la création du partenaire.' });
+  }
 });
 
 // PUT /api/partners/:id — admin
 router.put('/:id', auth, upload.single('image'), async (req, res) => {
-  const existing = await db.get(`SELECT * FROM partners WHERE id = ?`, [req.params.id]);
-  if (!existing) return res.status(404).json({ error: 'Partenaire introuvable' });
-  const { name, description, sort_order, existing_image_url } = req.body;
-  let image_url = existing_image_url || existing.image_url;
-  if (req.file) {
-    await deleteByUrl(existing.image_url);
-    image_url = await uploadBuffer(req.file.buffer, 'talentyah/partners', { resource_type: 'image' });
+  try {
+    const existing = await db.get(`SELECT * FROM partners WHERE id = ?`, [req.params.id]);
+    if (!existing) return res.status(404).json({ error: 'Partenaire introuvable' });
+    const { name, description, sort_order, existing_image_url } = req.body;
+    let image_url = existing_image_url || existing.image_url;
+    if (req.file) {
+      await deleteByUrl(existing.image_url);
+      image_url = await uploadBuffer(req.file.buffer, 'talentyah/partners', { resource_type: 'image' });
+    }
+    await db.run(
+      `UPDATE partners SET name=?, description=?, image_url=?, sort_order=? WHERE id=?`,
+      [name || existing.name, description !== undefined ? description : existing.description, image_url, sort_order !== undefined ? Number(sort_order) : existing.sort_order, req.params.id]
+    );
+    res.json(await db.get(`SELECT * FROM partners WHERE id = ?`, [req.params.id]));
+  } catch (err) {
+    console.error('[PUT /api/partners/:id]', err.message);
+    res.status(500).json({ error: 'Erreur lors de la mise à jour du partenaire.' });
   }
-  await db.run(
-    `UPDATE partners SET name=?, description=?, image_url=?, sort_order=? WHERE id=?`,
-    [name || existing.name, description ?? existing.description, image_url, Number(sort_order) || existing.sort_order, req.params.id]
-  );
-  res.json(await db.get(`SELECT * FROM partners WHERE id = ?`, [req.params.id]));
 });
 
 // POST /api/partners/bulk — admin
 router.post('/bulk', auth, async (req, res) => {
-  const { partners } = req.body;
-  if (!Array.isArray(partners)) return res.status(400).json({ error: 'partners[] requis' });
-  await db.run(`DELETE FROM partners`);
-  for (let i = 0; i < partners.length; i++) {
-    const p = partners[i];
-    await db.run(
-      `INSERT INTO partners (name, description, image_url, sort_order) VALUES (?,?,?,?)`,
-      [p.name || 'Partenaire', p.description || null, p.image_url || null, i]
-    );
+  try {
+    const { partners } = req.body;
+    if (!Array.isArray(partners)) return res.status(400).json({ error: 'partners[] requis' });
+    await db.run(`DELETE FROM partners`);
+    for (let i = 0; i < partners.length; i++) {
+      const p = partners[i];
+      await db.run(
+        `INSERT INTO partners (name, description, image_url, sort_order) VALUES (?,?,?,?)`,
+        [p.name || 'Partenaire', p.description || null, p.image_url || null, i]
+      );
+    }
+    res.json({ ok: true, count: partners.length });
+  } catch (err) {
+    console.error('[POST /api/partners/bulk]', err.message);
+    res.status(500).json({ error: 'Erreur lors de l\'enregistrement groupé.' });
   }
-  res.json({ ok: true, count: partners.length });
 });
 
 // DELETE /api/partners/:id — admin
 router.delete('/:id', auth, async (req, res) => {
-  const p = await db.get(`SELECT image_url FROM partners WHERE id = ?`, [req.params.id]);
-  await deleteByUrl(p?.image_url);
-  await db.run(`DELETE FROM partners WHERE id = ?`, [req.params.id]);
-  res.json({ ok: true });
+  try {
+    const p = await db.get(`SELECT image_url FROM partners WHERE id = ?`, [req.params.id]);
+    await deleteByUrl(p?.image_url);
+    await db.run(`DELETE FROM partners WHERE id = ?`, [req.params.id]);
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('[DELETE /api/partners/:id]', err.message);
+    res.status(500).json({ error: 'Erreur lors de la suppression.' });
+  }
 });
 
 module.exports = router;

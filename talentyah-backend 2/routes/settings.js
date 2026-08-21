@@ -37,48 +37,11 @@ router.put('/smtp', auth, async (req, res) => {
   const { smtp_host, smtp_port, smtp_user, smtp_pass, smtp_from, notify_email } = req.body;
 
   try {
-    // 1. Déterminer les valeurs à tester (avec fallback sur la BDD ou le .env)
-    let host = smtp_host;
-    let port = smtp_port ? Number(smtp_port) : 587;
-    let user = smtp_user;
-    let pass = smtp_pass;
-
-    const rows = await db.all(`SELECT * FROM config_settings WHERE key IN ('smtp_host', 'smtp_port', 'smtp_user', 'smtp_pass')`);
-    const dbConfig = {};
-    rows.forEach(r => dbConfig[r.key] = r.value);
-
-    if (!host) host = dbConfig.smtp_host || process.env.SMTP_HOST || 'smtp.gmail.com';
-    if (!smtp_port) port = dbConfig.smtp_port ? Number(dbConfig.smtp_port) : (Number(process.env.SMTP_PORT) || 587);
-    if (!user) user = dbConfig.smtp_user || process.env.SMTP_USER || '';
-    
-    if (pass === '********' || !pass) {
-      pass = dbConfig.smtp_pass ? decrypt(dbConfig.smtp_pass) : (process.env.SMTP_PASS || '');
-    }
-
-    // 2. Vérifier la connexion avec le serveur de messagerie
-    const transporter = nodemailer.createTransport({
-      host,
-      port,
-      secure: port === 465,
-      auth: { user, pass },
-      tls: {
-        rejectUnauthorized: false
-      }
-    });
-
-    try {
-      await transporter.verify();
-      console.log('[SMTP CHECK] Connexion validée avec succès !');
-    } catch (verifyErr) {
-      console.warn('[SMTP CHECK ERROR]', verifyErr.message);
-      return res.status(400).json({ error: `La connexion SMTP a échoué : ${verifyErr.message}` });
-    }
-
-    // 3. Enregistrer les paramètres en BDD si le test est réussi
+    // 1. Enregistrer immédiatement les paramètres en BDD
     const queries = [];
     
     if (smtp_host !== undefined) queries.push(db.run(`INSERT INTO config_settings (key, value) VALUES ('smtp_host', ?) ON CONFLICT (key) DO UPDATE SET value=?, updated_at=CURRENT_TIMESTAMP`, [smtp_host, smtp_host]));
-    if (smtp_port !== undefined) queries.push(db.run(`INSERT INTO config_settings (key, value) VALUES ('smtp_port', ?) ON CONFLICT (key) DO UPDATE SET value=?, updated_at=CURRENT_TIMESTAMP`, [smtp_port, smtp_port]));
+    if (smtp_port !== undefined) queries.push(db.run(`INSERT INTO config_settings (key, value) VALUES ('smtp_port', ?) ON CONFLICT (key) DO UPDATE SET value=?, updated_at=CURRENT_TIMESTAMP`, [String(smtp_port), String(smtp_port)]));
     if (smtp_user !== undefined) queries.push(db.run(`INSERT INTO config_settings (key, value) VALUES ('smtp_user', ?) ON CONFLICT (key) DO UPDATE SET value=?, updated_at=CURRENT_TIMESTAMP`, [smtp_user, smtp_user]));
     if (smtp_from !== undefined) queries.push(db.run(`INSERT INTO config_settings (key, value) VALUES ('smtp_from', ?) ON CONFLICT (key) DO UPDATE SET value=?, updated_at=CURRENT_TIMESTAMP`, [smtp_from, smtp_from]));
     if (notify_email !== undefined) queries.push(db.run(`INSERT INTO config_settings (key, value) VALUES ('notify_email', ?) ON CONFLICT (key) DO UPDATE SET value=?, updated_at=CURRENT_TIMESTAMP`, [notify_email, notify_email]));
@@ -90,10 +53,55 @@ router.put('/smtp', auth, async (req, res) => {
     }
 
     await Promise.all(queries);
-    res.json({ success: true, message: 'Configuration SMTP enregistrée et testée avec succès !' });
+
+    // 2. Tester la connexion avec timeout court (4s)
+    let host = smtp_host;
+    let port = smtp_port ? Number(smtp_port) : 587;
+    let user = smtp_user;
+    let pass = smtp_pass;
+
+    if (pass === '********' || !pass) {
+      const dbRow = await db.get(`SELECT value FROM config_settings WHERE key = 'smtp_pass'`);
+      pass = dbRow?.value ? decrypt(dbRow.value) : (process.env.SMTP_PASS || '');
+    }
+
+    let warning = null;
+    if (host && user && pass) {
+      try {
+        const transporter = nodemailer.createTransport({
+          host,
+          port,
+          secure: port === 465,
+          auth: { user, pass },
+          connectionTimeout: 4000,
+          greetingTimeout: 4000,
+          socketTimeout: 4000,
+          tls: { rejectUnauthorized: false }
+        });
+
+        await Promise.race([
+          transporter.verify(),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Délai d\'attente dépassé (timeout 4s)')), 4000))
+        ]);
+        console.log('[SMTP CHECK] Connexion validée avec succès !');
+      } catch (verifyErr) {
+        console.warn('[SMTP CHECK WARNING]', verifyErr.message);
+        warning = verifyErr.message;
+      }
+    }
+
+    if (warning) {
+      return res.json({ 
+        success: true, 
+        warning: true, 
+        message: `Paramètres enregistrés en base de données. Note : Le test de connexion SMTP a échoué (${warning}). Vérifiez vos identifiants ou le port.` 
+      });
+    }
+
+    res.json({ success: true, message: 'Configuration SMTP enregistrée et vérifiée avec succès !' });
   } catch (err) {
     console.error('[SMTP PUT ERROR]', err.message);
-    res.status(500).json({ error: 'Impossible de mettre à jour la configuration SMTP' });
+    res.status(500).json({ error: 'Impossible de mettre à jour la configuration SMTP : ' + err.message });
   }
 });
 
