@@ -57,6 +57,7 @@ body {
   color: var(--dark); background: var(--white);
   line-height: 1.6;
 }
+body { display: none !important; }
 img { max-width: 100%; height: auto; display: block; }
 
 /* =====================
